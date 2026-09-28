@@ -1,0 +1,6 @@
+*.rbxl binary
+*.rbxm binary
+*.jpg binary
+*.png binary
+*.luau text eol=lf
+*.py text eol=lf

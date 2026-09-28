@@ -1,0 +1,206 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Neon Bay preview</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #05060c; overflow: hidden; }
+  canvas { display: block; }
+  #status { position: fixed; left: 8px; top: 8px; color: #9ab; font: 12px monospace; }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "./node_modules/three/build/three.module.js",
+  "three/addons/": "./node_modules/three/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="status">loading…</div>
+<script type="module">
+// Approximate night render of a Neon Bay build (dist/layout.json). Not Roblox's renderer:
+// neon glows via bloom and every Roblox light becomes a soft pool of light on the surface
+// below it. Query: ?layout=...&cam=x,y,z&look=x,y,z&fov=60&w=1600&h=900
+import * as THREE from "three";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+
+const q = new URLSearchParams(location.search);
+const vec = (s, d) => (s ? s.split(",").map(Number) : d);
+const W = Number(q.get("w") || 1600), H = Number(q.get("h") || 900);
+const status = document.getElementById("status");
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(W, H);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = Number(q.get("exposure") || 1.35);
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0716);
+scene.fog = new THREE.FogExp2(0x1c1433, Number(q.get("fog") || 0.00032));
+
+const camera = new THREE.PerspectiveCamera(Number(q.get("fov") || 60), W / H, 1, 30000);
+camera.position.set(...vec(q.get("cam"), [-2600, 1500, 2600]));
+camera.lookAt(new THREE.Vector3(...vec(q.get("look"), [0, 0, 0])));
+
+// moonlight + ambient (mode=day gives flat daylight for checking geometry)
+const day = q.get("mode") === "day";
+if (day) {
+  scene.background = new THREE.Color(0x9cc4e8);
+  scene.fog = new THREE.Fog(0x9cc4e8, 3000, 14000);
+}
+scene.add(new THREE.HemisphereLight(day ? 0xffffff : 0x7a68c0, day ? 0x707060 : 0x1a1228, day ? 2.2 : 1.5));
+const moon = new THREE.DirectionalLight(day ? 0xfff4e0 : 0x8090ff, day ? 2.2 : 0.6);
+moon.position.set(-1, 2, 1);
+scene.add(moon);
+
+// cheap environment for glossy glass and water
+const pmrem = new THREE.PMREMGenerator(renderer);
+const envCanvas = document.createElement("canvas");
+envCanvas.width = 64; envCanvas.height = 32;
+const g = envCanvas.getContext("2d");
+const grad = g.createLinearGradient(0, 0, 0, 32);
+grad.addColorStop(0, "#0b0820"); grad.addColorStop(0.48, "#3a2a6a"); grad.addColorStop(0.52, "#241a40"); grad.addColorStop(1, "#050308");
+g.fillStyle = grad; g.fillRect(0, 0, 64, 32);
+const envTex = new THREE.CanvasTexture(envCanvas);
+envTex.mapping = THREE.EquirectangularReflectionMapping;
+envTex.colorSpace = THREE.SRGBColorSpace;
+scene.environment = pmrem.fromEquirectangular(envTex).texture;
+
+function wedgeGeometry() {
+  // Roblox wedge: tall at +Z, slope descending towards -Z
+  const geo = new THREE.BufferGeometry();
+  const p = [
+    [-0.5, -0.5, -0.5], [0.5, -0.5, -0.5], [0.5, -0.5, 0.5], [-0.5, -0.5, 0.5],
+    [-0.5, 0.5, 0.5], [0.5, 0.5, 0.5],
+  ];
+  const tris = [
+    [0, 2, 1], [0, 3, 2],        // bottom
+    [3, 5, 2], [3, 4, 5],        // back (+Z)
+    [0, 1, 5], [0, 5, 4],        // slope
+    [0, 4, 3], [1, 2, 5],        // sides
+  ];
+  const pos = [];
+  for (const t of tris) for (const i of t) pos.push(...p[i]);
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.computeVertexNormals();
+  return geo;
+}
+
+const geometries = {
+  Block: new THREE.BoxGeometry(1, 1, 1),
+  Cylinder: new THREE.CylinderGeometry(0.5, 0.5, 1, 20).rotateZ(Math.PI / 2),
+  Ball: new THREE.SphereGeometry(0.5, 16, 12),
+  Wedge: wedgeGeometry(),
+};
+
+function materialFor(kind, opacity) {
+  const transparent = opacity < 0.999;
+  const common = { transparent, opacity, depthWrite: !transparent };
+  if (kind === "Neon") return new THREE.MeshBasicMaterial({ ...common, color: 0xffffff, fog: true });
+  if (kind === "Glass") return new THREE.MeshStandardMaterial({ ...common, roughness: 0.12, metalness: 0.85, envMapIntensity: 1.6 });
+  if (kind === "Water") return new THREE.MeshStandardMaterial({ ...common, color: 0xffffff, roughness: 0.08, metalness: 0.9, envMapIntensity: 1.4 });
+  if (kind === "Metal") return new THREE.MeshStandardMaterial({ ...common, roughness: 0.45, metalness: 0.6, envMapIntensity: 0.8 });
+  return new THREE.MeshStandardMaterial({ ...common, roughness: 0.85, metalness: 0.0, envMapIntensity: 0.5 });
+}
+
+function kindOf(p) {
+  if (p.n === "Water") return "Water";
+  if (p.m === "Neon") return "Neon";
+  if (p.m === "Glass") return "Glass";
+  if (["Metal", "DiamondPlate", "CorrodedMetal", "Foil"].includes(p.m)) return "Metal";
+  return "Matte";
+}
+
+const lightPools = [];
+async function main() {
+  const layout = await (await fetch(q.get("layout") || "../../dist/layout.json")).json();
+  status.textContent = `parts ${layout.parts.length}, lights ${layout.lights.length}`;
+  const groups = new Map();
+  for (const p of layout.parts) {
+    const shape = p.c === "WedgePart" ? "Wedge" : (p.s === "Cylinder" ? "Cylinder" : (p.s === "Ball" ? "Ball" : "Block"));
+    const t = p.t || 0;
+    if (t >= 0.99) continue;
+    const kind = kindOf(p);
+    const opacity = Math.round((1 - t) * 10) / 10;
+    const key = `${shape}|${kind}|${opacity}`;
+    if (!groups.has(key)) groups.set(key, { shape, kind, opacity, items: [] });
+    groups.get(key).items.push(p);
+  }
+  const m = new THREE.Matrix4(), s = new THREE.Vector3(), c = new THREE.Color();
+  const solids = [];
+  for (const grp of groups.values()) {
+    const mesh = new THREE.InstancedMesh(geometries[grp.shape], materialFor(grp.kind, grp.opacity), grp.items.length);
+    grp.items.forEach((p, i) => {
+      const f = p.f;
+      m.set(
+        f[3], f[4], f[5], f[0],
+        f[6], f[7], f[8], f[1],
+        f[9], f[10], f[11], f[2],
+        0, 0, 0, 1,
+      );
+      s.set(p.z[0], p.z[1], p.z[2]);
+      m.scale(s);
+      mesh.setMatrixAt(i, m);
+      c.setRGB(p.k[0] / 255, p.k[1] / 255, p.k[2] / 255, THREE.SRGBColorSpace);
+      if (grp.kind === "Neon") c.multiplyScalar(2.4);
+      if (grp.kind === "Water") c.multiplyScalar(1.4);
+      mesh.setColorAt(i, c);
+    });
+    mesh.instanceMatrix.needsUpdate = true;
+    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+    mesh.computeBoundingSphere();
+    scene.add(mesh);
+    if (grp.kind !== "Neon" && grp.opacity > 0.99) solids.push(mesh);
+  }
+
+  // light pools: raycast from each light down to the first solid surface
+  const ray = new THREE.Raycaster();
+  const down = new THREE.Vector3(0, -1, 0);
+  const poolTex = (() => {
+    const cv = document.createElement("canvas"); cv.width = cv.height = 64;
+    const x = cv.getContext("2d");
+    const r = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+    r.addColorStop(0, "rgba(255,255,255,1)"); r.addColorStop(0.4, "rgba(255,255,255,0.45)"); r.addColorStop(1, "rgba(255,255,255,0)");
+    x.fillStyle = r; x.fillRect(0, 0, 64, 64);
+    return new THREE.CanvasTexture(cv);
+  })();
+  const poolGeo = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
+  const poolMat = new THREE.MeshBasicMaterial({ map: poolTex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: true });
+  const pools = new THREE.InstancedMesh(poolGeo, poolMat, layout.lights.length);
+  let n = 0;
+  for (const L of layout.lights) {
+    const origin = new THREE.Vector3(L.p[0], L.p[1] - 1.5, L.p[2]);
+    ray.set(origin, down);
+    ray.far = L.r * 1.2;
+    const hit = ray.intersectObjects(solids, false)[0];
+    const y = hit ? hit.point.y + 0.15 : L.p[1] - Math.min(L.r * 0.5, 20);
+    const dist = hit ? hit.distance : L.r * 0.5;
+    const radius = Math.max(8, L.r * (L.c === "SpotLight" ? 0.9 : 0.8)) * 1.2;
+    const strength = Math.max(0.15, 1 - dist / (L.r * 1.2)) * Math.min(1.4, L.b / 1.6) * 0.75;
+    m.makeScale(radius * 2, 1, radius * 2);
+    m.setPosition(L.p[0], y, L.p[2]);
+    pools.setMatrixAt(n, m);
+    c.setRGB(L.k[0] * strength, L.k[1] * strength, L.k[2] * strength);
+    pools.setColorAt(n, c);
+    n++;
+  }
+  pools.count = n;
+  scene.add(pools);
+
+  const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(W, H, { type: THREE.HalfFloatType, samples: 4 }));
+  composer.addPass(new RenderPass(scene, camera));
+  composer.addPass(new UnrealBloomPass(new THREE.Vector2(W, H), Number(q.get("bloom") || 1.25), 0.6, 0.8));
+  composer.addPass(new OutputPass());
+  composer.render();
+  status.textContent = "";
+  composer.render();
+  window.__done = true;
+}
+main().catch((e) => { status.textContent = "error: " + e; window.__error = String(e); window.__done = true; });
+</script>
+</body>
+</html>

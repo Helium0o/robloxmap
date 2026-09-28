@@ -1,0 +1,22 @@
+# Build intermediates (the place file in dist/ is committed on purpose)
+dist/*.json
+dist/*.rbxlx
+*.rbxl.lock
+*.rbxlx.lock
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Assetto Corsa sources and converter output: keep big/licensed files out of git
+*.kn5
+*.kn5.notex
+ac_input/
+ac_output/
+*.7z
+*.zip
+*.zip.[0-9][0-9][0-9]
+
+# Preview tooling
+tools/preview/node_modules/

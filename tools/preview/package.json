@@ -1,0 +1,8 @@
+{
+  "name": "neonbay-preview",
+  "private": true,
+  "description": "three.js night preview renderer for Neon Bay builds (see shoot.py)",
+  "dependencies": {
+    "three": "0.169.0"
+  }
+}

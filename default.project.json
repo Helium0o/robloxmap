@@ -1,0 +1,18 @@
+{
+	"name": "NeonBay",
+	"tree": {
+		"$className": "DataModel",
+		"ServerStorage": {
+			"NeonBay": {
+				"$path": "src/NeonBay"
+			}
+		},
+		"StarterPlayer": {
+			"StarterPlayerScripts": {
+				"NeonBayClient": {
+					"$path": "src/Client"
+				}
+			}
+		}
+	}
+}

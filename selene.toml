@@ -1,0 +1,6 @@
+# The official "roblox" std needs a network download; this repo ships a small
+# offline std (selene_std.yml) that declares the Roblox globals the code uses.
+std = "selene_std"
+
+[lints]
+shadowing = "allow"
