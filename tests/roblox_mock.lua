@@ -135,9 +135,38 @@ function Instance_new(cls)
 end
 Instance = { new = Instance_new }
 
+shared = {}
+Region3 = { new = function(a, b) return { min = a, max = b, Size = b - a } end }
+TERRAIN = { writes = 0, voxels = 0, solid = 0 }
 workspace = Instance_new("Workspace")
 workspace.Name = "Workspace"
 workspace.CurrentCamera = { CFrame = CFrame.new() }
+local terrainObj = Instance_new("Terrain")
+workspace.Terrain = terrainObj
+function methods:Clear() end
+function methods:WriteVoxels(region, res, mats, occs)
+	assert(res == 4, "resolution must be 4")
+	local s = region.Size
+	local nx, ny, nz = s.X / 4, s.Y / 4, s.Z / 4
+	assert(nx == math.floor(nx) and ny == math.floor(ny) and nz == math.floor(nz), "region size not a multiple of 4")
+	assert(region.min.X % 4 == 0 and region.min.Y % 4 == 0 and region.min.Z % 4 == 0, "region corner not on the voxel grid")
+	assert(nx * ny * nz <= 4194304, "region too big")
+	assert(#mats == nx and #occs == nx, ("x size mismatch %d vs %d"):format(#mats, nx))
+	for i = 1, nx do
+		assert(#mats[i] == ny and #occs[i] == ny, "y size mismatch")
+		for v = 1, ny do
+			assert(#mats[i][v] == nz and #occs[i][v] == nz, "z size mismatch")
+			for j = 1, nz do
+				local o = occs[i][v][j]
+				assert(mats[i][v][j] ~= nil, "nil material")
+				assert(o >= 0 and o <= 1, "bad occupancy " .. tostring(o))
+				if o > 0 then TERRAIN.solid += 1 end
+			end
+		end
+	end
+	TERRAIN.writes += 1
+	TERRAIN.voxels += nx * ny * nz
+end
 local serverTime = 1000
 function methods:GetServerTimeNow() return serverTime end
 function ADVANCE(dt) serverTime += dt end

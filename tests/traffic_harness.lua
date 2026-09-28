@@ -3,61 +3,71 @@ local ls = spsx:FindFirstChild("CityTraffic")
 assert(ls, "no traffic script")
 print("parts", STATS.parts, "max size", STATS.maxSize, "bad", #STATS.bad, "baseplate gone", workspace:FindFirstChild("Baseplate") == nil)
 for i = 1, math.min(10, #STATS.bad) do print(STATS.bad[i]) end
-print("lamps", #(STATS.tags.CityTrafficLamp or {}), "pointlights", STATS.byClass.PointLight, "surfaceguis", STATS.byClass.SurfaceGui)
-local src = ls.Source
-local fn, err = loadstring(src)
+print("terrain writes", TERRAIN.writes, "voxels", TERRAIN.voxels, "solid", TERRAIN.solid)
+print("lamps", #(STATS.tags.CityTrafficLamp or {}), "pointlights", STATS.byClass.PointLight, "surfaceguis", STATS.byClass.SurfaceGui, "wedges", STATS.byClass.WedgePart)
+local fn, err = loadstring(ls.Source)
 assert(fn, err)
 fn()
-local a = src:find("local NODES = ", 1, true)
-local b = src:find("local VEH = ", 1, true)
-local NODES, LINKS = loadstring(src:sub(a, b - 1) .. "\nreturn NODES, LINKS")()
-local cc = tonumber(src:match("local CITY_CARS, HWY_CARS = (%d+)"))
-local hc = tonumber(src:match("local CITY_CARS, HWY_CARS = %d+, (%d+)"))
-print("city cars", cc, "hwy cars", hc, "nodes", #NODES, "moving parts", BULK.parts and #BULK.parts or 0)
+local T = shared.CityTraffic
+local NODES = T.nodes
+print("city cars", #T.city, "hwy cars", #T.highway, "lanes", #T.lanes)
 local DT = 1 / 30
 local lastPos = {}
-local offroad, overlaps, samples = 0, 0, 0
-local MINUTES = tonumber(MINUTES_OVERRIDE or 4)
-for f = 1, 30 * 60 * MINUTES do
+local offroad, badHeight, overlaps, samples = 0, 0, 0, 0
+local MINUTES = tonumber(MINUTES_OVERRIDE or 3)
+local function segDist(px, pz, a, b)
+	local dx, dz = b[1] - a[1], b[3] - a[3]
+	local l = dx * dx + dz * dz
+	local t = l > 0 and ((px - a[1]) * dx + (pz - a[3]) * dz) / l or 0
+	t = math.clamp(t, 0, 1)
+	return math.sqrt((a[1] + dx * t - px) ^ 2 + (a[3] + dz * t - pz) ^ 2), a[2] + (b[2] - a[2]) * t
+end
+local all = {}
+for _, c in ipairs(T.city) do table.insert(all, c) end
+for _, c in ipairs(T.highway) do table.insert(all, c) end
+for f = 1, math.floor(30 * 60 * MINUTES) do
 	ADVANCE(DT)
 	for _, h in ipairs(HEARTBEAT) do h(DT) end
 	if f % 15 == 0 then
 		samples += 1
 		local cfs = BULK.cframes
 		local pos = {}
-		for i = 1, cc + hc do
-			local b0 = (i - 1) * 6
-			pos[i] = (cfs[b0 + 3].p + cfs[b0 + 4].p) * 0.5
+		for i, c in ipairs(all) do
+			pos[i] = (cfs[c.first + 2].p + cfs[c.first + 3].p) * 0.5
 		end
-		for i = 1, cc do
+		for i, c in ipairs(T.city) do
 			local p = pos[i]
-			local ok = false
-			for n = 1, #NODES do
-				local nx, nz = NODES[n][1], NODES[n][2]
-				if math.abs(p.X - nx) < 16 and math.abs(p.Z - nz) < 16 then ok = true break end
-				for _, k in ipairs({ 1, 3 }) do
-					local m = LINKS[n][k]
-					if m ~= 0 then
-						local mx, mz = NODES[m][1], NODES[m][2]
-						if k == 1 and p.X >= nx - 1 and p.X <= mx + 1 and math.abs(math.abs(p.Z - nz) - 6) < 1.5 then ok = true break end
-						if k == 3 and p.Z >= nz - 1 and p.Z <= mz + 1 and math.abs(math.abs(p.X - nx) - 6) < 1.5 then ok = true break end
-					end
+			if c.turning then
+				local N = NODES[c.lane.to]
+				if math.sqrt((p.X - N[1]) ^ 2 + (p.Z - N[3]) ^ 2) > N[8] + 16 then
+					offroad += 1
+					if offroad < 4 then print("turn far from junction", i, p.X, p.Z) end
 				end
-				if ok then break end
-			end
-			if not ok then
-				offroad += 1
-				if offroad < 5 then print("offroad", i, p.X, p.Z) end
+			else
+				local best, by = math.huge, 0
+				local pts = c.lane.pts
+				for k = 1, #pts - 1 do
+					local d, y = segDist(p.X, p.Z, pts[k], pts[k + 1])
+					if d < best then best, by = d, y end
+				end
+				if best > 1.6 then
+					offroad += 1
+					if offroad < 4 then print("off lane", i, best, p.X, p.Z) end
+				end
+				if math.abs(p.Y - (by + 0.6 + 1.3)) > 1.6 then
+					badHeight += 1
+					if badHeight < 4 then print("wrong height", i, p.Y, by) end
+				end
 			end
 		end
-		for i = 1, cc + hc do
-			for j = i + 1, cc + hc do
+		for i = 1, #all do
+			for j = i + 1, #all do
 				if (pos[i] - pos[j]).Magnitude < 4 then overlaps += 1 end
 			end
 		end
 		if f % (30 * 30) == 0 then
 			local stuck = 0
-			for i = 1, cc + hc do
+			for i = 1, #all do
 				if lastPos[i] and (pos[i] - lastPos[i]).Magnitude < 5 then stuck += 1 end
 				lastPos[i] = pos[i]
 			end
@@ -65,4 +75,4 @@ for f = 1, 30 * 60 * MINUTES do
 		end
 	end
 end
-print("samples", samples, "offroad samples", offroad, "overlapping pairs (<4 studs) summed over samples", overlaps)
+print("samples", samples, "off-road samples", offroad, "wrong-height samples", badHeight, "overlapping pairs (<4 studs) summed over samples", overlaps)
