@@ -135,7 +135,7 @@ a{color:var(--accent)}
           <div class="h2row"><h2>Build it in Studio</h2><span class="note" id="lua-meta"></span></div>
           <ol class="steps">
             <li>Open a new <b>Baseplate</b> place in Roblox Studio.</li>
-            <li>Open <b>View → Command Bar</b>, paste the script, press Enter. The hills take a little while to build.</li>
+            <li>Open the <b>Command Bar</b>: press <b>Ctrl+9</b> (<b>⌘9</b> on Mac), or go to the <b>Script</b> tab → <b>Command Bar</b>. Paste the script, then press <b>Ctrl+Enter</b> or click <b>Run</b>. The hills take a little while to build.</li>
             <li>Press <b>Play</b> to see the traffic.</li>
           </ol>
           <p class="note">The top of the script has a <code>SETTINGS</code> block. Set any line to <code>false</code> to leave that part out, or change the number of cars, without coming back here. If the Command Bar won't take the whole script, paste it into a ModuleScript called <code>BuildCity</code> in ServerStorage and run <code>require(game.ServerStorage.BuildCity:Clone())</code>.</p>
@@ -1335,7 +1335,7 @@ function buildLuau(M){
   const b = v => v ? 'true' : 'false';
   return `--!nocheck
 -- Roblox City Blueprint: seed ${P.seed}, ${M.NX} x ${M.NZ} blocks, map ${size}, hills ${P.hills}%, roads ${P.roads}
--- Paste into Roblox Studio's Command Bar (View > Command Bar) and press Enter.
+-- Open Roblox Studio's Command Bar (Ctrl+9, or Script tab > Command Bar), paste this, then press Ctrl+Enter or click Run.
 -- Or paste it into a ModuleScript named BuildCity in ServerStorage and run this in the Command Bar:
 --   require(game.ServerStorage.BuildCity:Clone())
 -- Builds the hills as Terrain, puts everything else in Workspace.City and adds StarterPlayerScripts.CityTraffic.

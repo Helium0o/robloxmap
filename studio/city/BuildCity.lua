@@ -1,6 +1,6 @@
 --!nocheck
 -- Roblox City Blueprint: seed 2112, 6 x 6 blocks, map 2534 x 2534 studs, hills 75%, roads organic
--- Paste into Roblox Studio's Command Bar (View > Command Bar) and press Enter.
+-- Open Roblox Studio's Command Bar (Ctrl+9, or Script tab > Command Bar), paste this, then press Ctrl+Enter or click Run.
 -- Or paste it into a ModuleScript named BuildCity in ServerStorage and run this in the Command Bar:
 --   require(game.ServerStorage.BuildCity:Clone())
 -- Builds the hills as Terrain, puts everything else in Workspace.City and adds StarterPlayerScripts.CityTraffic.

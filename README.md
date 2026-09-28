@@ -19,7 +19,7 @@ The map is about 2,500 × 2,500 studs with 90 studs of height difference and 372
 To build it:
 
 1. Open a new Baseplate place in Roblox Studio.
-2. Open **View → Command Bar**, paste the whole of `BuildCity.lua` and press Enter. The terrain takes a little while.
+2. Open the **Command Bar**: press **Ctrl+9** (**⌘9** on Mac), or go to the **Script** tab → **Command Bar**. Paste the whole of `BuildCity.lua`, then press **Ctrl+Enter** or click **Run**. The terrain takes a little while.
 3. Press **Play** to see the traffic.
 
 If the Command Bar won't take the whole script, use a ModuleScript instead:
