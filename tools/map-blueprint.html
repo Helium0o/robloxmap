@@ -1,0 +1,894 @@
+<title>Roblox Map Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#EDF1EC; --panel:#FAFCF9; --ink:#15211A; --muted:#56665C; --line:#CFD9D0; --soft:#E2E9E2;
+  --accent:#0A7BD0; --accent-ink:#FFFFFF; --danger:#B83A2A;
+  --grass:#93C173; --grid:rgba(20,50,20,.13); --grid-major:rgba(20,50,20,.26); --outside:#DDE4DC;
+  --water:#4E9FD6; --bank:#C9B68A; --path:#C29A64; --path-edge:#9B774A;
+  --roof:#B35A40; --ridge:#7E3A27; --door:#4A2E1B; --leaf:#3F8C48; --leaf-hi:#6DB55F; --trunk:#6B4A2E;
+  --stone:#9BA3A5; --stone-dark:#6E7679; --plank:#9A6A3C; --plank-line:#6F4A27; --torch:#F2A134;
+  --spawn:#F4F7FA; --spawn-mark:#0A7BD0;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0F1512; --panel:#151D18; --ink:#E3EBE5; --muted:#91A197; --line:#2A362E; --soft:#1C2620;
+    --accent:#4DB0FF; --accent-ink:#06121C; --danger:#F07A66;
+    --grass:#4E7A3F; --grid:rgba(0,0,0,.2); --grid-major:rgba(0,0,0,.36); --outside:#18211B;
+    --water:#2E6D9C; --bank:#7C6E4C; --path:#8F7148; --path-edge:#6A5234;
+    --roof:#9A4832; --ridge:#652A1B; --door:#2E1C10; --leaf:#2D6A34; --leaf-hi:#4C8F45; --trunk:#4A321E;
+    --stone:#737C7F; --stone-dark:#555D60; --plank:#74502D; --plank-line:#4E341B; --torch:#F5A83E;
+    --spawn:#DCE3EA; --spawn-mark:#1F7FD0;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0F1512; --panel:#151D18; --ink:#E3EBE5; --muted:#91A197; --line:#2A362E; --soft:#1C2620;
+  --accent:#4DB0FF; --accent-ink:#06121C; --danger:#F07A66;
+  --grass:#4E7A3F; --grid:rgba(0,0,0,.2); --grid-major:rgba(0,0,0,.36); --outside:#18211B;
+  --water:#2E6D9C; --bank:#7C6E4C; --path:#8F7148; --path-edge:#6A5234;
+  --roof:#9A4832; --ridge:#652A1B; --door:#2E1C10; --leaf:#2D6A34; --leaf-hi:#4C8F45; --trunk:#4A321E;
+  --stone:#737C7F; --stone-dark:#555D60; --plank:#74502D; --plank-line:#4E341B; --torch:#F5A83E;
+  --spawn:#DCE3EA; --spawn-mark:#1F7FD0;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.5}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:16px;padding-block:24px 48px;display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,4vw,36px);line-height:1.05;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.lede{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.steps{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0;padding:0;list-style:none;color:var(--muted);font-size:13px}
+.steps li{display:flex;gap:6px;align-items:baseline}
+.steps b{font-family:var(--mono);font-weight:500;color:var(--accent)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:20px;align-items:start}
+@media (max-width:960px){.main{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.mapcard{display:flex;flex-direction:column;gap:10px;padding:12px}
+.toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.toolbar .sep{width:1px;height:22px;background:var(--line);margin-inline:4px}
+button{font:inherit;color:inherit}
+.tool,.btn{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--line);background:var(--soft);border-radius:6px;cursor:pointer;font-size:13px;line-height:1.3}
+.tool:hover,.btn:hover{border-color:var(--accent)}
+.tool svg{width:16px;height:16px;flex:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.danger{color:var(--danger)}
+.btn.danger.armed{background:var(--danger);border-color:var(--danger);color:var(--panel)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mapbox{position:relative;width:100%;max-width:880px;margin-inline:auto}
+#map{display:block;width:100%;height:auto;touch-action:none;user-select:none;-webkit-user-select:none;border-radius:6px;background:var(--outside)}
+.maphint{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 16px;font-size:12px;color:var(--muted)}
+.maphint kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:4px;padding:0 4px;background:var(--soft)}
+#coord{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.side{display:flex;flex-direction:column;gap:16px}
+.section{padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.section h2{font-family:var(--display);font-weight:600;font-size:17px;margin:0;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tag{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{display:flex;flex-direction:column;gap:3px;min-width:0}
+.field.full{grid-column:1/-1}
+.field label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:500}
+.field input[type=text],.field input[type=number],.field select{width:100%;font:inherit;font-family:var(--mono);font-size:13px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:5px 8px}
+.field input[type=text]{font-family:var(--body)}
+.rotrow{display:flex;gap:8px;align-items:center}
+.rotrow input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
+.rotrow input[type=number]{width:76px;flex:none}
+.row{display:flex;flex-wrap:wrap;gap:6px}
+.empty{color:var(--muted);margin:0}
+.counts{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px 10px;margin:0;padding:0;list-style:none}
+.counts li{display:flex;justify-content:space-between;gap:6px;border-bottom:1px dotted var(--line);padding-block:2px}
+.counts span:last-child{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.opts{display:flex;flex-direction:column;gap:6px;font-size:13px}
+.opts label{display:flex;gap:8px;align-items:flex-start;cursor:pointer}
+.opts input{accent-color:var(--accent);margin-top:3px}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:none;padding:6px 10px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:500}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.outnote{font-size:12.5px;color:var(--muted);margin:0}
+pre#out.wrap-text{white-space:pre-wrap;overflow-wrap:anywhere}
+pre#out{margin:0;max-height:420px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-family:var(--mono);font-size:11.5px;line-height:1.55;white-space:pre;tab-size:4}
+.outbar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.outbar .meta{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+/* map art */
+.ground{fill:var(--grass)}
+.g-minor{stroke:var(--grid);stroke-width:1}
+.g-major{stroke:var(--grid-major);stroke-width:1}
+.axis{fill:var(--muted);font-family:var(--mono)}
+.river-bank{stroke:var(--bank);fill:none;stroke-linejoin:round}
+.river-body{stroke:var(--water);fill:none;stroke-linejoin:round}
+.path-edge{stroke:var(--path-edge);fill:none;stroke-linejoin:round;stroke-linecap:round}
+.path-body{stroke:var(--path);fill:none;stroke-linejoin:round;stroke-linecap:round}
+.hit{stroke:transparent;fill:none;pointer-events:stroke;cursor:move}
+[data-id]{cursor:move}
+.roof{fill:var(--roof);stroke:var(--ridge)}
+.ridge{stroke:var(--ridge)}
+.door{fill:var(--door)}
+.leaf{fill:var(--leaf)}
+.leaf-hi{fill:var(--leaf-hi);opacity:.55}
+.trunk{fill:var(--trunk)}
+.stone{fill:var(--stone);stroke:var(--stone-dark)}
+.well-water{fill:var(--water)}
+.plank{fill:var(--plank);stroke:var(--plank-line)}
+.plank-line{stroke:var(--plank-line)}
+.torch{fill:var(--torch)}
+.glow{fill:var(--torch);opacity:.28}
+.spawn{fill:var(--spawn);stroke:var(--spawn-mark)}
+.spawn-mark{stroke:var(--spawn-mark)}
+.sel{fill:none;stroke:var(--accent);stroke-dasharray:4 3;pointer-events:none}
+.vtx{fill:var(--panel);stroke:var(--accent);cursor:grab}
+.lbl{fill:var(--ink);font-family:var(--body);font-weight:600;paint-order:stroke;stroke:var(--panel);pointer-events:none}
+.ns{vector-effect:non-scaling-stroke}
+@media (prefers-reduced-motion: no-preference){.btn,.tool{transition:border-color .12s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Roblox Map Blueprint</h1>
+      <p class="lede">Lay out your map from above, then send it to Roblox Studio through Claude Desktop. All sizes and positions are in studs, the same units Studio uses.</p>
+    </div>
+    <ol class="steps">
+      <li><b>1</b>Arrange the map</li>
+      <li><b>2</b>Copy the prompt or script</li>
+      <li><b>3</b>Paste into Claude Desktop with Studio open</li>
+    </ol>
+  </header>
+
+  <div class="main">
+    <section class="card mapcard" aria-label="Map editor">
+      <div class="toolbar" id="toolbar"></div>
+      <div class="mapbox">
+        <svg id="map" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Top-down map layout"></svg>
+      </div>
+      <div class="maphint">
+        <span>Drag things to move them. Select a river or path to drag its points. <kbd>Del</kbd> removes, arrow keys nudge.</span>
+        <span id="coord">X —, Z —</span>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="card section" id="panel" aria-live="polite"></section>
+
+      <section class="card section">
+        <h2>Map settings</h2>
+        <div class="fields">
+          <div class="field">
+            <label for="f-size">Map size</label>
+            <select id="f-size">
+              <option value="256">256 × 256 studs</option>
+              <option value="512">512 × 512 studs</option>
+              <option value="1024">1024 × 1024 studs</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-snap">Snap to</label>
+            <select id="f-snap">
+              <option value="1">1 stud</option>
+              <option value="2">2 studs</option>
+              <option value="4">4 studs</option>
+              <option value="8">8 studs</option>
+            </select>
+          </div>
+        </div>
+        <div class="opts">
+          <label><input type="checkbox" id="o-baseplate"> <span>Delete the default Baseplate (it sits at ground level and would cover the terrain)</span></label>
+          <label><input type="checkbox" id="o-terrain"> <span>Clear existing terrain before building</span></label>
+        </div>
+        <div class="row">
+          <button class="btn" id="b-reset" type="button">Load example village</button>
+          <button class="btn danger" id="b-clear" type="button">Clear map</button>
+        </div>
+      </section>
+
+      <section class="card section">
+        <h2>Send to Studio</h2>
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" id="t-prompt" aria-selected="true">Claude prompt</button>
+          <button type="button" role="tab" id="t-lua" aria-selected="false">Luau script</button>
+        </div>
+        <p class="outnote" id="outnote"></p>
+        <div class="outbar">
+          <span class="meta" id="outmeta"></span>
+          <button class="btn primary" id="b-copy" type="button">Copy</button>
+        </div>
+        <pre id="out" tabindex="0"></pre>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const svg = $('#map');
+const NS = 'http://www.w3.org/2000/svg';
+
+const TYPES = {
+  tree:   {label:'Tree',   w:14, d:14},
+  house:  {label:'House',  w:24, d:20},
+  bridge: {label:'Bridge', w:44, d:12},
+  well:   {label:'Well',   w:8,  d:8},
+  torch:  {label:'Torch',  w:3,  d:3},
+  rock:   {label:'Rock',   w:10, d:8},
+  spawn:  {label:'Spawn',  w:12, d:12},
+  river:  {label:'River',  line:true, width:24},
+  path:   {label:'Path',   line:true, width:8},
+};
+const ROUND = new Set(['tree','well','torch']);
+const ROTATES = new Set(['house','bridge','rock','spawn']);
+const DRAW_ORDER = ['rock','well','spawn','house','bridge','tree','torch'];
+const KEY = 'map-blueprint-v1';
+
+let state, drag = null, uid = 1, clearArmed = null;
+
+/* ---------- geometry ---------- */
+const clamp = (v,a,b) => Math.min(b, Math.max(a, v));
+const num = v => { const r = Math.round(v*10)/10; return (Object.is(r,-0) ? 0 : r).toString(); };
+function distSeg(px,pz,ax,az,bx,bz){
+  const dx=bx-ax, dz=bz-az, l=dx*dx+dz*dz;
+  let t = l ? ((px-ax)*dx+(pz-az)*dz)/l : 0; t = clamp(t,0,1);
+  return Math.hypot(ax+t*dx-px, az+t*dz-pz);
+}
+function distLine(px,pz,pts){
+  let m = Infinity;
+  for (let i=0;i<pts.length-1;i++) m = Math.min(m, distSeg(px,pz,pts[i][0],pts[i][1],pts[i+1][0],pts[i+1][1]));
+  return m;
+}
+const reach = it => ROUND.has(it.type) ? it.w/2 : Math.hypot(it.w,it.d)/2;
+function isFree(items,size,x,z,r,ignore){
+  const h = size/2;
+  if (Math.abs(x) > h-r-2 || Math.abs(z) > h-r-2) return false;
+  for (const it of items){
+    if (it === ignore) continue;
+    if (TYPES[it.type].line){ if (distLine(x,z,it.pts) < it.width/2 + r + (it.type==='river'?6:3)) return false; }
+    else if (Math.hypot(x-it.x, z-it.z) < reach(it) + r + 3) return false;
+  }
+  return true;
+}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+/* ---------- items ---------- */
+function mk(type, props, items){
+  const T = TYPES[type];
+  const n = items.filter(i => i.type === type).length + 1;
+  const base = T.line
+    ? {type, name:`${T.label} ${n}`, width:T.width, pts:[]}
+    : {type, name:`${T.label} ${n}`, x:0, z:0, w:T.w, d:T.d, rot:0};
+  return Object.assign(base, props, {id: uid++});
+}
+function scatterTrees(items, size, n, rand){
+  const h = size/2; let placed = 0, tries = 0;
+  while (placed < n && tries < n*120){
+    tries++;
+    const s = 10 + Math.round(rand()*8);
+    const x = Math.round((rand()*2-1)*(h-8)), z = Math.round((rand()*2-1)*(h-8));
+    if (isFree(items,size,x,z,s/2)){ items.push(mk('tree',{x,z,w:s,d:s},items)); placed++; }
+  }
+  return placed;
+}
+function sample(){
+  const items = [];
+  const add = (type,p) => { const it = mk(type,p,items); items.push(it); return it; };
+  add('river',{name:'River',width:24,pts:[[-256,-60],[-120,-22],[0,8],[110,58],[256,40]]});
+  add('path',{name:'Main Road',width:8,pts:[[-10,158],[-6,90],[-2,30],[0,8],[6,-20],[24,-96]]});
+  add('path',{name:'West Lane',width:6,pts:[[24,-96],[-40,-140],[-60,-196]]});
+  add('path',{name:'East Lane',width:6,pts:[[24,-96],[96,-140],[112,-200]]});
+  add('bridge',{name:'Old Bridge',x:0,z:8,w:44,d:12,rot:100});
+  add('house',{name:'Miller House',x:-10,z:-90,w:24,d:20,rot:30});
+  add('house',{name:'Baker House',x:-72,z:-150,w:24,d:20,rot:-90});
+  add('house',{name:'Chapel',x:-20,z:-175,w:20,d:30,rot:90});
+  add('house',{name:'Smithy',x:60,z:-80,w:22,d:18,rot:150});
+  add('house',{name:'Inn',x:130,z:-160,w:30,d:22,rot:90});
+  add('house',{name:'Farmhouse',x:80,z:-185,w:24,d:20,rot:-90});
+  add('well',{name:'Village Well',x:24,z:-120,w:8,d:8});
+  add('torch',{name:'Torch 1',x:2,z:120});
+  add('torch',{name:'Torch 2',x:6,z:60});
+  add('torch',{name:'Torch 3',x:22,z:-52});
+  add('torch',{name:'Torch 4',x:40,z:-104});
+  add('rock',{name:'Rock 1',x:-150,z:-10,w:12,d:9,rot:20});
+  add('rock',{name:'Rock 2',x:150,z:74,w:10,d:8,rot:-30});
+  add('rock',{name:'Rock 3',x:-60,z:18,w:9,d:7,rot:45});
+  add('spawn',{name:'Spawn',x:-10,z:172,w:12,d:12,rot:0});
+  scatterTrees(items, 512, 46, mulberry32(7));
+  return {size:512, snap:2, items, sel:null, tab:'prompt', removeBaseplate:true, clearTerrain:true};
+}
+function load(){
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw){
+      const s = JSON.parse(raw);
+      if (s && Array.isArray(s.items)){
+        s.items.forEach(it => { if (!it.id || it.id >= uid) uid = (it.id||uid) + 1; });
+        s.items.forEach(it => { if (!it.id) it.id = uid++; });
+        return Object.assign({size:512, snap:2, sel:null, tab:'prompt', removeBaseplate:true, clearTerrain:true}, s, {sel:null});
+      }
+    }
+  } catch(e) {}
+  return sample();
+}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} }
+const byId = id => state.items.find(i => i.id === id);
+const selItem = () => state.sel == null ? null : byId(state.sel);
+
+/* ---------- drawing ---------- */
+function toolIcon(type){
+  const m = {
+    tree:'<circle cx="8" cy="8" r="6.5" class="leaf"/><circle cx="6" cy="6" r="2.6" class="leaf-hi"/>',
+    house:'<rect x="1.5" y="3" width="13" height="10" class="roof" stroke-width="1"/><line x1="1.5" y1="8" x2="14.5" y2="8" class="ridge"/>',
+    bridge:'<rect x="1" y="5" width="14" height="6" class="plank" stroke-width="1"/><line x1="5" y1="5" x2="5" y2="11" class="plank-line"/><line x1="9" y1="5" x2="9" y2="11" class="plank-line"/>',
+    well:'<circle cx="8" cy="8" r="6" class="stone" stroke-width="1"/><circle cx="8" cy="8" r="3.4" class="well-water"/>',
+    torch:'<circle cx="8" cy="8" r="7" class="glow"/><circle cx="8" cy="8" r="2.6" class="torch"/>',
+    rock:'<ellipse cx="8" cy="8" rx="6.5" ry="4.8" class="stone" stroke-width="1"/>',
+    spawn:'<rect x="2" y="2" width="12" height="12" class="spawn" stroke-width="1.4"/><path d="M8 4.5v7M4.5 8h7" class="spawn-mark" stroke-width="1.6"/>',
+    river:'<path d="M0 11 C5 11 6 5 16 5" class="river-bank" stroke-width="6"/><path d="M0 11 C5 11 6 5 16 5" class="river-body" stroke-width="4"/>',
+    path:'<path d="M1 14 L8 7 L15 3" class="path-edge" stroke-width="4"/><path d="M1 14 L8 7 L15 3" class="path-body" stroke-width="2.6"/>',
+  };
+  return `<svg viewBox="0 0 16 16" aria-hidden="true">${m[type]}</svg>`;
+}
+function drawItem(it, sel){
+  const {x,z,w,d} = it, id = it.id, rot = it.rot||0;
+  const tf = `translate(${x} ${z}) rotate(${rot})`;
+  const tip = `<title>${esc(it.name)} (${num(x)}, ${num(z)})</title>`;
+  let body = '', selShape = '';
+  switch (it.type){
+    case 'tree':
+      body = `<circle r="${w/2}" class="leaf"/><circle cx="${-w*0.14}" cy="${-w*0.14}" r="${w*0.24}" class="leaf-hi"/><circle r="${Math.max(1,w*0.08)}" class="trunk"/>`;
+      selShape = `<circle r="${w/2+2}" class="sel ns" stroke-width="1.5"/>`; break;
+    case 'house':
+      body = `<rect x="${-w/2}" y="${-d/2}" width="${w}" height="${d}" class="roof ns" stroke-width="1"/>`+
+             `<line x1="${-w/2}" y1="0" x2="${w/2}" y2="0" class="ridge ns" stroke-width="1.4"/>`+
+             `<rect x="-2" y="${d/2-0.5}" width="4" height="2" class="door"/>`;
+      selShape = `<rect x="${-w/2-2}" y="${-d/2-2}" width="${w+4}" height="${d+4}" class="sel ns" stroke-width="1.5"/>`; break;
+    case 'bridge': {
+      let lines = '';
+      for (let px = -w/2 + 3; px < w/2; px += 3) lines += `<line x1="${px}" y1="${-d/2}" x2="${px}" y2="${d/2}" class="plank-line ns" stroke-width=".6"/>`;
+      body = `<rect x="${-w/2}" y="${-d/2}" width="${w}" height="${d}" class="plank ns" stroke-width="1"/>${lines}`+
+             `<line x1="${-w/2}" y1="${-d/2+0.6}" x2="${w/2}" y2="${-d/2+0.6}" class="plank-line ns" stroke-width="1.6"/>`+
+             `<line x1="${-w/2}" y1="${d/2-0.6}" x2="${w/2}" y2="${d/2-0.6}" class="plank-line ns" stroke-width="1.6"/>`;
+      selShape = `<rect x="${-w/2-2}" y="${-d/2-2}" width="${w+4}" height="${d+4}" class="sel ns" stroke-width="1.5"/>`; break; }
+    case 'well':
+      body = `<circle r="${w/2}" class="stone ns" stroke-width="1"/><circle r="${Math.max(0.5,w/2-1.5)}" class="well-water"/>`;
+      selShape = `<circle r="${w/2+2}" class="sel ns" stroke-width="1.5"/>`; break;
+    case 'torch':
+      body = `<circle r="7" class="glow"/><circle r="2" class="torch"/>`;
+      selShape = `<circle r="8" class="sel ns" stroke-width="1.5"/>`; break;
+    case 'rock':
+      body = `<ellipse rx="${w/2}" ry="${d/2}" class="stone ns" stroke-width="1"/>`;
+      selShape = `<ellipse rx="${w/2+2}" ry="${d/2+2}" class="sel ns" stroke-width="1.5"/>`; break;
+    case 'spawn': {
+      const m = Math.min(w,d)*0.3;
+      body = `<rect x="${-w/2}" y="${-d/2}" width="${w}" height="${d}" class="spawn ns" stroke-width="1.6"/>`+
+             `<path d="M0 ${-m}V${m}M${-m} 0H${m}" class="spawn-mark ns" stroke-width="2"/>`;
+      selShape = `<rect x="${-w/2-2}" y="${-d/2-2}" width="${w+4}" height="${d+4}" class="sel ns" stroke-width="1.5"/>`; break; }
+  }
+  return `<g data-id="${id}" transform="${tf}">${tip}${body}${sel ? selShape : ''}</g>`;
+}
+function drawLine(it, sel, S){
+  const pts = it.pts.map(p => p.join(',')).join(' ');
+  const tip = `<title>${esc(it.name)}</title>`;
+  const hitW = Math.max(it.width, S/40);
+  let s = `<g data-id="${it.id}">${tip}`;
+  if (it.type === 'river'){
+    s += `<polyline points="${pts}" class="river-bank" stroke-width="${it.width+5}"/>`;
+    s += `<polyline points="${pts}" class="river-body" stroke-width="${it.width}"/>`;
+  } else {
+    s += `<polyline points="${pts}" class="path-edge" stroke-width="${it.width+1.6}"/>`;
+    s += `<polyline points="${pts}" class="path-body" stroke-width="${it.width}"/>`;
+  }
+  s += `<polyline points="${pts}" class="hit" stroke-width="${hitW}"/>`;
+  if (sel) s += `<polyline points="${pts}" class="sel ns" stroke-width="1.5"/>`;
+  s += '</g>';
+  return s;
+}
+function drawHandles(it, S){
+  const r = S/110;
+  return it.pts.map((p,i) => `<circle data-vtx="${i}" cx="${p[0]}" cy="${p[1]}" r="${r}" class="vtx ns" stroke-width="2"/>`).join('');
+}
+const plural = w => /(ch|sh|s|x)$/.test(w) ? w + 'es' : w + 's';
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function renderMap(){
+  const S = state.size, h = S/2, M = S*0.07, fs = S/42;
+  svg.setAttribute('viewBox', `${-h-M} ${-h-M} ${S+M+S*0.02} ${S+M+S*0.02}`);
+  const step = S <= 256 ? 16 : S <= 512 ? 32 : 64, major = step*4;
+  let g = `<rect x="${-h}" y="${-h}" width="${S}" height="${S}" class="ground"/>`;
+  for (let v = -h; v <= h; v += step){
+    const cls = (v % major === 0) ? 'g-major' : 'g-minor';
+    g += `<line x1="${v}" y1="${-h}" x2="${v}" y2="${h}" class="${cls} ns"/><line x1="${-h}" y1="${v}" x2="${h}" y2="${v}" class="${cls} ns"/>`;
+  }
+  for (let v = -h; v <= h; v += major){
+    g += `<text x="${v}" y="${-h-fs*0.6}" class="axis" font-size="${fs}" text-anchor="middle">${v}</text>`;
+    g += `<text x="${-h-fs*0.5}" y="${v+fs*0.35}" class="axis" font-size="${fs}" text-anchor="end">${v}</text>`;
+  }
+  const sel = state.sel;
+  for (const t of ['river','path']) for (const it of state.items) if (it.type === t) g += drawLine(it, it.id === sel, S);
+  for (const t of DRAW_ORDER) for (const it of state.items) if (it.type === t) g += drawItem(it, it.id === sel);
+  const si = selItem();
+  if (si && !TYPES[si.type].line && si.type !== 'tree' && si.type !== 'torch'){
+    g += `<text x="${si.x}" y="${si.z - reach(si) - fs*0.7}" class="lbl" font-size="${fs}" stroke-width="${fs*0.25}" text-anchor="middle">${esc(si.name)}</text>`;
+  }
+  if (si && TYPES[si.type].line) g += drawHandles(si, S);
+  svg.innerHTML = g;
+}
+
+/* ---------- side panel ---------- */
+function renderPanel(){
+  const p = $('#panel'), it = selItem();
+  if (!it){
+    const counts = {};
+    state.items.forEach(i => counts[i.type] = (counts[i.type]||0)+1);
+    const rows = Object.keys(TYPES).filter(t => counts[t]).map(t => `<li><span>${counts[t]>1?plural(TYPES[t].label):TYPES[t].label}</span><span>${counts[t]}</span></li>`).join('');
+    p.innerHTML = `<h2>Selection <span class="tag">none</span></h2>
+      <p class="empty">Click something on the map to edit its name, position, size and rotation. Add new things with the buttons above the map.</p>
+      ${rows ? `<ul class="counts">${rows}</ul>` : ''}`;
+    return;
+  }
+  const T = TYPES[it.type];
+  let f = `<div class="field full"><label for="f-name">Name</label><input type="text" id="f-name" data-f="name" value="${esc(it.name)}" maxlength="40"></div>`;
+  if (T.line){
+    f += `<div class="field"><label for="f-width">Width (studs)</label><input type="number" id="f-width" data-f="width" min="2" max="200" value="${it.width}"></div>
+          <div class="field"><label>Points</label><input type="text" value="${it.pts.length}" disabled></div>`;
+  } else {
+    f += `<div class="field"><label for="f-x">X</label><input type="number" id="f-x" data-f="x" value="${num(it.x)}"></div>
+          <div class="field"><label for="f-z">Z</label><input type="number" id="f-z" data-f="z" value="${num(it.z)}"></div>`;
+    if (it.type !== 'torch'){
+      if (ROUND.has(it.type)) f += `<div class="field full"><label for="f-w">Diameter (studs)</label><input type="number" id="f-w" data-f="w" min="1" max="400" value="${num(it.w)}"></div>`;
+      else f += `<div class="field"><label for="f-w">${it.type==='bridge'?'Length':'Width'} (X)</label><input type="number" id="f-w" data-f="w" min="1" max="400" value="${num(it.w)}"></div>
+                 <div class="field"><label for="f-d">${it.type==='bridge'?'Deck width':'Depth'} (Z)</label><input type="number" id="f-d" data-f="d" min="1" max="400" value="${num(it.d)}"></div>`;
+    }
+    if (ROTATES.has(it.type)) f += `<div class="field full"><label for="f-rot">Rotation (degrees, clockwise from above)</label>
+          <div class="rotrow"><input type="range" id="f-rotr" data-f="rot" min="-180" max="180" step="1" value="${it.rot}" aria-label="Rotation slider"><input type="number" id="f-rot" data-f="rot" min="-180" max="180" value="${it.rot}"></div></div>`;
+  }
+  const acts = T.line
+    ? `<button class="btn" type="button" data-act="addpt">Add point</button><button class="btn" type="button" data-act="rmpt"${it.pts.length<=2?' disabled':''}>Remove last point</button>`
+    : `<button class="btn" type="button" data-act="dup">Duplicate</button>`;
+  p.innerHTML = `<h2>${esc(it.name)} <span class="tag">${T.label}</span></h2>
+    <div class="fields">${f}</div>
+    <div class="row">${acts}<button class="btn danger" type="button" data-act="del">Delete</button></div>`;
+}
+function syncPanelValues(){
+  const it = selItem(); if (!it || TYPES[it.type].line) return;
+  const setv = (id,v) => { const el = document.getElementById(id); if (el && document.activeElement !== el) el.value = v; };
+  setv('f-x', num(it.x)); setv('f-z', num(it.z));
+}
+
+/* ---------- outputs ---------- */
+function segs(pts, ext){
+  const out = [];
+  for (let i=0;i<pts.length-1;i++){
+    const [ax,az] = pts[i], [bx,bz] = pts[i+1];
+    const dx = bx-ax, dz = bz-az, len = Math.hypot(dx,dz);
+    if (len < 0.01) continue;
+    const ux = dx/len, uz = dz/len;
+    const ea = i > 0 ? ext : 0, eb = i < pts.length-2 ? ext : 0;
+    const sx = ax-ux*ea, sz = az-uz*ea, ex = bx+ux*eb, ez = bz+uz*eb;
+    out.push({cx:(sx+ex)/2, cz:(sz+ez)/2, len:len+ea+eb, a:Math.atan2(-dz,dx)});
+  }
+  return out;
+}
+const luaName = s => '"' + String(s).replace(/[^A-Za-z0-9 _\-]/g,'') + '"';
+const ang = a => (Math.round(a*10000)/10000).toString();
+const pt = p => `(${num(p[0])}, ${num(p[1])})`;
+function facing(rot){
+  const r = rot*Math.PI/180, fx = -Math.sin(r), fz = Math.cos(r);
+  return Math.abs(fx) > Math.abs(fz) ? (fx > 0 ? '+X' : '−X') : (fz > 0 ? '+Z' : '−Z');
+}
+const of = t => state.items.filter(i => i.type === t);
+
+function buildLua(){
+  const S = state.size, L = [];
+  const rivers = of('river'), paths = of('path'), houses = of('house'), bridges = of('bridge');
+  const wells = of('well'), torches = of('torch'), rocks = of('rock'), trees = of('tree'), spawns = of('spawn');
+  L.push(`-- Roblox Map Blueprint: ${S} x ${S} studs, ground level Y = 0`,
+         `-- Run it by pasting into Studio's Command Bar (View > Command Bar),`,
+         `-- or paste it into Claude Desktop and say "Run this Luau in Roblox Studio".`,
+         ``,
+         `local Terrain = workspace.Terrain`,
+         `local History = game:GetService("ChangeHistoryService")`,
+         `local recording = History:TryBeginRecording("Build map")`,
+         ``);
+  if (state.removeBaseplate) L.push(`local baseplate = workspace:FindFirstChild("Baseplate")`, `if baseplate then baseplate:Destroy() end`);
+  if (state.clearTerrain) L.push(`Terrain:Clear()`);
+  L.push(`local oldMap = workspace:FindFirstChild("Map")`, `if oldMap then oldMap:Destroy() end`, ``,
+    `local map = Instance.new("Folder")`, `map.Name = "Map"`, `map.Parent = workspace`, ``,
+    `local function folder(name)`, `\tlocal f = Instance.new("Folder")`, `\tf.Name = name`, `\tf.Parent = map`, `\treturn f`, `end`, ``,
+    `local function part(parent, name, size, cf, color, material, shape)`,
+    `\tlocal p = Instance.new("Part")`, `\tp.Name = name`, `\tp.Anchored = true`,
+    `\tif shape then p.Shape = shape end`,
+    `\tp.Size = size`, `\tp.CFrame = cf`, `\tp.Color = color`, `\tp.Material = material`,
+    `\tp.TopSurface = Enum.SurfaceType.Smooth`, `\tp.BottomSurface = Enum.SurfaceType.Smooth`,
+    `\tp.Parent = parent`, `\treturn p`, `end`, ``,
+    `local function yaw(deg) return CFrame.Angles(0, math.rad(-deg), 0) end`,
+    `local UPRIGHT = CFrame.Angles(0, 0, math.rad(90)) -- stands a cylinder on its end`,
+    `local rng = Random.new(42)`, ``,
+    `-- Ground: grass terrain with its top at Y = 0`,
+    `Terrain:FillBlock(CFrame.new(0, -8, 0), Vector3.new(${S}, 16, ${S}), Enum.Material.Grass)`, ``);
+
+  if (rivers.length){
+    L.push(`-- Rivers: water terrain flush with the ground`);
+    for (const r of rivers){
+      L.push(`-- ${r.name.replace(/[\r\n]/g,'')}`);
+      for (const s of segs(r.pts, r.width/2))
+        L.push(`Terrain:FillBlock(CFrame.new(${num(s.cx)}, -3, ${num(s.cz)}) * CFrame.Angles(0, ${ang(s.a)}, 0), Vector3.new(${num(s.len)}, 6, ${r.width}), Enum.Material.Water)`);
+    }
+    L.push(``);
+  }
+  if (paths.length){
+    L.push(`-- Paths`, `local pathsFolder = folder("Paths")`,
+      `local PATH_COLOR, PATH_MAT = Color3.fromRGB(150, 116, 78), Enum.Material.Ground`,
+      `local function strip(parent, cx, cz, length, width, angle)`,
+      `\tpart(parent, "Segment", Vector3.new(length, 0.4, width), CFrame.new(cx, 0.3, cz) * CFrame.Angles(0, angle, 0), PATH_COLOR, PATH_MAT)`, `end`,
+      `local function joint(parent, x, z, width)`,
+      `\tpart(parent, "Joint", Vector3.new(0.3, width, width), CFrame.new(x, 0.3, z) * UPRIGHT, PATH_COLOR, PATH_MAT, Enum.PartType.Cylinder)`, `end`);
+    for (const p of paths){
+      L.push(`do`, `\tlocal f = Instance.new("Folder")`, `\tf.Name = ${luaName(p.name)}`, `\tf.Parent = pathsFolder`);
+      for (const s of segs(p.pts, 0)) L.push(`\tstrip(f, ${num(s.cx)}, ${num(s.cz)}, ${num(s.len)}, ${p.width}, ${ang(s.a)})`);
+      for (let i=1;i<p.pts.length-1;i++) L.push(`\tjoint(f, ${num(p.pts[i][0])}, ${num(p.pts[i][1])}, ${p.width})`);
+      L.push(`end`);
+    }
+    L.push(``);
+  }
+  if (houses.length){
+    L.push(`-- Buildings (front door on each house's local +Z side)`, `local buildings = folder("Buildings")`,
+      `local function house(name, x, z, w, d, rot)`,
+      `\tlocal m = Instance.new("Model")`, `\tm.Name = name`,
+      `\tlocal cf = CFrame.new(x, 0, z) * yaw(rot)`,
+      `\tm.PrimaryPart = part(m, "Walls", Vector3.new(w, 12, d), cf * CFrame.new(0, 6, 0), Color3.fromRGB(222, 205, 170), Enum.Material.WoodPlanks)`,
+      `\tfor k = 0, 3 do`,
+      `\t\tpart(m, "Roof", Vector3.new(w + 2, 1.5, (d + 2) * (1 - k / 4)), cf * CFrame.new(0, 12.75 + k * 1.5, 0), Color3.fromRGB(150, 70, 50), Enum.Material.Slate)`,
+      `\tend`,
+      `\tpart(m, "Door", Vector3.new(4, 7, 0.4), cf * CFrame.new(0, 3.5, d / 2 + 0.2), Color3.fromRGB(80, 50, 30), Enum.Material.Wood)`,
+      `\tif w >= 16 then`,
+      `\t\tfor _, side in ipairs({ -1, 1 }) do`,
+      `\t\t\tlocal win = part(m, "Window", Vector3.new(3, 3, 0.3), cf * CFrame.new(side * w / 4, 7, d / 2 + 0.15), Color3.fromRGB(170, 210, 235), Enum.Material.Glass)`,
+      `\t\t\twin.Transparency = 0.3`,
+      `\t\tend`,
+      `\tend`,
+      `\tm.Parent = buildings`, `end`);
+    for (const h of houses) L.push(`house(${luaName(h.name)}, ${num(h.x)}, ${num(h.z)}, ${num(h.w)}, ${num(h.d)}, ${h.rot})`);
+    L.push(``);
+  }
+  const hasProps = bridges.length || wells.length || torches.length || rocks.length;
+  if (hasProps) L.push(`local props = folder("Props")`);
+  if (bridges.length){
+    L.push(`-- Bridges`, `local function bridge(name, x, z, w, d, rot)`,
+      `\tlocal m = Instance.new("Model")`, `\tm.Name = name`,
+      `\tlocal cf = CFrame.new(x, 1, z) * yaw(rot)`,
+      `\tm.PrimaryPart = part(m, "Deck", Vector3.new(w, 1, d), cf, Color3.fromRGB(140, 98, 58), Enum.Material.WoodPlanks)`,
+      `\tlocal posts = math.max(1, math.floor(w / 8))`,
+      `\tfor _, side in ipairs({ -1, 1 }) do`,
+      `\t\tlocal zOff = side * (d / 2 - 0.3)`,
+      `\t\tpart(m, "Rail", Vector3.new(w, 0.6, 0.6), cf * CFrame.new(0, 3, zOff), Color3.fromRGB(110, 75, 45), Enum.Material.Wood)`,
+      `\t\tfor i = 0, posts do`,
+      `\t\t\tpart(m, "Post", Vector3.new(0.6, 3, 0.6), cf * CFrame.new(-w / 2 + 0.3 + i * (w - 0.6) / posts, 2, zOff), Color3.fromRGB(110, 75, 45), Enum.Material.Wood)`,
+      `\t\tend`, `\tend`,
+      `\tm.Parent = props`, `end`);
+    for (const b of bridges) L.push(`bridge(${luaName(b.name)}, ${num(b.x)}, ${num(b.z)}, ${num(b.w)}, ${num(b.d)}, ${b.rot})`);
+    L.push(``);
+  }
+  if (wells.length){
+    L.push(`-- Wells`, `local function well(name, x, z, s)`,
+      `\tlocal m = Instance.new("Model")`, `\tm.Name = name`,
+      `\tm.PrimaryPart = part(m, "Wall", Vector3.new(4, s, s), CFrame.new(x, 2, z) * UPRIGHT, Color3.fromRGB(150, 150, 150), Enum.Material.Cobblestone, Enum.PartType.Cylinder)`,
+      `\tlocal water = part(m, "Water", Vector3.new(0.2, s - 2, s - 2), CFrame.new(x, 4.05, z) * UPRIGHT, Color3.fromRGB(60, 130, 190), Enum.Material.Glass, Enum.PartType.Cylinder)`,
+      `\twater.Transparency = 0.2`,
+      `\tfor _, side in ipairs({ -1, 1 }) do`,
+      `\t\tpart(m, "Post", Vector3.new(0.6, 8, 0.6), CFrame.new(x + side * (s / 2 - 0.5), 8, z), Color3.fromRGB(110, 75, 45), Enum.Material.Wood)`,
+      `\tend`,
+      `\tpart(m, "Roof", Vector3.new(s + 2, 0.6, s * 0.7), CFrame.new(x, 12.3, z), Color3.fromRGB(150, 70, 50), Enum.Material.Slate)`,
+      `\tm.Parent = props`, `end`);
+    for (const w of wells) L.push(`well(${luaName(w.name)}, ${num(w.x)}, ${num(w.z)}, ${num(w.w)})`);
+    L.push(``);
+  }
+  if (torches.length){
+    L.push(`-- Torches`, `local function torch(x, z)`,
+      `\tlocal m = Instance.new("Model")`, `\tm.Name = "Torch"`,
+      `\tm.PrimaryPart = part(m, "Pole", Vector3.new(0.6, 7, 0.6), CFrame.new(x, 3.5, z), Color3.fromRGB(90, 60, 35), Enum.Material.Wood)`,
+      `\tlocal flame = part(m, "Flame", Vector3.new(1.2, 1.2, 1.2), CFrame.new(x, 7.6, z), Color3.fromRGB(255, 160, 60), Enum.Material.Neon)`,
+      `\tlocal light = Instance.new("PointLight")`, `\tlight.Range = 18`, `\tlight.Brightness = 2`, `\tlight.Color = Color3.fromRGB(255, 180, 100)`, `\tlight.Parent = flame`,
+      `\tm.Parent = props`, `end`);
+    for (const t of torches) L.push(`torch(${num(t.x)}, ${num(t.z)})`);
+    L.push(``);
+  }
+  if (rocks.length){
+    L.push(`-- Rocks`, `local function rock(x, z, w, d, rot)`,
+      `\tlocal h = math.min(w, d) * 0.6`,
+      `\tpart(props, "Rock", Vector3.new(w, h, d), CFrame.new(x, h / 2 - 0.5, z) * yaw(rot) * CFrame.Angles(math.rad(8), 0, math.rad(-6)), Color3.fromRGB(125, 125, 120), Enum.Material.Rock)`,
+      `end`);
+    for (const r of rocks) L.push(`rock(${num(r.x)}, ${num(r.z)}, ${num(r.w)}, ${num(r.d)}, ${r.rot})`);
+    L.push(``);
+  }
+  if (trees.length){
+    L.push(`-- Trees (x, z, canopy diameter)`, `local treesFolder = folder("Trees")`,
+      `local function tree(x, z, size)`,
+      `\tlocal m = Instance.new("Model")`, `\tm.Name = "Tree"`,
+      `\tlocal h = size * 0.7`, `\tlocal t = math.max(1.5, size * 0.14)`,
+      `\tm.PrimaryPart = part(m, "Trunk", Vector3.new(t, h, t), CFrame.new(x, h / 2, z), Color3.fromRGB(105, 72, 45), Enum.Material.Wood)`,
+      `\tlocal leafColor = Color3.fromRGB(50 + rng:NextInteger(0, 25), 120 + rng:NextInteger(0, 40), 50 + rng:NextInteger(0, 20))`,
+      `\tpart(m, "Leaves", Vector3.new(size, size, size), CFrame.new(x, h + size * 0.3, z), leafColor, Enum.Material.Grass, Enum.PartType.Ball)`,
+      `\tm.Parent = treesFolder`, `end`);
+    for (const t of trees) L.push(`tree(${num(t.x)}, ${num(t.z)}, ${num(t.w)})`);
+    L.push(``);
+  }
+  if (spawns.length){
+    L.push(`-- Spawn points`);
+    for (const s of spawns){
+      L.push(`do`, `\tlocal s = Instance.new("SpawnLocation")`, `\ts.Name = ${luaName(s.name)}`, `\ts.Anchored = true`,
+        `\ts.Size = Vector3.new(${num(s.w)}, 1, ${num(s.d)})`, `\ts.CFrame = CFrame.new(${num(s.x)}, 0.5, ${num(s.z)}) * yaw(${s.rot})`,
+        `\ts.Parent = map`, `end`);
+    }
+    L.push(``);
+  }
+  L.push(`if recording then History:FinishRecording(recording, Enum.FinishRecordingOperation.Commit) end`,
+         `print("Map built: ${state.items.length} objects")`);
+  return L.join('\n');
+}
+
+function buildPrompt(){
+  const S = state.size, L = [];
+  const rivers = of('river'), paths = of('path'), houses = of('house'), bridges = of('bridge');
+  const wells = of('well'), torches = of('torch'), rocks = of('rock'), trees = of('tree'), spawns = of('spawn');
+  const rotTxt = r => r ? `, rotated ${r}° clockwise seen from above` : '';
+  L.push(`Using the Roblox Studio tools, build this map in my open place.`,
+    ``,
+    `Coordinates are in studs. (0, 0) is the center of the map, X runs left to right and Z runs top to bottom when seen from above. Ground level is Y = 0. Put everything in a Folder in Workspace called "Map" with subfolders Paths, Buildings, Trees and Props. Anchor every part. Work through the steps in order and check the result after each one.`,
+    ``, `1. Setup`);
+  if (state.removeBaseplate) L.push(`- Delete the default "Baseplate" part if it exists.`);
+  if (state.clearTerrain) L.push(`- Clear the existing terrain.`);
+  L.push(`- Delete any existing "Map" folder, then create a new one.`,
+    `- Fill a ${S} × ${S} stud area of Grass terrain centered on (0, 0), 16 studs thick, with its top surface at Y = 0.`);
+  let n = 2;
+  if (rivers.length){
+    L.push(``, `${n++}. Rivers (Water terrain dug into the grass, surface flush with Y = 0, about 6 studs deep)`);
+    for (const r of rivers) L.push(`- "${r.name}", ${r.width} studs wide, following ${r.pts.map(pt).join(' → ')}`);
+  }
+  if (paths.length){
+    L.push(``, `${n++}. Paths (thin dirt parts just above the grass, Ground material, brown; round the corners)`);
+    for (const p of paths) L.push(`- "${p.name}", ${p.width} studs wide, following ${p.pts.map(pt).join(' → ')}`);
+  }
+  if (houses.length){
+    L.push(``, `${n++}. Buildings (Models in Map/Buildings). Make each one a small cottage: walls about 12 studs tall, a pitched roof, a door and a couple of windows. Footprint is width along X × depth along Z before rotation.`);
+    for (const h of houses) L.push(`- "${h.name}" centered at ${pt([h.x,h.z])}, footprint ${num(h.w)} × ${num(h.d)}${rotTxt(h.rot)}, front door facing ${facing(h.rot)}`);
+  }
+  if (bridges.length){
+    L.push(``, `${n++}. Bridges (wooden plank deck with railings, deck top about 1.5 studs above the water)`);
+    for (const b of bridges) L.push(`- "${b.name}" centered at ${pt([b.x,b.z])}, ${num(b.w)} long × ${num(b.d)} wide${rotTxt(b.rot)}`);
+  }
+  if (wells.length || torches.length || rocks.length){
+    L.push(``, `${n++}. Props (in Map/Props)`);
+    for (const w of wells) L.push(`- Stone well "${w.name}" at ${pt([w.x,w.z])}, ${num(w.w)} studs across, with a small wooden roof`);
+    if (torches.length) L.push(`- Torches (wooden pole about 7 studs tall, glowing Neon top with a warm PointLight) at ${torches.map(t => pt([t.x,t.z])).join(', ')}`);
+    for (const r of rocks) L.push(`- Rock at ${pt([r.x,r.z])}, about ${num(r.w)} × ${num(r.d)}${rotTxt(r.rot)}`);
+  }
+  if (trees.length){
+    L.push(``, `${n++}. Trees (Models in Map/Trees: a wood trunk and a round leafy canopy; vary the green slightly). Position, then canopy diameter in brackets:`);
+    L.push(trees.map(t => `${pt([t.x,t.z])} [${num(t.w)}]`).join(', '));
+  }
+  if (spawns.length){
+    L.push(``, `${n++}. Spawn`);
+    for (const s of spawns) L.push(`- SpawnLocation "${s.name}" at ${pt([s.x,s.z])}, ${num(s.w)} × ${num(s.d)}${rotTxt(s.rot)}, top at Y = 1`);
+  }
+  L.push(``, `When you're done, tell me what you built and anything you had to change.`);
+  return L.join('\n');
+}
+
+function renderOutput(){
+  const isLua = state.tab === 'lua';
+  $('#t-prompt').setAttribute('aria-selected', String(!isLua));
+  $('#t-lua').setAttribute('aria-selected', String(isLua));
+  $('#outnote').textContent = isLua
+    ? 'Builds the plan exactly with simple parts. Paste it into Claude Desktop and say "Run this Luau in Roblox Studio", or into Studio\'s Command Bar. Running it again replaces the Map folder.'
+    : 'Paste this into a new Claude Desktop chat while Studio is open. Claude builds the plan with the Studio tools and adds its own detail to the houses and trees.';
+  const text = isLua ? buildLua() : buildPrompt();
+  $('#out').textContent = text;
+  $('#out').classList.toggle('wrap-text', !isLua);
+  const lines = text.split('\n').length;
+  $('#outmeta').textContent = `${state.items.length} objects · ${lines} lines`;
+}
+
+function renderAll(){ renderMap(); renderPanel(); renderOutput(); }
+
+/* ---------- toolbar ---------- */
+function buildToolbar(){
+  const tb = $('#toolbar');
+  const order = ['house','tree','river','path','bridge','well','torch','rock','spawn'];
+  tb.innerHTML = order.map(t => `<button class="tool" type="button" data-add="${t}">${toolIcon(t)}${TYPES[t].label}</button>`).join('') +
+    `<span class="sep" aria-hidden="true"></span><button class="tool" type="button" data-add="scatter">${toolIcon('tree')}Scatter 10 trees</button>`;
+  tb.addEventListener('click', e => {
+    const b = e.target.closest('[data-add]'); if (!b) return;
+    const t = b.dataset.add;
+    if (t === 'scatter'){
+      const n = scatterTrees(state.items, state.size, 10, Math.random);
+      state.sel = null; commit(true);
+      if (!n) $('#coord').textContent = 'No free space left for trees';
+      return;
+    }
+    addItem(t);
+  });
+}
+function freeSpot(r){
+  for (let ring = 0; ring < 40; ring++){
+    const rad = ring * r * 1.2;
+    const steps = ring === 0 ? 1 : 8 + ring*2;
+    for (let k = 0; k < steps; k++){
+      const a = k/steps*Math.PI*2;
+      const x = Math.round(Math.cos(a)*rad), z = Math.round(Math.sin(a)*rad);
+      if (isFree(state.items, state.size, x, z, r)) return [x,z];
+    }
+  }
+  return [0,0];
+}
+function addItem(type){
+  const T = TYPES[type];
+  let it;
+  if (T.line){
+    const q = state.size/8;
+    const [x,z] = freeSpot(q);
+    it = mk(type, {pts:[[x-q,z],[x,z+q*0.3],[x+q,z]].map(p => p.map(v => Math.round(clamp(v,-state.size/2,state.size/2))))}, state.items);
+  } else {
+    const r = ROUND.has(type) ? T.w/2 : Math.hypot(T.w,T.d)/2;
+    const [x,z] = freeSpot(r);
+    it = mk(type, {x,z}, state.items);
+  }
+  state.items.push(it);
+  state.sel = it.id;
+  commit(true);
+}
+
+/* ---------- interaction ---------- */
+function toMap(e){
+  const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
+  const m = svg.getScreenCTM(); if (!m) return {x:0,z:0};
+  const r = p.matrixTransform(m.inverse());
+  return {x:r.x, z:r.y};
+}
+const snap = v => Math.round(v/state.snap)*state.snap;
+svg.addEventListener('pointerdown', e => {
+  const p = toMap(e), h = state.size/2;
+  const vtx = e.target.closest('[data-vtx]');
+  if (vtx && selItem()){
+    drag = {kind:'vtx', idx:+vtx.dataset.vtx};
+  } else {
+    const g = e.target.closest('[data-id]');
+    if (!g){ if (state.sel != null){ state.sel = null; renderMap(); renderPanel(); } return; }
+    const it = byId(+g.dataset.id); if (!it) return;
+    if (state.sel !== it.id){ state.sel = it.id; renderPanel(); }
+    drag = {kind:'move', start:p, orig: TYPES[it.type].line ? it.pts.map(q => q.slice()) : [it.x,it.z], moved:false};
+    renderMap();
+  }
+  svg.setPointerCapture(e.pointerId);
+  e.preventDefault();
+});
+svg.addEventListener('pointermove', e => {
+  const p = toMap(e), h = state.size/2;
+  if (Math.abs(p.x) <= h && Math.abs(p.z) <= h) $('#coord').textContent = `X ${Math.round(p.x)}, Z ${Math.round(p.z)}`;
+  if (!drag) return;
+  const it = selItem(); if (!it) return;
+  if (drag.kind === 'vtx'){
+    it.pts[drag.idx] = [clamp(snap(p.x),-h,h), clamp(snap(p.z),-h,h)];
+  } else {
+    const dx = snap(p.x - drag.start.x), dz = snap(p.z - drag.start.z);
+    if (TYPES[it.type].line){
+      it.pts = drag.orig.map(q => [clamp(q[0]+dx,-h,h), clamp(q[1]+dz,-h,h)]);
+    } else {
+      it.x = clamp(drag.orig[0]+dx,-h,h); it.z = clamp(drag.orig[1]+dz,-h,h);
+    }
+  }
+  drag.moved = true;
+  renderMap(); syncPanelValues();
+});
+function endDrag(){ if (!drag) return; const moved = drag.moved; drag = null; if (moved){ renderOutput(); save(); } }
+svg.addEventListener('pointerup', endDrag);
+svg.addEventListener('pointercancel', endDrag);
+svg.addEventListener('pointerleave', () => { if (!drag) $('#coord').textContent = 'X —, Z —'; });
+
+document.addEventListener('keydown', e => {
+  const tag = (document.activeElement && document.activeElement.tagName) || '';
+  if (/INPUT|SELECT|TEXTAREA/.test(tag)) return;
+  const it = selItem(); if (!it) return;
+  if (e.key === 'Delete' || e.key === 'Backspace'){ removeSel(); e.preventDefault(); return; }
+  const dirs = {ArrowLeft:[-1,0], ArrowRight:[1,0], ArrowUp:[0,-1], ArrowDown:[0,1]};
+  const d = dirs[e.key]; if (!d) return;
+  const s = state.snap * (e.shiftKey ? 4 : 1), h = state.size/2;
+  if (TYPES[it.type].line) it.pts = it.pts.map(q => [clamp(q[0]+d[0]*s,-h,h), clamp(q[1]+d[1]*s,-h,h)]);
+  else { it.x = clamp(it.x+d[0]*s,-h,h); it.z = clamp(it.z+d[1]*s,-h,h); }
+  e.preventDefault();
+  renderMap(); syncPanelValues(); renderOutput(); save();
+});
+function removeSel(){
+  state.items = state.items.filter(i => i.id !== state.sel);
+  state.sel = null; commit(true);
+}
+
+const panel = $('#panel');
+panel.addEventListener('input', e => {
+  const it = selItem(); const f = e.target.dataset.f; if (!it || !f) return;
+  const h = state.size/2;
+  if (f === 'name'){
+    const clean = e.target.value.replace(/[^A-Za-z0-9 _\-]/g,'').slice(0,40);
+    if (clean !== e.target.value) e.target.value = clean;
+    it.name = clean || TYPES[it.type].label;
+    const h2 = panel.querySelector('h2'); if (h2) h2.firstChild.textContent = it.name + ' ';
+  } else {
+    const v = parseFloat(e.target.value); if (!isFinite(v)) return;
+    if (f === 'x') it.x = clamp(v,-h,h);
+    else if (f === 'z') it.z = clamp(v,-h,h);
+    else if (f === 'w'){ it.w = clamp(v,1,400); if (ROUND.has(it.type)) it.d = it.w; }
+    else if (f === 'd') it.d = clamp(v,1,400);
+    else if (f === 'width') it.width = clamp(Math.round(v),2,200);
+    else if (f === 'rot'){
+      it.rot = Math.round(((v + 180) % 360 + 360) % 360 - 180);
+      const other = document.getElementById(e.target.id === 'f-rot' ? 'f-rotr' : 'f-rot');
+      if (other) other.value = it.rot;
+    }
+  }
+  renderMap(); renderOutput(); save();
+});
+panel.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const it = selItem(); if (!it) return;
+  const h = state.size/2;
+  switch (b.dataset.act){
+    case 'del': removeSel(); break;
+    case 'dup': {
+      const c = mk(it.type, {x:clamp(it.x+16,-h,h), z:clamp(it.z+16,-h,h), w:it.w, d:it.d, rot:it.rot}, state.items);
+      state.items.push(c); state.sel = c.id; commit(true); break; }
+    case 'addpt': {
+      const n = it.pts.length, a = it.pts[n-2], z = it.pts[n-1];
+      const dx = z[0]-a[0], dz = z[1]-a[1], l = Math.hypot(dx,dz) || 1, step = state.size/10;
+      it.pts.push([Math.round(clamp(z[0]+dx/l*step,-h,h)), Math.round(clamp(z[1]+dz/l*step,-h,h))]);
+      commit(true); break; }
+    case 'rmpt': if (it.pts.length > 2){ it.pts.pop(); commit(true); } break;
+  }
+});
+function commit(full){ if (full) renderAll(); save(); }
+
+/* settings */
+$('#f-size').addEventListener('change', e => { state.size = +e.target.value; commit(true); });
+$('#f-snap').addEventListener('change', e => { state.snap = +e.target.value; save(); });
+$('#o-baseplate').addEventListener('change', e => { state.removeBaseplate = e.target.checked; renderOutput(); save(); });
+$('#o-terrain').addEventListener('change', e => { state.clearTerrain = e.target.checked; renderOutput(); save(); });
+$('#b-reset').addEventListener('click', () => { uid = 1; state = sample(); syncSettings(); commit(true); });
+$('#b-clear').addEventListener('click', e => {
+  const b = e.currentTarget;
+  if (!clearArmed){
+    b.classList.add('armed'); b.textContent = 'Click again to clear';
+    clearArmed = setTimeout(() => { b.classList.remove('armed'); b.textContent = 'Clear map'; clearArmed = null; }, 3000);
+    return;
+  }
+  clearTimeout(clearArmed); clearArmed = null;
+  b.classList.remove('armed'); b.textContent = 'Clear map';
+  state.items = []; state.sel = null; commit(true);
+});
+$('#t-prompt').addEventListener('click', () => { state.tab = 'prompt'; renderOutput(); save(); });
+$('#t-lua').addEventListener('click', () => { state.tab = 'lua'; renderOutput(); save(); });
+$('#b-copy').addEventListener('click', e => {
+  const b = e.currentTarget, text = $('#out').textContent;
+  const done = msg => { b.textContent = msg; setTimeout(() => { b.textContent = 'Copy'; }, 1800); };
+  const fallback = () => {
+    const r = document.createRange(); r.selectNodeContents($('#out'));
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    done('Selected, press Ctrl+C');
+  };
+  try {
+    navigator.clipboard.writeText(text).then(() => done('Copied'), fallback);
+  } catch(err) { fallback(); }
+});
+function syncSettings(){
+  $('#f-size').value = String(state.size);
+  $('#f-snap').value = String(state.snap);
+  $('#o-baseplate').checked = !!state.removeBaseplate;
+  $('#o-terrain').checked = !!state.clearTerrain;
+}
+
+state = load();
+buildToolbar();
+syncSettings();
+renderAll();
+})();
+</script>
