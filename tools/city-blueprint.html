@@ -24,49 +24,62 @@
 }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--display);font-size:15px;line-height:1.5}
-.wrap{max-width:1360px;margin:0 auto;padding-inline:16px;padding-block:22px 56px;display:flex;flex-direction:column;gap:22px}
+.wrap{max-width:1380px;margin:0 auto;padding-inline:16px;padding-block:22px 56px;display:flex;flex-direction:column;gap:22px}
 header{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center}
 .sign{background:var(--sign);color:var(--sign-ink);border-radius:10px;padding:5px;box-shadow:0 1px 0 rgba(0,0,0,.15)}
-.sign-inner{border:2px solid rgba(255,255,255,.92);border-radius:7px;padding:8px 18px 6px;display:flex;flex-direction:column;gap:0}
+.sign-inner{border:2px solid rgba(255,255,255,.92);border-radius:7px;padding:8px 18px 6px;display:flex;flex-direction:column}
 .sign small{font-weight:600;font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.9}
 h1{font-weight:800;font-size:clamp(24px,3.6vw,34px);line-height:1.05;margin:0;letter-spacing:.01em;text-wrap:balance}
-.lede{margin:0;color:var(--muted);max-width:62ch;flex:1 1 320px}
-.stage{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:18px;align-items:start}
-@media (max-width:1000px){.stage{grid-template-columns:minmax(0,1fr)}}
+.lede{margin:0;color:var(--muted);max-width:64ch;flex:1 1 320px}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;align-items:start}
+@media (max-width:1020px){.stage{grid-template-columns:minmax(0,1fr)}}
+.maincol{display:flex;flex-direction:column;gap:18px;min-width:0}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px}
 .viewcard{overflow:hidden;position:relative}
-#view{position:relative;height:clamp(360px,68vh,760px);background:var(--view);touch-action:none}
+#view{position:relative;height:clamp(360px,64vh,720px);background:var(--view);touch-action:none}
 #view canvas{display:block;width:100%;height:100%}
 .hud{position:absolute;inset:10px 10px auto 10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:space-between;pointer-events:none}
 .hud .grp{display:flex;flex-wrap:wrap;gap:6px;pointer-events:auto}
-.hbtn{font:inherit;font-size:13px;font-weight:600;padding:6px 11px;border-radius:6px;border:1px solid rgba(0,0,0,.18);background:rgba(255,255,255,.9);color:#15191E;cursor:pointer;line-height:1.2}
+.hbtn{font:inherit;font-size:13px;font-weight:600;padding:6px 11px;border-radius:6px;border:1px solid rgba(0,0,0,.18);background:rgba(255,255,255,.92);color:#15191E;cursor:pointer;line-height:1.2}
 .hbtn[aria-pressed="true"]{background:#15191E;color:#fff;border-color:#15191E}
 .hbtn:hover{border-color:#0B6B41}
 .foot{position:absolute;left:10px;bottom:10px;right:10px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;pointer-events:none}
 .chip{font-family:var(--mono);font-size:12px;background:rgba(10,14,18,.72);color:#E9EEF2;padding:4px 8px;border-radius:5px;font-variant-numeric:tabular-nums}
 .nogl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--ink);background:var(--soft)}
 button:focus-visible,input:focus-visible,select:focus-visible,pre:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
-.side{display:flex;flex-direction:column;gap:16px}
+.below{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:18px;align-items:start}
+@media (max-width:760px){.below{grid-template-columns:minmax(0,1fr)}}
+.side{display:flex;flex-direction:column;gap:14px}
 .section{padding:14px 16px;display:flex;flex-direction:column;gap:12px}
 h2{font-weight:800;font-size:18px;margin:0;letter-spacing:.005em}
+.h2row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.field{display:flex;flex-direction:column;gap:4px}
+.field{display:flex;flex-direction:column;gap:3px}
 .field label,.lbl{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.field .val{font-family:var(--mono);font-size:12.5px;color:var(--ink);text-transform:none;letter-spacing:0}
+.val{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums}
 .labrow{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-input[type=range]{width:100%;accent-color:var(--accent)}
-input[type=number]{font:inherit;font-family:var(--mono);font-size:13px;width:110px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent);margin:2px 0}
+input[type=number]{font:inherit;font-family:var(--mono);font-size:13px;width:100px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
 .btn{font:inherit;font-size:13.5px;font-weight:600;padding:6px 12px;border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:6px;cursor:pointer}
 .btn:hover{border-color:var(--accent)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{font:inherit;font-size:13.5px;font-weight:600;padding:7px 6px;border:0;border-right:1px solid var(--line);background:var(--soft);color:var(--ink);cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}
+.checks label{display:flex;gap:7px;align-items:flex-start;font-size:13.5px;cursor:pointer;line-height:1.3}
+.checks input{accent-color:var(--accent);margin-top:2px}
+.hint{font-size:12.5px;color:var(--muted);margin:0}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin:0}
 .stats div{display:flex;flex-direction:column;border-top:1px solid var(--line);padding-top:6px}
 .stats dt{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 .stats dd{margin:0;font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums}
-ol.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+ol.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:5px;font-size:14px}
 ol.steps li::marker{font-family:var(--mono);color:var(--muted)}
 .note{font-size:13px;color:var(--muted);margin:0}
-pre#lua{margin:0;max-height:300px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-family:var(--mono);font-size:11.5px;line-height:1.5;white-space:pre;tab-size:4}
+code{font-family:var(--mono);font-size:.92em}
+pre#lua{margin:0;max-height:260px;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-family:var(--mono);font-size:11.5px;line-height:1.5;white-space:pre;tab-size:4}
 .research{padding:20px;display:flex;flex-direction:column;gap:16px}
 .research h2{font-size:22px}
 .research p{margin:0;max-width:75ch}
@@ -88,70 +101,100 @@ a{color:var(--accent)}
 <div class="wrap">
   <header>
     <div class="sign"><div class="sign-inner"><small>Roblox · Studio build</small><h1>City Blueprint</h1></div></div>
-    <p class="lede">A generated Roblox city with downtown towers, parking garages, houses with garages, parks, an elevated ring highway with on-ramps, gas and repair stations, and moving traffic with working signals. Look around in 3D, then copy one script to build it in Studio.</p>
+    <p class="lede">Design a Roblox town: streets of houses with garages, main roads with traffic lights, stop signs on the side streets, shops, parks and a ring highway with moving traffic. Adjust it on the right, look around in 3D, then copy one script into Studio.</p>
   </header>
 
   <div class="stage">
-    <section class="card viewcard" aria-label="3D city preview">
-      <div id="view">
-        <div class="hud">
-          <div class="grp" role="group" aria-label="Camera">
-            <button class="hbtn" id="cam-orbit" type="button" aria-pressed="true">Look around</button>
-            <button class="hbtn" id="cam-car" type="button" aria-pressed="false">Ride a car</button>
-            <button class="hbtn" id="cam-hwy" type="button" aria-pressed="false">Ride the highway</button>
+    <div class="maincol">
+      <section class="card viewcard" aria-label="3D city preview">
+        <div id="view">
+          <div class="hud">
+            <div class="grp" role="group" aria-label="Camera">
+              <button class="hbtn" id="cam-orbit" type="button" aria-pressed="true">Look around</button>
+              <button class="hbtn" id="cam-car" type="button" aria-pressed="false">Ride a car</button>
+              <button class="hbtn" id="cam-hwy" type="button" aria-pressed="false">Ride the highway</button>
+            </div>
+            <div class="grp">
+              <button class="hbtn" id="t-night" type="button" aria-pressed="false">Night</button>
+              <button class="hbtn" id="t-pause" type="button" aria-pressed="false">Pause traffic</button>
+            </div>
           </div>
-          <div class="grp">
-            <button class="hbtn" id="t-night" type="button" aria-pressed="false">Night</button>
-            <button class="hbtn" id="t-pause" type="button" aria-pressed="false">Pause traffic</button>
+          <div class="foot">
+            <span class="chip" id="chip-hint">Drag to orbit · right-drag to pan · scroll to zoom</span>
+            <span class="chip" id="chip-fps"></span>
           </div>
         </div>
-        <div class="foot">
-          <span class="chip" id="chip-hint">Drag to orbit · right-drag to pan · scroll to zoom</span>
-          <span class="chip" id="chip-fps"></span>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <aside class="side">
+      <div class="below">
+        <section class="card section">
+          <h2>This city</h2>
+          <dl class="stats" id="stats"></dl>
+        </section>
+        <section class="card section">
+          <div class="h2row"><h2>Build it in Studio</h2><span class="note" id="lua-meta"></span></div>
+          <ol class="steps">
+            <li>Open a new <b>Baseplate</b> place in Roblox Studio.</li>
+            <li>Open <b>View → Command Bar</b>, paste the script, press Enter.</li>
+            <li>Press <b>Play</b> to see the traffic.</li>
+          </ol>
+          <p class="note">The top of the script has a <code>SETTINGS</code> block. Set any line to <code>false</code> to leave that part out (highway, trees, street lights, parked cars and more), or change the number of cars, without coming back here. If the Command Bar won't take the whole script, paste it into a ModuleScript called <code>BuildCity</code> in ServerStorage and run <code>require(game.ServerStorage.BuildCity:Clone())</code>.</p>
+          <div class="row"><button class="btn primary" id="b-copy" type="button">Copy build script</button></div>
+          <pre id="lua" tabindex="0" aria-label="Luau build script"></pre>
+        </section>
+      </div>
+    </div>
+
+    <aside class="side" aria-label="City settings">
       <section class="card section">
-        <h2>City layout</h2>
-        <div class="field">
-          <div class="labrow"><label for="f-nx">Blocks east–west</label><span class="val" id="v-nx"></span></div>
-          <input type="range" id="f-nx" min="3" max="10" step="1" value="5">
+        <div class="h2row"><h2>Style</h2><span class="note" id="preset-note"></span></div>
+        <div class="seg" role="group" aria-label="Preset">
+          <button type="button" data-preset="suburb" aria-pressed="true">Suburb</button>
+          <button type="button" data-preset="town" aria-pressed="false">Small town</button>
+          <button type="button" data-preset="downtown" aria-pressed="false">Downtown</button>
         </div>
-        <div class="field">
-          <div class="labrow"><label for="f-nz">Blocks north–south</label><span class="val" id="v-nz"></span></div>
-          <input type="range" id="f-nz" min="3" max="10" step="1" value="5">
-        </div>
-        <div class="field">
-          <div class="labrow"><label for="f-block">Block size</label><span class="val" id="v-block"></span></div>
-          <input type="range" id="f-block" min="140" max="260" step="10" value="180">
-        </div>
+        <p class="hint">How much of each kind of block to build. Shops sit on main roads and offices near the centre.</p>
+        <div class="field"><div class="labrow"><label for="m-houses">Houses with garages</label><span class="val" id="v-m-houses"></span></div><input type="range" id="m-houses" min="0" max="100" step="1"></div>
+        <div class="field"><div class="labrow"><label for="m-shops">Shops</label><span class="val" id="v-m-shops"></span></div><input type="range" id="m-shops" min="0" max="100" step="1"></div>
+        <div class="field"><div class="labrow"><label for="m-parks">Parks</label><span class="val" id="v-m-parks"></span></div><input type="range" id="m-parks" min="0" max="100" step="1"></div>
+        <div class="field"><div class="labrow"><label for="m-apartments">Apartments</label><span class="val" id="v-m-apartments"></span></div><input type="range" id="m-apartments" min="0" max="100" step="1"></div>
+        <div class="field"><div class="labrow"><label for="m-offices">Office towers</label><span class="val" id="v-m-offices"></span></div><input type="range" id="m-offices" min="0" max="100" step="1"></div>
+        <div class="field"><div class="labrow"><label for="f-floors">Tallest building</label><span class="val" id="v-floors"></span></div><input type="range" id="f-floors" min="2" max="40" step="1"></div>
+      </section>
+
+      <section class="card section">
+        <h2>Layout</h2>
+        <div class="field"><div class="labrow"><label for="f-nx">Blocks east–west</label><span class="val" id="v-nx"></span></div><input type="range" id="f-nx" min="3" max="10" step="1"></div>
+        <div class="field"><div class="labrow"><label for="f-nz">Blocks north–south</label><span class="val" id="v-nz"></span></div><input type="range" id="f-nz" min="3" max="10" step="1"></div>
+        <div class="field"><div class="labrow"><label for="f-block">Block size</label><span class="val" id="v-block"></span></div><input type="range" id="f-block" min="140" max="280" step="10"></div>
+        <div class="field"><div class="labrow"><label for="f-lot">House lot width</label><span class="val" id="v-lot"></span></div><input type="range" id="f-lot" min="40" max="64" step="2"></div>
         <div class="row">
-          <div class="field"><label for="f-seed">Seed</label><input type="number" id="f-seed" min="1" max="99999" value="2112"></div>
+          <div class="field"><label for="f-seed">Seed</label><input type="number" id="f-seed" min="1" max="99999"></div>
           <button class="btn" id="b-shuffle" type="button" style="align-self:flex-end">New random city</button>
         </div>
       </section>
 
       <section class="card section">
-        <h2>This city</h2>
-        <dl class="stats" id="stats"></dl>
+        <h2>Extras</h2>
+        <div class="checks">
+          <label><input type="checkbox" id="o-highway"> Ring highway</label>
+          <label><input type="checkbox" id="o-ramps"> On-ramps</label>
+          <label><input type="checkbox" id="o-outskirts"> Gas, repair, warehouses</label>
+          <label><input type="checkbox" id="o-streetLights"> Street lights</label>
+          <label><input type="checkbox" id="o-lampGlow"> Lamps light up at night</label>
+          <label><input type="checkbox" id="o-streetTrees"> Street trees</label>
+          <label><input type="checkbox" id="o-furniture"> Benches, bins, mailboxes</label>
+        </div>
+        <div class="field"><div class="labrow"><label for="f-trees">Trees and woods</label><span class="val" id="v-trees"></span></div><input type="range" id="f-trees" min="0" max="100" step="5"></div>
+        <div class="field"><div class="labrow"><label for="f-parked">Parked cars</label><span class="val" id="v-parked"></span></div><input type="range" id="f-parked" min="0" max="100" step="5"></div>
       </section>
 
       <section class="card section">
-        <h2>Build it in Studio</h2>
-        <ol class="steps">
-          <li>Open a new <b>Baseplate</b> place in Roblox Studio.</li>
-          <li>Open <b>View → Command Bar</b>, paste the script, press Enter. It takes a few seconds.</li>
-          <li>Press <b>Play</b>. Traffic and signals run on each player's device.</li>
-        </ol>
-        <p class="note">If the Command Bar won't take the whole script, add a <b>ModuleScript</b> named <code>BuildCity</code> to ServerStorage, paste the script into it, then run <code>require(game.ServerStorage.BuildCity:Clone())</code> in the Command Bar.</p>
-        <p class="note">Everything goes in <code>Workspace.City</code>; the traffic lives in <code>StarterPlayerScripts.CityTraffic</code>. Running it again replaces both. The script also removes the default Baseplate and moves the spawn onto a sidewalk. You can also paste it into Claude Desktop and say “run this Luau in Roblox Studio”, though it's long.</p>
-        <div class="row" style="justify-content:space-between">
-          <span class="note" id="lua-meta"></span>
-          <button class="btn primary" id="b-copy" type="button">Copy build script</button>
-        </div>
-        <pre id="lua" tabindex="0" aria-label="Luau build script"></pre>
+        <h2>Traffic</h2>
+        <div class="field"><div class="labrow"><label for="f-cityCars">Cars on the streets</label><span class="val" id="v-cityCars"></span></div><input type="range" id="f-cityCars" min="0" max="200" step="5"></div>
+        <div class="field"><div class="labrow"><label for="f-hwyCars">Cars on the highway</label><span class="val" id="v-hwyCars"></span></div><input type="range" id="f-hwyCars" min="0" max="120" step="5"></div>
+        <p class="hint">Traffic runs on each player's device, so it costs no network bandwidth. Fewer cars help slower phones.</p>
+        <div class="row"><button class="btn" id="b-reset" type="button">Reset everything</button></div>
       </section>
     </aside>
   </div>
@@ -215,9 +258,9 @@ const COL = {
   concrete:[160,160,155], barrier:[196,194,186], line:[236,236,230], yellow:[236,190,40],
   trunk:[102,72,46], leaf1:[62,118,56], leaf2:[80,138,62], leaf3:[50,100,58],
   pole:[64,66,70], lamp:[255,226,160], water:[64,132,186], stone:[150,148,142],
-  wood:[134,94,56], metal:[96,98,104], red:[190,38,34], blue:[36,76,156], bin:[38,84,58],
-  door:[78,50,30], rollup:[196,198,196], glass:[44,56,70], canopy:[238,238,236], accent:[204,52,40],
-  warehouse:[150,160,170], cream:[228,214,188], billboard:[34,40,52],
+  wood:[134,94,56], metal:[96,98,104], red:[190,38,34], blue:[36,76,156], bin:[38,84,58], mail:[60,64,72],
+  door:[78,50,30], rollup:[214,214,210], glass:[44,56,70], canopy:[238,238,236], accent:[204,52,40],
+  warehouse:[150,160,170], cream:[228,214,188], billboard:[34,40,52], court:[176,96,64], play:[230,160,40],
   tire:[28,28,30], head:[255,244,214], tail:[222,40,40], white:[236,236,232],
 };
 const COL_KEYS = Object.keys(COL);
@@ -233,8 +276,11 @@ const STYLES = [
   {body:[226,220,206], band:[52,60,70], mat:'SmoothPlastic'},
   {body:[140,142,146], band:[40,46,54], mat:'Concrete'},
 ];
-const WALLS = [[214,196,160],[190,208,220],[226,226,218],[200,170,150],[168,190,160]];
-const ROOFS = [[120,60,48],[70,72,80],[90,70,60],[60,80,100]];
+const WALLS = [[214,196,160],[190,208,220],[226,226,218],[200,170,150],[168,190,160],[232,214,200],[176,184,196]];
+const ROOFS = [[120,60,48],[70,72,80],[90,70,60],[60,80,100],[104,96,88]];
+const SHOP_COLS = [[176,92,70],[120,132,150],[200,184,150],[92,120,100],[160,150,170],[190,170,120]];
+const AWNINGS = [[200,50,44],[40,110,170],[40,140,90],[230,160,30],[140,60,140],[30,40,52]];
+const SHOP_NAMES = ['BAKERY','PIZZA','HARDWARE','BOOKS','FLOWERS','DINER','PHARMACY','BARBER','GROCERY','LAUNDRY','ICE CREAM','PET SHOP','CAFE','TOYS'];
 const PAINT = [[200,40,40],[30,90,170],[235,235,235],[30,30,34],[150,155,160],[240,190,40],[40,130,80],[120,40,120],[230,110,30]];
 // vehicles: size xyz, offset xyz, role (1 paint, 2 glass, 3 tyre, 4 headlight, 5 taillight, 6 white), shape (0 block, 1 cylinder along X). Front is local -Z.
 const VEH = [
@@ -246,6 +292,15 @@ const VEH = [
 const ROLE_COL = [null, null, COL.glass, COL.tire, COL.head, COL.tail, COL.white];
 const ROLE_MAT = [null, 'std', 'glass', 'std', 'neon', 'neon', 'std'];
 const BILLBOARDS = ['GRID CITY FM 99.1','NEON NOODLES','DRIVE SAFE','PARK & RIDE','STUDWORTH BANK','BRICK BURGERS'];
+
+const PRESETS = {
+  suburb:   { mix:{houses:80, shops:9, parks:10, apartments:1, offices:0}, maxFloors:3 },
+  town:     { mix:{houses:55, shops:20, parks:10, apartments:15, offices:0}, maxFloors:6 },
+  downtown: { mix:{houses:8, shops:14, parks:8, apartments:25, offices:45}, maxFloors:30 },
+};
+const DEFAULTS = { seed:2112, nx:6, nz:6, block:200, lot:44, preset:'suburb', mix:{...PRESETS.suburb.mix}, maxFloors:PRESETS.suburb.maxFloors,
+  trees:55, parked:40, highway:true, ramps:true, outskirts:true, streetLights:true, lampGlow:true, streetTrees:true, furniture:true, cityCars:100, hwyCars:60 };
+const TOGGLES = ['highway','ramps','outskirts','streetLights','lampGlow','streetTrees','furniture'];
 
 /* ---------- small helpers ---------- */
 function makeRng(seed){ let s = (Math.abs(Math.floor(seed)) % 2147483646) + 1; return () => (s = s * 48271 % 2147483647) / 2147483647; }
@@ -287,6 +342,9 @@ function cutGaps(pieces, gaps){
   }
   return pieces;
 }
+// traffic control at a junction for cars heading in direction k (0 east, 1 west, 2 south, 3 north)
+const hasCrosswalk = n => n.city && n.ctl === 1;
+const mustStop = (n, k) => n.ctl === 1 || n.ctl === 3 || (n.ctl === 2 && (k <= 1 ? 1 : 2) !== n.axis);
 
 /* =====================================================================
    City generator: produces the layout both the 3D view and Studio use
@@ -297,8 +355,10 @@ function generate(P){
   const ri = (a,b) => a + Math.floor(R()*(b-a+1));
   const pick = a => a[Math.floor(R()*a.length)];
   const chance = p => R() < p;
-  const {ROAD,WALK,ST,PAD,GAP,DECK,RC,H,BAND,FLOOR,LH} = C;
-  const NX = P.nx, NZ = P.nz, B = P.block, PITCH = B + ST;
+  const {ROAD,WALK,ST,PAD,GAP,DECK,RC,BAND,FLOOR,LH} = C;
+  const td = P.trees/100, pf = P.parked/100, mf = Math.max(2, P.maxFloors);
+  const tp = p => Math.min(0.95, p*td*1.3);
+  const NX = P.nx, NZ = P.nz, B = P.block, PITCH = B + ST, LOT = P.lot;
   const CX = NX*B + (NX+1)*ST, CZ = NZ*B + (NZ+1)*ST;
   const SX = [], SZ = [];
   for (let i = 0; i <= NX; i++) SX.push(-CX/2 + ST/2 + i*PITCH);
@@ -308,120 +368,168 @@ function generate(P){
   const MX = OX + ROAD/2 + 90, MZ = OZ + ROAD/2 + 90;
   const spokes = n => { const a = Math.round(n/3), b = n - a; return a === b ? [a] : [a,b]; };
   const SPI = spokes(NX), SPJ = spokes(NZ);
-  const M = {P, NX, NZ, B, CX, CZ, SX, SZ, RX, RZ, OX, OZ, MX, MZ, SPI, SPJ,
+  const mainI = new Set([0, NX, ...SPI]), mainJ = new Set([0, NZ, ...SPJ]);
+  const M = {P, NX, NZ, B, CX, CZ, SX, SZ, RX, RZ, OX, OZ, MX, MZ, SPI, SPJ, mainI, mainJ,
     spokeX: SPI.map(i => SX[i]), spokeZ: SPJ.map(j => SZ[j]),
-    nodes:[], links:[], buildings:[], houses:[], garages:[], parks:[], lawns:[], trees:[], cars:[], props:[],
+    nodes:[], links:[], buildings:[], houses:[], shops:[], garages:[], parks:[], lawns:[], trees:[], cars:[], props:[],
     warehouses:[], repairs:[], gas:[], lots:[], billboards:[], ramps:[], counts:{}};
   const tree = (x,z,s,y) => M.trees.push([Math.round(x), Math.round(z), Math.round(s), y]);
   const car = (x,y,z,rot,k) => M.cars.push([r1(x), r1(y), r1(z), rot, k, ri(0, PAINT.length-1)]);
   const prop = (k,x,z,rot,y) => M.props.push([k, r1(x), r1(z), Math.round(rot), y]);
 
   /* road graph: 0 east, 1 west, 2 south, 3 north */
-  const node = (x,z,city) => { M.nodes.push({x, z, city, off:-1}); M.links.push([-1,-1,-1,-1]); return M.nodes.length-1; };
+  const node = (x,z,city,mainX,mainZ) => { M.nodes.push({x, z, city, mainX, mainZ, off:-1, ctl:0, axis:0}); M.links.push([-1,-1,-1,-1]); return M.nodes.length-1; };
   const link = (a,b) => { const p = M.nodes[a], q = M.nodes[b]; const k = q.x > p.x ? 0 : q.x < p.x ? 1 : q.z > p.z ? 2 : 3; M.links[a][k] = b; M.links[b][k^1] = a; };
   const id = [];
-  for (let j = 0; j <= NZ; j++){ id.push([]); for (let i = 0; i <= NX; i++) id[j].push(node(SX[i], SZ[j], true)); }
+  for (let j = 0; j <= NZ; j++){ id.push([]); for (let i = 0; i <= NX; i++) id[j].push(node(SX[i], SZ[j], true, mainJ.has(j), mainI.has(i))); }
   for (let j = 0; j <= NZ; j++) for (let i = 0; i <= NX; i++){ if (i < NX) link(id[j][i], id[j][i+1]); if (j < NZ) link(id[j][i], id[j+1][i]); }
-  const cNW = node(-OX,-OZ,false), cNE = node(OX,-OZ,false), cSE = node(OX,OZ,false), cSW = node(-OX,OZ,false);
+  const cNW = node(-OX,-OZ,false,true,true), cNE = node(OX,-OZ,false,true,true), cSE = node(OX,OZ,false,true,true), cSW = node(-OX,OZ,false,true,true);
   const north = [cNW], south = [cSW], west = [cNW], east = [cNE];
-  for (const i of SPI){ const n = node(SX[i],-OZ,false); link(n, id[0][i]); north.push(n); const s = node(SX[i],OZ,false); link(id[NZ][i], s); south.push(s); }
-  for (const j of SPJ){ const w = node(-OX,SZ[j],false); link(w, id[j][0]); west.push(w); const e = node(OX,SZ[j],false); link(id[j][NX], e); east.push(e); }
+  for (const i of SPI){ const n = node(SX[i],-OZ,false,true,true); link(n, id[0][i]); north.push(n); const s = node(SX[i],OZ,false,true,true); link(id[NZ][i], s); south.push(s); }
+  for (const j of SPJ){ const w = node(-OX,SZ[j],false,true,true); link(w, id[j][0]); west.push(w); const e = node(OX,SZ[j],false,true,true); link(id[j][NX], e); east.push(e); }
   north.push(cNE); south.push(cSE); west.push(cSW); east.push(cSE);
   for (const side of [north,south,west,east]) for (let k = 0; k+1 < side.length; k++) link(side[k], side[k+1]);
-  M.nodes.forEach((n,i) => { if (M.links[i].filter(v => v >= 0).length >= 3) n.off = (i*7) % 30; });
+  // main road junctions get traffic lights, main/side junctions a two-way stop, side streets an all-way stop
+  M.nodes.forEach((n,i) => {
+    if (M.links[i].filter(v => v >= 0).length < 3) return;
+    if (n.mainX && n.mainZ){ n.ctl = 1; n.off = (i*7) % 30; }
+    else if (n.mainX || n.mainZ){ n.ctl = 2; n.axis = n.mainX ? 1 : 2; }
+    else n.ctl = 3;
+  });
 
   /* city blocks */
   const blocks = [];
   for (let b = 0; b < NZ; b++) for (let a = 0; a < NX; a++){
     const x0 = SX[a]+ROAD/2+WALK, x1 = SX[a+1]-ROAD/2-WALK, z0 = SZ[b]+ROAD/2+WALK, z1 = SZ[b+1]-ROAD/2-WALK;
     const cx = (x0+x1)/2, cz = (z0+z1)/2;
-    blocks.push({x0,x1,z0,z1,cx,cz, r: Math.max(Math.abs(cx)/(CX/2), Math.abs(cz)/(CZ/2)), type:null});
+    const mainSides = [];
+    if (mainJ.has(b)) mainSides.push('N'); if (mainJ.has(b+1)) mainSides.push('S'); if (mainI.has(a)) mainSides.push('W'); if (mainI.has(a+1)) mainSides.push('E');
+    blocks.push({a,b,x0,x1,z0,z1,cx,cz, r: Math.max(Math.abs(cx)/(CX/2), Math.abs(cz)/(CZ/2)), mainSides, type:null});
   }
-  const choose = (type, n, f) => { for (let k = 0; k < n; k++){ const c = blocks.filter(b => !b.type && f(b)); if (!c.length) return; pick(c).type = type; } };
-  choose('park', Math.max(1, Math.round(NX*NZ/14)), b => b.r > 0.2 && b.r < 0.9);
-  choose('garage', Math.max(1, Math.round(NX*NZ/16)), b => b.r > 0.2 && b.r < 0.95);
-  for (const b of blocks) if (!b.type) b.type = b.r < 0.42 ? 'towers' : (b.r > 0.68 && chance(0.45)) ? 'homes' : 'midrise';
+  const mix = P.mix;
+  for (const bl of blocks){
+    const w = [
+      ['homes', mix.houses],
+      ['shops', mix.shops * (bl.mainSides.length ? 1.5 : 0.25)],
+      ['park', mix.parks],
+      ['apartments', mix.apartments * (bl.r < 0.75 ? 1.2 : 0.7)],
+      ['offices', mix.offices * Math.max(0.05, 1.5 - 1.8*bl.r)],
+    ];
+    const total = w.reduce((s,x) => s + x[1], 0);
+    let roll = R()*total, type = 'homes';
+    if (total > 0) for (const [t,v] of w){ if (roll < v){ type = t; break; } roll -= v; }
+    if (type === 'offices' && chance(0.18)) type = 'garage';
+    bl.type = type;
+  }
+  if (mix.parks > 0 && blocks.length >= 6 && !blocks.some(b => b.type === 'park')){
+    const c = blocks.filter(b => b.type === 'homes' && b.r < 0.8);
+    if (c.length) pick(c).type = 'park';
+  }
 
+  // block-local placement: u runs along the street on `side`, v goes into the block from that street
+  const BW = (bl, side, u, v) => side === 'N' ? [bl.x0+u, bl.z0+v] : side === 'S' ? [bl.x0+u, bl.z1-v] : side === 'W' ? [bl.x0+v, bl.z0+u] : [bl.x1-v, bl.z0+u];
+  const FACE = {N:180, S:0, W:90, E:-90};
+  const OPPOSITE = {N:'S', S:'N', W:'E', E:'W'};
   const split = (x0,z0,x1,z1,nx,nz,gap) => { const out = [], w = (x1-x0-(nx-1)*gap)/nx, d = (z1-z0-(nz-1)*gap)/nz; for (let a = 0; a < nx; a++) for (let b = 0; b < nz; b++) out.push([x0+a*(w+gap), z0+b*(d+gap), x0+a*(w+gap)+w, z0+b*(d+gap)+d]); return out; };
   const houseAt = (cx, cz, rot, y, drive) => {
-    const g = chance(0.5) ? 1 : -1;
+    const g = chance(0.5) ? 1 : -1, style = chance(0.4) ? 1 : 0;
     const [ox,oz] = rot2(-g*6, 0, rot);
-    const hx = cx+ox, hz = cz+oz;
-    M.houses.push([r1(hx), r1(hz), rot, ri(0,WALLS.length-1), ri(0,ROOFS.length-1), g, drive, y]);
-    if (chance(0.5)){ const [px,pz] = rot2(g*17, 9+7, rot); car(hx+px, y, hz+pz, rot, chance(0.8) ? 0 : 1); }
+    const hx = cx+ox, hz = cz+oz, gx = g*((style ? 11 : 12) + 6);
+    M.houses.push([r1(hx), r1(hz), rot, ri(0,WALLS.length-1), ri(0,ROOFS.length-1), g, drive, y, style]);
+    if (chance(pf*0.8)){ const [px,pz] = rot2(gx, 9+7, rot); car(hx+px, y, hz+pz, rot, chance(0.8) ? 0 : 1); }
   };
-  const houseRow = (lo, hi, fixed, horizontal, rot, y, drive) => {
-    const n = Math.floor((hi-lo)/46); if (n < 1) return;
-    const start = (lo+hi)/2 - (n-1)*23;
-    for (let i = 0; i < n; i++){ const c = start + i*46; horizontal ? houseAt(c, fixed, rot, y, drive) : houseAt(fixed, c, rot, y, drive); }
+  // a row of houses along one street of a block, all facing that street
+  const houseRow = (bl, side, u0, u1, y) => {
+    const n = Math.floor((u1-u0)/LOT); if (n < 1) return;
+    const start = (u0+u1)/2 - (n-1)*LOT/2;
+    for (let i = 0; i < n; i++){ const [x,z] = BW(bl, side, start + i*LOT, 14 + 9); houseAt(x, z, FACE[side], y, 14); }
   };
   const garageCars = g => {
     const [x0,z0,x1,z1,lv,y0] = g;
     for (let L = 0; L <= lv; L++) for (let rx = x0+28; rx+9 <= x1-4; rx += 30) for (let z = z0+8; z <= z1-8; z += 10)
-      if (chance(0.3)) car(rx, y0 + L*LH, z, pick([90,-90]), chance(0.85) ? 0 : 1);
+      if (chance(0.6*pf)) car(rx, y0 + L*LH, z, pick([90,-90]), chance(0.85) ? 0 : 1);
+  };
+  // surface parking lot; dir 0 = stall rows run east-west, 1 = north-south
+  const parkingLot = (x0, z0, x1, z1, dir, y, fill) => {
+    M.lots.push([r1(x0), r1(z0), r1(x1), r1(z1), dir, y]);
+    if (dir === 0){ for (let z = z0+6; z+18 <= z1-6; z += 42) for (let x = x0+6; x+10 <= x1-6; x += 10) if (chance(fill)) car(x+5, y+0.2, z+9, pick([0,180]), chance(0.85) ? 0 : 1); }
+    else { for (let x = x0+6; x+18 <= x1-6; x += 42) for (let z = z0+6; z+10 <= z1-6; z += 10) if (chance(fill)) car(x+9, y+0.2, z+5, pick([90,-90]), chance(0.85) ? 0 : 1); }
   };
 
   for (const bl of blocks){
     M.counts[bl.type] = (M.counts[bl.type]||0) + 1;
-    if (bl.type === 'towers'){
-      const pat = pick(['one','two','four','four']);
-      const base = 120 + 260*(1 - bl.r/0.42);
+    if (bl.type === 'homes'){
+      M.lawns.push([bl.x0,bl.z0,bl.x1,bl.z1]);
+      const y = PAD + 0.2;
+      houseRow(bl, 'N', 8, B-8, y); houseRow(bl, 'S', 8, B-8, y);
+      houseRow(bl, 'W', 46, B-46, y); houseRow(bl, 'E', 46, B-46, y);
+      if (B > 120) for (let t = 0; t < Math.round(8*td); t++) tree(rf(bl.x0+52, bl.x1-52), rf(bl.z0+52, bl.z1-52), rf(10,16), y);
+    } else if (bl.type === 'shops'){
+      const side = bl.mainSides.length ? pick(bl.mainSides) : pick(['N','S','E','W']);
+      const [ax,az] = BW(bl, side, 8, 4), [bx,bz] = BW(bl, side, B-8, 48);
+      parkingLot(Math.min(ax,bx), Math.min(az,bz), Math.max(ax,bx), Math.max(az,bz), (side === 'N' || side === 'S') ? 0 : 1, PAD, 0.8*pf);
+      const n = Math.max(2, Math.floor((B-20)/44)), sw = (B-20)/n;
+      for (let i = 0; i < n; i++){ const [x,z] = BW(bl, side, 10 + sw*(i+0.5), 72); M.shops.push([r1(x), r1(z), r1(sw-1), FACE[side], ri(0,SHOP_COLS.length-1), ri(0,SHOP_NAMES.length-1)]); }
+      if (B - 92 >= 44){
+        const opp = OPPOSITE[side], [lx0,lz0] = BW(bl, opp, 0, 0), [lx1,lz1] = BW(bl, opp, B, 48);
+        M.lawns.push([Math.min(lx0,lx1), Math.min(lz0,lz1), Math.max(lx0,lx1), Math.max(lz0,lz1)]);
+        houseRow(bl, opp, 8, B-8, PAD+0.2);
+      }
+      else for (let t = 0; t < 4*td; t++){ const [x,z] = BW(bl, side, rf(12, B-12), rf(96, B-8)); tree(x, z, rf(10,15), PAD); }
+    } else if (bl.type === 'park'){
+      const variant = pick([1,2]);
+      M.parks.push([bl.x0,bl.z0,bl.x1,bl.z1,variant]);
+      const q = B/4;
+      for (let t = 0; t < Math.round(B*B/700*td); t++){
+        const x = rf(bl.x0+8, bl.x1-8), z = rf(bl.z0+8, bl.z1-8);
+        if (Math.abs(x-bl.cx) < 12 || Math.abs(z-bl.cz) < 12 || Math.hypot(x-bl.cx, z-bl.cz) < 26) continue;
+        if (variant === 2 && (Math.hypot(x-(bl.cx-q), z-(bl.cz-q)) < 34 || Math.hypot(x-(bl.cx+q), z-(bl.cz+q)) < 24)) continue;
+        tree(x, z, rf(10,18), PAD+0.2);
+      }
+      if (P.furniture) for (const s of [-1,1]){ prop(1, bl.cx+s*34, bl.cz+8, 180, PAD+0.2); prop(1, bl.cx+s*34, bl.cz-8, 0, PAD+0.2); }
+    } else if (bl.type === 'apartments'){
+      const lo = Math.min(3, mf), hi = Math.min(6, mf);
+      const rects = chance(0.5) ? split(bl.x0+10,bl.z0+10,bl.x1-10,bl.z1-10,2,1,24) : split(bl.x0+10,bl.z0+10,bl.x1-10,bl.z1-10,2,2,20);
+      for (const [a0,b0,a1,b1] of rects) M.buildings.push([r1((a0+a1)/2), r1((b0+b1)/2), r1(a1-a0-rf(4,12)), r1(b1-b0-rf(4,12)), FLOOR*ri(lo,hi), pick([4,5,6,7]), 0]);
+      for (let t = 0; t < 4*td; t++) tree(rf(bl.x0+6, bl.x1-6), pick([bl.z0+5, bl.z1-5]), rf(9,13), PAD);
+    } else if (bl.type === 'offices'){
+      const pat = pick(['one','two','four']);
       const rects = pat === 'one' ? split(bl.x0+22,bl.z0+22,bl.x1-22,bl.z1-22,1,1,0)
         : pat === 'two' ? (chance(0.5) ? split(bl.x0+10,bl.z0+10,bl.x1-10,bl.z1-10,2,1,14) : split(bl.x0+10,bl.z0+10,bl.x1-10,bl.z1-10,1,2,14))
         : split(bl.x0+10,bl.z0+10,bl.x1-10,bl.z1-10,2,2,14);
       for (const [a0,b0,a1,b1] of rects){
-        const w = a1-a0-rf(0,10), d = b1-b0-rf(0,10);
-        const h = Math.max(6, Math.round(base*rf(0.6,1.15)/FLOOR))*FLOOR;
-        M.buildings.push([r1((a0+a1)/2), r1((b0+b1)/2), r1(w), r1(d), h, pick([0,1,2,3]), h >= 264 ? 2 : h >= 168 ? 1 : 0]);
+        const floors = Math.max(Math.min(4, mf), Math.min(mf, Math.round(mf*(1 - 0.6*bl.r)*rf(0.6,1.1))));
+        M.buildings.push([r1((a0+a1)/2), r1((b0+b1)/2), r1(a1-a0-rf(0,10)), r1(b1-b0-rf(0,10)), floors*FLOOR, pick([0,1,2,3]), floors >= 22 ? 2 : floors >= 14 ? 1 : 0]);
       }
       if (pat === 'one') for (const [tx,tz] of [[bl.x0+10,bl.z0+10],[bl.x1-10,bl.z0+10],[bl.x0+10,bl.z1-10],[bl.x1-10,bl.z1-10]]) tree(tx, tz, 12, PAD);
-    } else if (bl.type === 'midrise'){
-      const pat = pick(['two','four','six']);
-      const rects = pat === 'two' ? split(bl.x0+6,bl.z0+6,bl.x1-6,bl.z1-6,2,1,10) : pat === 'four' ? split(bl.x0+6,bl.z0+6,bl.x1-6,bl.z1-6,2,2,10) : split(bl.x0+6,bl.z0+6,bl.x1-6,bl.z1-6,3,2,10);
-      for (const [a0,b0,a1,b1] of rects){
-        M.buildings.push([r1((a0+a1)/2), r1((b0+b1)/2), r1(a1-a0-rf(0,6)), r1(b1-b0-rf(0,6)), FLOOR*ri(3,8), pick([4,5,6,7]), 0]);
-      }
-    } else if (bl.type === 'homes'){
-      M.lawns.push([bl.x0,bl.z0,bl.x1,bl.z1]);
-      const y = PAD + 0.2, set = 14;
-      houseRow(bl.x0+8, bl.x1-8, bl.z0+set+9, true, 180, y, set);
-      houseRow(bl.x0+8, bl.x1-8, bl.z1-set-9, true, 0, y, set);
-      houseRow(bl.z0+set+32, bl.z1-set-32, bl.x0+set+9, false, 90, y, set);
-      houseRow(bl.z0+set+32, bl.z1-set-32, bl.x1-set-9, false, -90, y, set);
-      for (let t = 0; t < 5; t++) if (B > 120) tree(rf(bl.x0+52, bl.x1-52), rf(bl.z0+52, bl.z1-52), rf(10,16), y);
-    } else if (bl.type === 'park'){
-      M.parks.push([bl.x0,bl.z0,bl.x1,bl.z1]);
-      for (let t = 0; t < Math.round(B*B/800); t++){
-        const x = rf(bl.x0+8, bl.x1-8), z = rf(bl.z0+8, bl.z1-8);
-        if (Math.abs(x-bl.cx) < 12 || Math.abs(z-bl.cz) < 12 || Math.hypot(x-bl.cx, z-bl.cz) < 26) continue;
-        tree(x, z, rf(10,18), PAD+0.2);
-      }
-      for (const s of [-1,1]){ prop(1, bl.cx+s*34, bl.cz+8, 180, PAD+0.2); prop(1, bl.cx+s*34, bl.cz-8, 0, PAD+0.2); }
     } else if (bl.type === 'garage'){
       const g = [bl.x0+8, bl.z0+8, bl.x1-8, bl.z1-8, ri(3,5), PAD];
       M.garages.push(g); garageCars(g);
     }
   }
 
-  /* sidewalk furniture: benches, bins, hydrants, mailboxes, bus stops */
-  forEachCityEdge(M, (ax, az, dx, dz, len) => {
+  /* sidewalk furniture: benches, bins, hydrants, bus stops on main roads */
+  if (P.furniture) forEachCityEdge(M, (ax, az, dx, dz, len, main) => {
     const rx = -dz, rz = dx, s0 = ROAD/2 + WALK + 12;
     for (let s = s0 + 14; s <= len - s0 - 14; s += 28) for (const side of [1,-1]){
-      if (!chance(0.3)) continue;
+      if (!chance(0.15)) continue;
       const roll = R();
-      const k = roll < 0.3 ? 1 : roll < 0.55 ? 2 : roll < 0.75 ? 3 : roll < 0.85 ? 4 : 5;
+      let k = roll < 0.3 ? 1 : roll < 0.6 ? 2 : roll < 0.85 ? 3 : 5;
+      if (k === 5 && !main) k = 3;
       const lat = side * (k === 3 ? ROAD/2 + 1.5 : ROAD/2 + WALK - 2.5);
-      const fx = -side*rx, fz = -side*rz;   // face the road
+      const fx = -side*rx, fz = -side*rz;
       prop(k, ax + dx*s + rx*lat, az + dz*s + rz*lat, Math.atan2(-fx, fz)*180/Math.PI, PAD);
     }
   });
 
   /* ring highway on-ramps (east and west sides, on the straight part away from the spokes) */
-  const zStart = Math.max(0, ...M.spokeZ.map(Math.abs)) + ROAD/2 + 16, zEnd = RZ - RC - 6;
-  const rampLen = Math.min(300, zEnd - zStart - 70);
-  if (rampLen >= 150){
-    M.ramps.push([RX + DECK/2 + 7, zEnd, zEnd - rampLen]);
-    M.ramps.push([-(RX + DECK/2 + 7), -zEnd, -zEnd + rampLen]);
+  if (P.highway && P.ramps){
+    const zStart = Math.max(0, ...M.spokeZ.map(Math.abs)) + ROAD/2 + 16, zEnd = RZ - RC - 6;
+    const rampLen = Math.min(300, zEnd - zStart - 70);
+    if (rampLen >= 150){
+      M.ramps.push([RX + DECK/2 + 7, zEnd, zEnd - rampLen]);
+      M.ramps.push([-(RX + DECK/2 + 7), -zEnd, -zEnd + rampLen]);
+    }
   }
 
   /* outskirts: lots between the highway and the outer road */
@@ -446,10 +554,12 @@ function generate(P){
   const fillTrees = (L, v0, v1, sp, p, skip) => {
     for (let u = L.u0 + sp/2; u < L.u1; u += sp) for (let v = v0 + sp/2; v < v1; v += sp){
       if (skip && skip(u,v)) continue;
-      if (chance(p)){ const [x,z] = W(L, u + rf(-sp*0.3, sp*0.3), v + rf(-sp*0.3, sp*0.3)); tree(x, z, rf(12,22), 0); }
+      if (chance(tp(p))){ const [x,z] = W(L, u + rf(-sp*0.3, sp*0.3), v + rf(-sp*0.3, sp*0.3)); tree(x, z, rf(12,22), 0); }
     }
   };
-  const pool = ['gas','repair','warehouse','parking','garage','forest','homes','warehouse','parking','homes','forest','homes'];
+  const pool = P.outskirts
+    ? ['gas','repair','warehouse','homes','forest','homes','parking','homes','forest','warehouse','homes','garage']
+    : ['homes','forest','homes','homes','forest','homes','homes','forest','homes','homes','forest','homes'];
   for (let i = pool.length-1; i > 0; i--){ const j = Math.floor(R()*(i+1)); [pool[i],pool[j]] = [pool[j],pool[i]]; }
   lots.forEach((L,i) => {
     const len = L.u1 - L.u0, rot = FRONT[L.side], uc = (L.u0+L.u1)/2;
@@ -460,8 +570,8 @@ function generate(P){
     if (kind === 'forest') fillTrees(L, 0, L.depth, 28, 0.75);
     else if (kind === 'homes'){
       for (const v of [30, 118]){
-        const n = Math.floor((len-20)/48), start = uc - (n-1)*24;
-        for (let k = 0; k < n; k++){ const [x,z] = W(L, start+k*48, v); houseAt(x, z, rot, 0, v === 30 ? 21 : 16); }
+        const n = Math.floor((len-20)/LOT), start = uc - (n-1)*LOT/2;
+        for (let k = 0; k < n; k++){ const [x,z] = W(L, start+k*LOT, v); houseAt(x, z, rot, 0, v === 30 ? 21 : 16); }
       }
       fillTrees(L, 160, L.depth, 30, 0.5);
     } else if (kind === 'warehouse'){
@@ -484,9 +594,7 @@ function generate(P){
       fillTrees(L, 0, L.depth, 30, 0.45, (u,v) => Math.abs(u-uc) < 64 && v < 130);
     } else if (kind === 'parking'){
       const [ax,az] = W(L, L.u0+8, 10), [bx,bz] = W(L, L.u1-8, L.depth-16);
-      const x0 = Math.min(ax,bx), x1 = Math.max(ax,bx), z0 = Math.min(az,bz), z1 = Math.max(az,bz);
-      M.lots.push([r1(x0), r1(z0), r1(x1), r1(z1)]);
-      for (let z = z0+6; z+18 <= z1-6; z += 42) for (let x = x0+6; x+10 <= x1-6; x += 10) if (chance(0.32)) car(x+5, 0.2, z+9, pick([0,180]), chance(0.85) ? 0 : 1);
+      parkingLot(Math.min(ax,bx), Math.min(az,bz), Math.max(ax,bx), Math.max(az,bz), 0, 0, 0.64*pf);
     } else if (kind === 'garage'){
       const gw = Math.min(len-40, 150), gd = Math.min(L.depth-50, 130);
       const [cx,cz] = W(L, uc, 25 + gd/2);
@@ -498,23 +606,22 @@ function generate(P){
   });
   M.lotList = lots;
 
-  /* green band between the city and the highway, with billboards */
-  const inner = [RX - DECK/2 - 8, RZ - DECK/2 - 8];
-  const boards = [[0, -(CZ/2 + (GAP-DECK/2)/2), 180], [0, CZ/2 + (GAP-DECK/2)/2, 0], [CX/2 + (GAP-DECK/2)/2, 0, -90], [-(CX/2 + (GAP-DECK/2)/2), 0, 90]];
+  /* green band between the city and the highway (with billboards facing the highway) */
+  const inner = P.highway ? [RX - DECK/2 - 8, RZ - DECK/2 - 8] : [RX + DECK/2 + 8, RZ + DECK/2 + 8];
+  const boards = P.highway ? [[0, -(CZ/2 + (GAP-DECK/2)/2), 180], [0, CZ/2 + (GAP-DECK/2)/2, 0], [CX/2 + (GAP-DECK/2)/2, 0, -90], [-(CX/2 + (GAP-DECK/2)/2), 0, 90]] : [];
   boards.forEach((b,i) => M.billboards.push([r1(b[0]), r1(b[1]), b[2], BILLBOARDS[(i + P.seed) % BILLBOARDS.length]]));
   const onSpoke = (x,z,pad) => M.spokeX.some(sx => Math.abs(x-sx) < ROAD/2 + pad && Math.abs(z) > CZ/2 - 2) || M.spokeZ.some(sz => Math.abs(z-sz) < ROAD/2 + pad && Math.abs(x) > CX/2 - 2);
   for (let x = -inner[0]; x <= inner[0]; x += 30) for (let z = -inner[1]; z <= inner[1]; z += 30){
     if (Math.abs(x) < CX/2 + 10 && Math.abs(z) < CZ/2 + 10) continue;
-    const ex = Math.abs(x) - (RX-RC), ez = Math.abs(z) - (RZ-RC);
-    if (ex > 0 && ez > 0 && Math.hypot(ex,ez) > RC - DECK/2 - 10) continue;
+    if (P.highway){ const ex = Math.abs(x) - (RX-RC), ez = Math.abs(z) - (RZ-RC); if (ex > 0 && ez > 0 && Math.hypot(ex,ez) > RC - DECK/2 - 10) continue; }
     if (onSpoke(x,z,8) || boards.some(b => Math.hypot(x-b[0], z-b[1]) < 30)) continue;
-    if (chance(0.42)) tree(x + rf(-8,8), z + rf(-8,8), rf(12,20), 0);
+    if (chance(tp(0.42))) tree(x + rf(-8,8), z + rf(-8,8), rf(12,20), 0);
   }
   /* woods around the edge of the map */
   for (let x = -MX+14; x <= MX-14; x += 34) for (let z = -MZ+14; z <= MZ-14; z += 34){
     if (Math.abs(x) < OX + ROAD/2 + 10 && Math.abs(z) < OZ + ROAD/2 + 10) continue;
     if (onSpoke(x,z,10)) continue;
-    if (chance(0.24)) tree(x + rf(-8,8), z + rf(-8,8), rf(14,24), 0);
+    if (chance(tp(0.24))) tree(x + rf(-8,8), z + rf(-8,8), rf(14,24), 0);
   }
   return M;
 }
@@ -523,7 +630,7 @@ function forEachCityEdge(M, fn){
     const b = M.links[a][k];
     if (b < 0 || !M.nodes[a].city || !M.nodes[b].city) continue;
     const A = M.nodes[a], Bn = M.nodes[b];
-    fn(A.x, A.z, k === 0 ? 1 : 0, k === 2 ? 1 : 0, Math.abs(Bn.x-A.x) + Math.abs(Bn.z-A.z));
+    fn(A.x, A.z, k === 0 ? 1 : 0, k === 2 ? 1 : 0, Math.abs(Bn.x-A.x) + Math.abs(Bn.z-A.z), k === 0 ? A.mainX : A.mainZ);
   }
 }
 
@@ -542,31 +649,36 @@ function luaVehicles(){
 }
 function luaPaint(){ return 'local PAINT = { ' + PAINT.map(rgb).join(', ') + ' }'; }
 function luaGraph(M){
-  const nodes = M.nodes.map(n => [n.x, n.z, n.off, n.city ? 1 : 0]);
+  const nodes = M.nodes.map(n => [n.x, n.z, n.off, n.city ? 1 : 0, n.ctl, n.axis]);
   const links = M.links.map(l => l.map(v => v + 1));
-  return `local NODES = { -- x, z, signal offset (-1 = no signal), is city street\n${luaRows(nodes, 6)}\n}\nlocal LINKS = { -- neighbour to the east, west, south, north (0 = none)\n${luaRows(links, 8)}\n}`;
+  return `-- junctions: x, z, signal offset, is city street, control (0 none, 1 lights, 2 two-way stop, 3 all-way stop), main road axis (1 x, 2 z)
+local NODES = {
+${luaRows(nodes, 5)}
 }
-function trafficCounts(M){
+local LINKS = { -- neighbour to the east, west, south, north (0 = none)
+${luaRows(links, 8)}
+}`;
+}
+function roadLength(M){
   let total = 0;
   for (let a = 0; a < M.nodes.length; a++) for (const k of [0,2]){ const b = M.links[a][k]; if (b >= 0) total += Math.abs(M.nodes[b].x - M.nodes[a].x) + Math.abs(M.nodes[b].z - M.nodes[a].z); }
-  const ring = 2*(2*M.RX + 2*M.RZ) - (8 - 2*Math.PI)*C.RC;
-  return { city: Math.max(20, Math.min(130, Math.round(total/180))), hwy: Math.max(16, Math.min(80, Math.round(ring*4/170))), roadLen: total, ring };
+  return { city: total, ring: 2*(2*M.RX + 2*M.RZ) - (8 - 2*Math.PI)*C.RC };
 }
 
+// The traffic LocalScript. __CITY_CARS__ and friends are filled in from SETTINGS when the city is built.
 function trafficLuau(M){
-  const T = trafficCounts(M);
   return `--!nocheck
--- CityTraffic: ambient traffic and signals for the city made by Roblox City Blueprint.
+-- CityTraffic: ambient traffic, traffic lights and stop signs for the city made by Roblox City Blueprint.
 -- It runs on each player's device, so the moving cars cost no network bandwidth.
 local RunService = game:GetService("RunService")
 local CollectionService = game:GetService("CollectionService")
 
+local CITY_CARS, HWY_CARS = __CITY_CARS__, __HWY_CARS__
+local CITY_SPEED, HWY_SPEED = __CITY_SPEED__, __HWY_SPEED__
+local TURN_SPEED, ACCEL, BRAKE = 15, 16, 42
 local ROAD, WALK, LANE, Y = ${C.ROAD}, ${C.WALK}, ${C.LANE}, 0.1
-local CITY_SPEED, TURN_SPEED = 34, 15
-local ACCEL, BRAKE = 16, 42
 local GREEN, YELLOW = 12, 3
 local CYCLE = 2 * (GREEN + YELLOW)
-local CITY_CARS, HWY_CARS = ${T.city}, ${T.hwy}
 local HWY = { rx = ${ln(M.RX)}, rz = ${ln(M.RZ)}, rc = ${C.RC}, h = ${C.H} }
 
 ${luaGraph(M)}
@@ -591,7 +703,7 @@ local parts, cframes = {}, {}
 local function newVehicle(kind)
 	local def = VEH[kind]
 	local paint = PAINT[rng:NextInteger(1, #PAINT)]
-	local v = { kind = kind, len = def.L, first = #parts + 1, offs = {}, v = 0, wait = 0 }
+	local v = { kind = kind, len = def.L, first = #parts + 1, offs = {}, v = 0, wait = 0, stopT = 0, cleared = false }
 	for _, p in ipairs(def.parts) do
 		local part = Instance.new("Part")
 		part.Anchored = true
@@ -602,6 +714,7 @@ local function newVehicle(kind)
 		part.Size = Vector3.new(p[1], p[2], p[3])
 		part.Color = ROLE_COLOR[p[7]] or paint
 		part.Material = ROLE_MAT[p[7]]
+		part.CastShadow = p[7] <= 2
 		part.TopSurface = Enum.SurfaceType.Smooth
 		part.BottomSurface = Enum.SurfaceType.Smooth
 		part.Parent = folder
@@ -628,7 +741,7 @@ local function pickKind(weights)
 	return 1
 end
 
--- traffic signals ------------------------------------------------------------
+-- traffic lights ---------------------------------------------------------------
 local function lightFor(n, xAxis, now)
 	local off = NODES[n][3]
 	if off < 0 then return "G" end
@@ -656,9 +769,14 @@ local function updateLamps(now)
 	end
 end
 
--- city streets ---------------------------------------------------------------
+-- streets ------------------------------------------------------------------------
 local function edgeLen(a, b)
 	return math.abs(NODES[b][1] - NODES[a][1]) + math.abs(NODES[b][2] - NODES[a][2])
+end
+
+local function mustStop(n, k)
+	local ctl = NODES[n][5]
+	return ctl == 1 or ctl == 3 or (ctl == 2 and (k <= 2 and 1 or 2) ~= NODES[n][6])
 end
 
 local function pickNext(b, k)
@@ -707,7 +825,7 @@ for _ = 1, CITY_CARS do
 		local b = LINKS[a][k]
 		if b ~= 0 then
 			local len = edgeLen(a, b)
-			local s = rng:NextNumber(ROAD / 2 + 10, len - ROAD / 2 - 30)
+			local s = rng:NextNumber(ROAD / 2 + 10, len - ROAD / 2 - 40)
 			local ok = true
 			for _, o in ipairs(cityCars) do
 				if o.a == a and o.b == b and math.abs(o.s - s) < 40 then
@@ -716,7 +834,7 @@ for _ = 1, CITY_CARS do
 				end
 			end
 			if ok then
-				local c = newVehicle(pickKind({ 0.72, 0.14, 0.07, 0.07 }))
+				local c = newVehicle(pickKind({ 0.74, 0.14, 0.05, 0.07 }))
 				c.a, c.b, c.k, c.s, c.turning = a, b, k, s, false
 				c.nk = pickNext(b, k)
 				table.insert(cityCars, c)
@@ -726,13 +844,37 @@ for _ = 1, CITY_CARS do
 	end
 end
 
+-- a car on a main road may cross a two-way stop only when no main-road car is close
+local function mainClear(b, groups)
+	local axis = NODES[b][6]
+	for k = 1, 4 do
+		if (k <= 2 and 1 or 2) == axis then
+			local m = LINKS[b][OPP[k]]
+			if m ~= 0 then
+				local g = groups[m * 4096 + b]
+				if g then
+					local len = edgeLen(m, b)
+					for _, o in ipairs(g) do
+						if not o.turning and len - o.s < 55 and o.v > 1 then return false end
+					end
+				end
+			end
+		end
+	end
+	return true
+end
+
+local occ = {}
 local function stepCity(dt, now)
 	local groups = {}
+	table.clear(occ)
 	for _, c in ipairs(cityCars) do
 		if c.turning then
 			c.key, c.gs = c.b * 4096 + c.nxt, ROAD / 2 - (1 - c.u) * c.blen
+			occ[c.b] = (occ[c.b] or 0) + 1
 		else
 			c.key, c.gs = c.a * 4096 + c.b, c.s
+			if c.cleared then occ[c.b] = (occ[c.b] or 0) + 1 end
 		end
 		local g = groups[c.key]
 		if not g then
@@ -754,18 +896,37 @@ local function stepCity(dt, now)
 			c.u += c.v * dt / c.blen
 			if c.u >= 1 then
 				c.a, c.b, c.k = c.b, c.nxt, c.nk
-				c.s, c.turning = ROAD / 2, false
+				c.s, c.turning, c.cleared, c.stopT = ROAD / 2, false, false, 0
 				c.nk = pickNext(c.b, c.k)
 			end
 		else
 			local len = edgeLen(c.a, c.b)
 			local sEnd = len - ROAD / 2
 			local limit = lead
-			local light = lightFor(c.b, c.k <= 2, now)
-			if light ~= "G" then
-				local stopAt = len - ROAD / 2 - (NODES[c.b][4] == 1 and WALK or 0) - 1.5 - c.len / 2
-				local canStop = (stopAt - c.s) > (c.v * c.v) / (2 * BRAKE) - 1
-				if c.s <= stopAt + 0.5 and (light == "R" or canStop) then limit = math.min(limit, stopAt) end
+			local node = NODES[c.b]
+			local ctl = node[5]
+			local stopAt = len - ROAD / 2 - ((node[4] == 1 and ctl == 1) and WALK or 2) - 1.5 - c.len / 2
+			if ctl == 1 then
+				local light = lightFor(c.b, c.k <= 2, now)
+				if light ~= "G" then
+					local canStop = (stopAt - c.s) > (c.v * c.v) / (2 * BRAKE) - 1
+					if c.s <= stopAt + 0.5 and (light == "R" or canStop) then limit = math.min(limit, stopAt) end
+				end
+			elseif ctl >= 2 then
+				if mustStop(c.b, c.k) then
+					if not c.cleared then
+						if c.s >= stopAt - 1.5 and c.v < 0.5 then
+							c.stopT += dt
+							if c.wait > 12 or (c.stopT > 0.8 and (occ[c.b] or 0) == 0 and (ctl == 3 or mainClear(c.b, groups))) then
+								c.cleared = true
+								occ[c.b] = (occ[c.b] or 0) + 1
+							end
+						end
+						if not c.cleared then limit = math.min(limit, stopAt) end
+					end
+				elseif (occ[c.b] or 0) > 0 and c.s < sEnd - 3 and c.wait < 6 then
+					limit = math.min(limit, sEnd - 3)
+				end
 			end
 			local g = groups[c.b * 4096 + LINKS[c.b][c.nk]]
 			if g and c.wait < 4 then
@@ -781,7 +942,10 @@ local function stepCity(dt, now)
 			vmax = math.min(vmax, math.sqrt(2 * BRAKE * math.max(0, limit - c.s)))
 			approach(c, vmax, dt)
 			c.s = math.min(c.s + c.v * dt, math.max(c.s, limit))
-			if c.s >= sEnd then startTurn(c) end
+			if c.s >= sEnd then
+				startTurn(c)
+				if not c.cleared then occ[c.b] = (occ[c.b] or 0) + 1 end
+			end
 		end
 		if c.turning then
 			local p, u = c.p, math.min(c.u, 1)
@@ -798,7 +962,7 @@ local function stepCity(dt, now)
 	end
 end
 
--- ring highway ---------------------------------------------------------------
+-- ring highway ---------------------------------------------------------------------
 local function roundedRect(hx, hz, r, n)
 	local pts = {}
 	local centres = { { hx - r, hz - r }, { -hx + r, hz - r }, { -hx + r, -hz + r }, { hx - r, -hz + r } }
@@ -826,54 +990,55 @@ for _, o in ipairs({ 9, 21, -9, -21 }) do
 		total += math.sqrt((b[1] - a[1]) ^ 2 + (b[2] - a[2]) ^ 2)
 		cum[i + 1] = total
 	end
-	table.insert(lanes, { pts = pts, cum = cum, total = total })
+	table.insert(lanes, { pts = pts, cum = cum, total = total, cars = {} })
 end
 
 local hwyCars = {}
+local perLane = math.max(1, math.ceil(HWY_CARS / #lanes))
 for i = 1, HWY_CARS do
 	local lane = (i - 1) % #lanes + 1
 	local c = newVehicle(pickKind({ 0.55, 0.15, 0.05, 0.25 }))
 	c.lane, c.seg = lane, 1
-	c.s = (math.floor((i - 1) / #lanes) + rng:NextNumber() * 0.3) * lanes[lane].total / math.ceil(HWY_CARS / #lanes)
-	c.vmax = (lane % 2 == 1) and rng:NextNumber(62, 72) or rng:NextNumber(72, 84)
-	if c.kind >= 3 then c.vmax = math.min(c.vmax, 60) end
+	c.s = (math.floor((i - 1) / #lanes) + rng:NextNumber() * 0.3) * lanes[lane].total / perLane
+	c.vmax = HWY_SPEED * ((lane % 2 == 1) and rng:NextNumber(0.82, 0.95) or rng:NextNumber(0.95, 1.1))
+	if c.kind >= 3 then c.vmax = math.min(c.vmax, HWY_SPEED * 0.8) end
 	c.v = c.vmax
 	table.insert(hwyCars, c)
+	table.insert(lanes[lane].cars, c)
 end
 
+local function bySpace(a, b) return a.s < b.s end
 local function stepHighway(dt)
-	for _, c in ipairs(hwyCars) do
-		local lane = lanes[c.lane]
-		local gap, leader = math.huge, nil
-		for _, o in ipairs(hwyCars) do
-			if o ~= c and o.lane == c.lane then
-				local d = (o.s - c.s) % lane.total
-				if d > 0 and d < gap then gap, leader = d, o end
+	for _, lane in ipairs(lanes) do
+		local list = lane.cars
+		table.sort(list, bySpace)
+		for i, c in ipairs(list) do
+			local leader = list[i % #list + 1]
+			local free = math.huge
+			if leader ~= c then free = (leader.s - c.s) % lane.total - (leader.len + c.len) / 2 - 8 end
+			approach(c, math.min(c.vmax, math.sqrt(2 * BRAKE * math.max(0, free))), dt)
+			c.s += c.v * dt
+			if c.s >= lane.total then
+				c.s -= lane.total
+				c.seg = 1
 			end
+			while c.seg < #lane.pts and lane.cum[c.seg + 1] < c.s do c.seg += 1 end
+			local a, b = lane.pts[c.seg], lane.pts[c.seg % #lane.pts + 1]
+			local segLen = lane.cum[c.seg + 1] - lane.cum[c.seg]
+			local t = segLen > 0 and (c.s - lane.cum[c.seg]) / segLen or 0
+			place(c, a[1] + (b[1] - a[1]) * t, HWY.h + Y, a[2] + (b[2] - a[2]) * t, b[1] - a[1], b[2] - a[2])
 		end
-		local free = leader and (gap - (leader.len + c.len) / 2 - 8) or math.huge
-		approach(c, math.min(c.vmax, math.sqrt(2 * BRAKE * math.max(0, free))), dt)
-		c.s += c.v * dt
-		if c.s >= lane.total then
-			c.s -= lane.total
-			c.seg = 1
-		end
-		while c.seg < #lane.pts and lane.cum[c.seg + 1] < c.s do c.seg += 1 end
-		local a, b = lane.pts[c.seg], lane.pts[c.seg % #lane.pts + 1]
-		local segLen = lane.cum[c.seg + 1] - lane.cum[c.seg]
-		local t = segLen > 0 and (c.s - lane.cum[c.seg]) / segLen or 0
-		place(c, a[1] + (b[1] - a[1]) * t, HWY.h + Y, a[2] + (b[2] - a[2]) * t, b[1] - a[1], b[2] - a[2])
 	end
 end
 
--- main loop ------------------------------------------------------------------
+-- main loop ------------------------------------------------------------------------
 local lampTimer = 1
 RunService.Heartbeat:Connect(function(dt)
 	dt = math.min(dt, 0.1)
 	local now = workspace:GetServerTimeNow()
 	stepCity(dt, now)
 	stepHighway(dt)
-	workspace:BulkMoveTo(parts, cframes, Enum.BulkMoveMode.FireCFrameChanged)
+	if #parts > 0 then workspace:BulkMoveTo(parts, cframes, Enum.BulkMoveMode.FireCFrameChanged) end
 	lampTimer += dt
 	if lampTimer > 0.25 then
 		lampTimer = 0
@@ -884,21 +1049,45 @@ end)
 }
 
 function buildLuau(M){
-  const T = trafficCounts(M);
+  const P = M.P;
   const traffic = trafficLuau(M);
   const cols = COL_KEYS.map(k => `\t${k} = ${rgb(COL[k])},`).join('\n');
   const styles = STYLES.map(s => `\t{ ${rgb(s.body)}, ${rgb(s.band)}, Enum.Material.${s.mat} },`).join('\n');
-  const houses = M.houses.map(h => [h[0],h[1],h[2],h[3]+1,h[4]+1,h[5],h[6],h[7]]);
+  const houses = M.houses.map(h => [h[0],h[1],h[2],h[3]+1,h[4]+1,h[5],h[6],h[7],h[8]]);
+  const shops = M.shops.map(s => [s[0],s[1],s[2],s[3],s[4]+1,s[5]+1]);
   const cars = M.cars.map(c => [c[0],c[1],c[2],c[3],c[4]+1,c[5]+1]);
-  const trees = M.trees.map(t => [t[0], t[1], t[2], t[3]]);
   const size = `${Math.round(M.MX*2)} x ${Math.round(M.MZ*2)} studs`;
+  const b = v => v ? 'true' : 'false';
   return `--!nocheck
--- Roblox City Blueprint: seed ${M.P.seed}, ${M.NX} x ${M.NZ} blocks of ${M.B} studs, map ${size}
+-- Roblox City Blueprint: seed ${P.seed}, ${M.NX} x ${M.NZ} blocks of ${M.B} studs, map ${size}
 -- Paste into Roblox Studio's Command Bar (View > Command Bar) and press Enter.
 -- Or paste it into a ModuleScript named BuildCity in ServerStorage and run this in the Command Bar:
 --   require(game.ServerStorage.BuildCity:Clone())
 -- Builds Workspace.City and adds StarterPlayerScripts.CityTraffic. Press Play to see the traffic.
 -- Running it again replaces both. Undo with Ctrl+Z.
+
+local SETTINGS = {
+	-- set any of these to false to leave that part out
+	houses = ${b(true)}, -- houses with garages and driveways
+	shops = ${b(true)}, -- shop rows and their parking lots
+	parks = ${b(true)},
+	buildings = ${b(true)}, -- apartments and office towers
+	highway = ${b(P.highway)}, -- elevated ring highway and on-ramps
+	outskirts = ${b(P.outskirts)}, -- gas station, auto repair, warehouses, parking lots
+	trees = ${b(true)},
+	streetTrees = ${b(P.streetTrees)},
+	streetLights = ${b(P.streetLights)},
+	lampGlow = ${b(P.lampGlow)}, -- real lights in street lamps (costs some performance)
+	furniture = ${b(P.furniture)}, -- benches, bins, hydrants, bus stops, mailboxes
+	parkedCars = ${b(true)},
+	-- traffic runs on each player's device; fewer cars help slower phones
+	traffic = true,
+	cityCars = ${P.cityCars},
+	highwayCars = ${P.hwyCars},
+	citySpeed = 34, -- studs per second
+	highwaySpeed = 72,
+	removeBaseplate = true, -- the default Baseplate would cover the roads
+}
 
 local CollectionService = game:GetService("CollectionService")
 local History = game:GetService("ChangeHistoryService")
@@ -920,28 +1109,34 @@ ${styles}
 }
 local WALLS = { ${WALLS.map(rgb).join(', ')} }
 local ROOFS = { ${ROOFS.map(rgb).join(', ')} }
+local SHOP_COLORS = { ${SHOP_COLS.map(rgb).join(', ')} }
+local AWNINGS = { ${AWNINGS.map(rgb).join(', ')} }
+local SHOP_NAMES = { ${SHOP_NAMES.map(s => JSON.stringify(s)).join(', ')} }
 ${luaPaint()}
 ${luaVehicles()}
 local ROLE_COLOR = { nil, COL.glass, COL.tire, COL.head, COL.tail, COL.white }
 
 ${luaGraph(M)}
+local HOUSES = { -- x, z, rotation, wall, roof, garage side, driveway length, ground y, style (0 one floor, 1 two floors)
+${luaRows(houses, 3)}
+}
+local SHOPS = { -- x, z, width, rotation, colour, name
+${luaRows(shops, 3)}
+}
 local BUILDINGS = { -- x, z, width, depth, height, style, crown
 ${luaRows(M.buildings, 4)}
 }
-local HOUSES = { -- x, z, rotation, wall, roof, garage side, driveway length, ground y
-${luaRows(houses, 4)}
-}
-local GARAGES = { -- x0, z0, x1, z1, levels, ground y
+local GARAGES = { -- parking structures: x0, z0, x1, z1, levels, ground y
 ${luaRows(M.garages, 3)}
 }
-local PARKS = {
-${luaRows(M.parks, 4)}
+local PARKS = { -- x0, z0, x1, z1, kind (1 fountain, 2 court and playground)
+${luaRows(M.parks, 3)}
 }
 local LAWNS = {
 ${luaRows(M.lawns, 4)}
 }
-local LOTS = { -- surface parking lots
-${luaRows(M.lots, 4)}
+local LOTS = { -- parking lots: x0, z0, x1, z1, stall direction, ground y
+${luaRows(M.lots, 3)}
 }
 local WAREHOUSES = { -- x, z, width, depth, height, rotation
 ${luaRows(M.warehouses, 3)}
@@ -958,11 +1153,11 @@ ${luaRows(M.billboards, 2)}
 local RAMPS = { -- x, z at ground, z at deck
 ${luaRows(M.ramps, 2)}
 }
-local PROPS = { -- kind (1 bench, 2 bin, 3 hydrant, 4 mailbox, 5 bus stop), x, z, rotation, y
-${luaRows(M.props, 6)}
+local PROPS = { -- kind (1 bench, 2 bin, 3 hydrant, 5 bus stop), x, z, rotation, y
+${luaRows(M.props, 5)}
 }
 local TREES = { -- x, z, size, ground y
-${luaRows(trees, 8)}
+${luaRows(M.trees, 8)}
 }
 local CARS = { -- parked: x, y, z, rotation, kind, paint
 ${luaRows(cars, 5)}
@@ -972,16 +1167,19 @@ local DX, DZ, OPP = { 1, -1, 0, 0 }, { 0, 0, 1, -1 }, { 2, 1, 4, 3 }
 local MAT = Enum.Material
 local CYL, BALL = Enum.PartType.Cylinder, Enum.PartType.Ball
 local UPRIGHT = CFrame.Angles(0, 0, math.rad(90)) -- stands a cylinder on its end
+local FLIP = CFrame.Angles(0, math.pi, 0)
 local V3, CF = Vector3.new, CFrame.new
 local MAXP = 2048
 
 local function yaw(deg) return CFrame.Angles(0, math.rad(-deg), 0) end
 
--- clear the previous build ----------------------------------------------------
+-- clear the previous build ------------------------------------------------------
 local oldCity = workspace:FindFirstChild("City")
 if oldCity then oldCity:Destroy() end
-local baseplate = workspace:FindFirstChild("Baseplate")
-if baseplate then baseplate:Destroy() end
+if SETTINGS.removeBaseplate then
+	local baseplate = workspace:FindFirstChild("Baseplate")
+	if baseplate then baseplate:Destroy() end
+end
 
 local root = Instance.new("Folder")
 root.Name = "City"
@@ -993,9 +1191,11 @@ local function folder(name, parent)
 	return f
 end
 
+-- every static part is anchored and never fires Touched events, which keeps physics cheap
 local function part(parent, size, cf, color, material, shape)
 	local p = Instance.new("Part")
 	p.Anchored = true
+	p.CanTouch = false
 	if shape then p.Shape = shape end
 	p.Size = size
 	p.CFrame = cf
@@ -1004,6 +1204,36 @@ local function part(parent, size, cf, color, material, shape)
 	p.TopSurface = Enum.SurfaceType.Smooth
 	p.BottomSurface = Enum.SurfaceType.Smooth
 	p.Parent = parent
+	return p
+end
+
+-- road paint and other flat details: no collisions, no shadows, not hit by raycasts
+local function mark(parent, size, cf, color)
+	local p = part(parent, size, cf, color, MAT.SmoothPlastic)
+	p.CanCollide = false
+	p.CanQuery = false
+	p.CastShadow = false
+	return p
+end
+
+-- sloped roof half; the slope faces the part's front
+local function wedge(parent, size, cf, color, material)
+	local w = Instance.new("WedgePart")
+	w.Anchored = true
+	w.CanTouch = false
+	w.Size = size
+	w.CFrame = cf
+	w.Color = color
+	w.Material = material
+	w.Parent = parent
+	return w
+end
+
+-- doors, windows and signs: flush with walls, so they need no collisions or shadows
+local function detail(parent, size, cf, color, material)
+	local p = part(parent, size, cf, color, material)
+	p.CanCollide = false
+	p.CastShadow = false
 	return p
 end
 
@@ -1045,7 +1275,7 @@ local function slab(parent, x0, z0, x1, z1, y0, y1, color, material)
 end
 
 -- flat strip from A to B (centre line), split when longer than 2048 studs
-local function strip(parent, ax, az, bx, bz, width, y, h, color, material, extra)
+local function strip(parent, ax, az, bx, bz, width, y, h, color, material, extra, flat)
 	local dx, dz = bx - ax, bz - az
 	local len = math.sqrt(dx * dx + dz * dz)
 	if len < 0.05 then return end
@@ -1054,7 +1284,8 @@ local function strip(parent, ax, az, bx, bz, width, y, h, color, material, extra
 	local rot = CFrame.Angles(0, math.atan2(-dz, dx), 0)
 	for i = 0, n - 1 do
 		local t = (i + 0.5) / n
-		part(parent, V3(total / n, h, width), CF(ax + dx * t, y, az + dz * t) * rot, color, material)
+		local cf = CF(ax + dx * t, y, az + dz * t) * rot
+		if flat then mark(parent, V3(total / n, h, width), cf, color) else part(parent, V3(total / n, h, width), cf, color, material) end
 	end
 end
 
@@ -1101,14 +1332,14 @@ local function cutGaps(pieces, gaps)
 	return pieces
 end
 
-local function ribbon(parent, pts, width, y, h, color, material, gaps)
+local function ribbon(parent, pts, width, y, h, color, material, gaps, flat)
 	local extra = width * math.tan(math.pi / 4 / ARC)
 	for i = 1, #pts do
 		local a, b = pts[i], pts[i % #pts + 1]
 		local pieces = { { a[1], a[2], b[1], b[2] } }
 		if gaps then pieces = cutGaps(pieces, gaps) end
 		for _, p in ipairs(pieces) do
-			strip(parent, p[1], p[2], p[3], p[4], width, y, h, color, material, extra)
+			strip(parent, p[1], p[2], p[3], p[4], width, y, h, color, material, extra, flat)
 		end
 	end
 end
@@ -1140,13 +1371,21 @@ local function vehicle(parent, cf, kind, paint)
 	local def = VEH[kind]
 	local m = model(parent, def.name)
 	for i, p in ipairs(def.parts) do
-		local mat = (p[7] == 4 or p[7] == 5) and MAT.Neon or (p[7] == 2 and MAT.Glass or MAT.SmoothPlastic)
-		local pt = part(m, V3(p[1], p[2], p[3]), cf * CF(p[4], p[5], p[6]), ROLE_COLOR[p[7]] or paint, mat, p[8] == 1 and CYL or nil)
-		if i == 1 then m.PrimaryPart = pt end
+		if p[7] < 4 then -- parked cars skip their light bars
+			local pt = part(m, V3(p[1], p[2], p[3]), cf * CF(p[4], p[5], p[6]), ROLE_COLOR[p[7]] or paint, p[7] == 2 and MAT.Glass or MAT.SmoothPlastic, p[8] == 1 and CYL or nil)
+			if p[7] == 3 then pt.CastShadow = false end
+			if i == 1 then m.PrimaryPart = pt end
+		end
 	end
 end
 
--- ground and streets -----------------------------------------------------------
+local function hasCrosswalk(n) return NODES[n][4] == 1 and NODES[n][5] == 1 end
+local function mustStop(n, k)
+	local ctl = NODES[n][5]
+	return ctl == 1 or ctl == 3 or (ctl == 2 and (k <= 2 and 1 or 2) ~= NODES[n][6])
+end
+
+-- ground and streets --------------------------------------------------------------
 local ground = folder("Ground")
 slab(ground, -MX, -MZ, MX, -CZ / 2, -4, 0, COL.grass, MAT.Grass)
 slab(ground, -MX, CZ / 2, MX, MZ, -4, 0, COL.grass, MAT.Grass)
@@ -1206,14 +1445,14 @@ local function crosswalk(nx, nz, dx, dz, sy)
 	local s = ROAD / 2 + WALK / 2
 	for i = -5, 5, 2 do
 		local o = i * 2
-		part(marks, V3(dx ~= 0 and WALK - 1 or 2, 0.1, dx ~= 0 and 2 or WALK - 1), CF(nx + dx * s + rx * o, sy + 0.05, nz + dz * s + rz * o), COL.line, MAT.SmoothPlastic)
+		mark(marks, V3(dx ~= 0 and WALK - 1 or 2, 0.1, dx ~= 0 and 2 or WALK - 1), CF(nx + dx * s + rx * o, sy + 0.05, nz + dz * s + rz * o), COL.line)
 	end
 end
 
-local function stopLine(nx, nz, dx, dz, city, sy)
-	local back = ROAD / 2 + (city and WALK or 0) + 1
+local function stopLine(n, dx, dz, sy)
+	local back = ROAD / 2 + (hasCrosswalk(n) and WALK or 2) + 1
 	local rx, rz = -dz, dx
-	part(marks, V3(dx ~= 0 and 1 or ROAD / 2 - 1, 0.1, dx ~= 0 and ROAD / 2 - 1 or 1), CF(nx - dx * back + rx * ROAD / 4, sy + 0.05, nz - dz * back + rz * ROAD / 4), COL.line, MAT.SmoothPlastic)
+	mark(marks, V3(dx ~= 0 and 1 or ROAD / 2 - 1, 0.1, dx ~= 0 and ROAD / 2 - 1 or 1), CF(NODES[n][1] - dx * back + rx * ROAD / 4, sy + 0.05, NODES[n][2] - dz * back + rz * ROAD / 4), COL.line)
 end
 
 local function edgeToCity(n, dx, dz)
@@ -1238,50 +1477,60 @@ for a = 1, #NODES do
 				if cb then s1 = len - edgeToCity(b, -dx, -dz) end
 				strip(roads, ax + dx * s0, az + dz * s0, ax + dx * s1, az + dz * s1, ROAD, -0.4, 1.2, COL.asphalt, MAT.Asphalt)
 			end
-			local ma = ROAD / 2 + (ca and WALK or 0) + 2
-			local mb = ROAD / 2 + (cb and WALK or 0) + 2
+			local ma = ROAD / 2 + (hasCrosswalk(a) and WALK or 0) + 2
+			local mb = ROAD / 2 + (hasCrosswalk(b) and WALK or 0) + 2
 			for _, o in ipairs({ -0.45, 0.45 }) do
-				strip(marks, ax + dx * ma + rx * o, az + dz * ma + rz * o, ax + dx * (len - mb) + rx * o, az + dz * (len - mb) + rz * o, 0.4, sy + 0.05, 0.1, COL.yellow, MAT.SmoothPlastic)
+				strip(marks, ax + dx * ma + rx * o, az + dz * ma + rz * o, ax + dx * (len - mb) + rx * o, az + dz * (len - mb) + rz * o, 0.4, sy + 0.05, 0.1, COL.yellow, nil, 0, true)
 			end
-			if ca then crosswalk(ax, az, dx, dz, sy) end
-			if cb then crosswalk(NODES[b][1], NODES[b][2], -dx, -dz, sy) end
-			if NODES[b][3] >= 0 then stopLine(NODES[b][1], NODES[b][2], dx, dz, cb, sy) end
-			if NODES[a][3] >= 0 then stopLine(ax, az, -dx, -dz, ca, sy) end
+			if hasCrosswalk(a) then crosswalk(ax, az, dx, dz, sy) end
+			if hasCrosswalk(b) then crosswalk(NODES[b][1], NODES[b][2], -dx, -dz, sy) end
+			if mustStop(b, k) then stopLine(b, dx, dz, sy) end
+			if mustStop(a, OPP[k]) then stopLine(a, -dx, -dz, sy) end
 		end
 	end
 end
 
--- traffic lights (the CityTraffic script switches the lamps) -------------------
-local lights = folder("TrafficLights")
+-- traffic lights and stop signs (the CityTraffic script switches the lamps) --------
+local controls = folder("TrafficControl")
 local LAMP_DIM = { R = Color3.fromRGB(70, 22, 20), Y = Color3.fromRGB(70, 56, 18), G = Color3.fromRGB(18, 60, 28) }
 for n = 1, #NODES do
-	if NODES[n][3] >= 0 then
+	local ctl = NODES[n][5]
+	if ctl >= 1 then
 		for k = 1, 4 do
-			if LINKS[n][OPP[k]] ~= 0 then
+			if LINKS[n][OPP[k]] ~= 0 and mustStop(n, k) then
 				local nx, nz = NODES[n][1], NODES[n][2]
 				local dx, dz = DX[k], DZ[k]
 				local rx, rz = -dz, dx
 				local off = ROAD / 2 + 3
 				local px, pz = nx - dx * off + rx * off, nz - dz * off + rz * off
 				local y = NODES[n][4] == 1 and PAD or 0
-				local m = model(lights, "TrafficLight")
-				m.PrimaryPart = part(m, V3(0.8, 16, 0.8), CF(px, y + 8, pz), COL.pole, MAT.Metal)
-				local face = CFrame.lookAt(V3(px, y + 12, pz), V3(px - dx, y + 12, pz - dz))
-				part(m, V3(2.2, 6.6, 1.6), face, COL.pole, MAT.Metal)
-				for i, l in ipairs({ "R", "Y", "G" }) do
-					local lamp = part(m, V3(1.6, 1.6, 1.6), face * CF(0, 4.2 - 2.1 * i, -0.8), LAMP_DIM[l], MAT.SmoothPlastic, BALL)
-					lamp.Name = "Lamp" .. l
-					lamp:SetAttribute("Node", n)
-					lamp:SetAttribute("Axis", k <= 2 and "X" or "Z")
-					lamp:SetAttribute("Light", l)
-					CollectionService:AddTag(lamp, "CityTrafficLamp")
+				if ctl == 1 then
+					local m = model(controls, "TrafficLight")
+					m.PrimaryPart = part(m, V3(0.8, 16, 0.8), CF(px, y + 8, pz), COL.pole, MAT.Metal)
+					local face = CFrame.lookAt(V3(px, y + 12, pz), V3(px - dx, y + 12, pz - dz))
+					part(m, V3(2.2, 6.6, 1.6), face, COL.pole, MAT.Metal)
+					for i, l in ipairs({ "R", "Y", "G" }) do
+						local lamp = part(m, V3(1.6, 1.6, 1.6), face * CF(0, 4.2 - 2.1 * i, -0.8), LAMP_DIM[l], MAT.SmoothPlastic, BALL)
+						lamp.Name = "Lamp" .. l
+						lamp.CastShadow = false
+						lamp:SetAttribute("Node", n)
+						lamp:SetAttribute("Axis", k <= 2 and "X" or "Z")
+						lamp:SetAttribute("Light", l)
+						CollectionService:AddTag(lamp, "CityTrafficLamp")
+					end
+				else
+					local m = model(controls, "StopSign")
+					m.PrimaryPart = part(m, V3(0.5, 9, 0.5), CF(px, y + 4.5, pz), COL.metal, MAT.Metal)
+					local face = CFrame.lookAt(V3(px, y + 8.6, pz), V3(px - dx, y + 8.6, pz - dz)) * CFrame.Angles(0, math.rad(90), 0)
+					local sign = part(m, V3(0.2, 3.2, 3.2), face * CF(0.35, 0, 0), COL.red, MAT.SmoothPlastic, CYL)
+					label(sign, "STOP", Enum.NormalId.Right)
 				end
 			end
 		end
 	end
 end
 
--- street lights and street trees along every city block ------------------------
+-- street lights and street trees along every city block ----------------------------
 local streetFolder = folder("StreetLights")
 local treeFolder = folder("Trees")
 local lightCount = 0
@@ -1298,24 +1547,26 @@ for a = 1, #NODES do
 			local s = s0
 			while s <= len - s0 do
 				for _, side in ipairs({ 1, -1 }) do
-					if (idx + (side == 1 and 0 or 1)) % 2 == 0 then
-						local lat = side * (ROAD / 2 + 1.5)
-						local px, pz = ax + dx * s + rx * lat, az + dz * s + rz * lat
-						local m = model(streetFolder, "StreetLight")
-						m.PrimaryPart = part(m, V3(0.7, 16, 0.7), CF(px, PAD + 8, pz), COL.pole, MAT.Metal)
-						local armEnd = V3(px - rx * side * 4.5, PAD + 15.6, pz - rz * side * 4.5)
-						local arm = CFrame.lookAt(V3(px, PAD + 15.6, pz), armEnd)
-						part(m, V3(0.5, 0.5, 4.5), arm * CF(0, 0, -2.25), COL.pole, MAT.Metal)
-						local lamp = part(m, V3(1.4, 0.5, 2.2), CFrame.lookAt(armEnd - V3(0, 0.4, 0), armEnd - V3(0, 0.4, 0) + V3(rx, 0, rz)), COL.lamp, MAT.Neon)
-						lightCount += 1
-						if lightCount % 2 == 0 then
-							local pl = Instance.new("PointLight")
-							pl.Range = 28
-							pl.Brightness = 1.2
-							pl.Color = Color3.fromRGB(255, 214, 150)
-							pl.Parent = lamp
+					local slot = (idx + (side == 1 and 0 or 2)) % 4
+					if slot == 0 then
+						if SETTINGS.streetLights then
+							local lat = side * (ROAD / 2 + 1.5)
+							local px, pz = ax + dx * s + rx * lat, az + dz * s + rz * lat
+							local m = model(streetFolder, "StreetLight")
+							m.PrimaryPart = part(m, V3(0.7, 16, 0.7), CF(px, PAD + 8, pz), COL.pole, MAT.Metal)
+							local head = V3(px - rx * side * 1.3, PAD + 15.7, pz - rz * side * 1.3)
+							local lamp = mark(m, V3(1.4, 0.5, 2.6), CFrame.lookAt(head, head + V3(rx, 0, rz)), COL.lamp)
+							lamp.Material = MAT.Neon
+							lightCount += 1
+							if SETTINGS.lampGlow and lightCount % 3 == 0 then
+								local pl = Instance.new("PointLight")
+								pl.Range = 30
+								pl.Brightness = 1.3
+								pl.Color = Color3.fromRGB(255, 214, 150)
+								pl.Parent = lamp
+							end
 						end
-					else
+					elseif slot == 2 and SETTINGS.streetTrees and SETTINGS.trees then
 						local lat = side * (ROAD / 2 + 5.5)
 						tree(treeFolder, ax + dx * s + rx * lat, az + dz * s + rz * lat, 9, PAD)
 					end
@@ -1327,316 +1578,390 @@ for a = 1, #NODES do
 	end
 end
 
--- buildings ---------------------------------------------------------------------
-local buildings = folder("Buildings")
-for _, b in ipairs(BUILDINGS) do
-	local x, z, w, d, h, s, crown = table.unpack(b)
-	local st = STYLES[s + 1]
-	local m = model(buildings, "Building")
-	m.PrimaryPart = part(m, V3(w, h, d), CF(x, PAD + h / 2, z), st[1], st[3])
-	part(m, V3(w + 0.4, 7, d + 0.4), CF(x, PAD + 4.5, z), COL.glass, MAT.Glass)
-	local k = 1
-	while k * FLOOR + 9 <= h - 3 do
-		part(m, V3(w + 0.3, 5, d + 0.3), CF(x, PAD + k * FLOOR + 6.5, z), st[2], MAT.Glass)
-		k += 1
+-- houses with garages ---------------------------------------------------------------
+if SETTINGS.houses then
+	local homes = folder("Homes")
+	for _, l in ipairs(LAWNS) do
+		part(homes, V3(l[3] - l[1], 0.2, l[4] - l[2]), CF((l[1] + l[3]) / 2, PAD + 0.1, (l[2] + l[4]) / 2), COL.lawn, MAT.Grass)
 	end
-	part(m, V3(w + 0.8, 1.2, d + 0.8), CF(x, PAD + h + 0.6, z), st[1], st[3])
-	local top = PAD + h + 1.2
-	local tw, td = w, d
-	if crown >= 1 then
-		tw, td = w * 0.62, d * 0.62
-		local ch = FLOOR * math.max(2, math.floor(h * 0.12 / FLOOR + 0.5))
-		part(m, V3(tw, ch, td), CF(x, top + ch / 2, z), st[1], st[3])
-		local kk = 1
-		while (kk - 1) * FLOOR + 9 <= ch - 2 do
-			part(m, V3(tw + 0.3, 5, td + 0.3), CF(x, top + (kk - 1) * FLOOR + 6.5, z), st[2], MAT.Glass)
-			kk += 1
+	for _, hs in ipairs(HOUSES) do
+		local x, z, rot, wall, roof, g, drive, y, style = table.unpack(hs)
+		local m = model(homes, "House")
+		local cf = CF(x, y, z) * yaw(rot) -- the front door faces local +Z
+		local wc, rc = WALLS[wall], ROOFS[roof]
+		local tall = style == 1
+		local bw, bh, rh = tall and 22 or 24, tall and 20 or 11, tall and 7 or 6
+		local gx = g * (bw / 2 + 6)
+		m.PrimaryPart = part(m, V3(bw, bh, 18), cf * CF(0, bh / 2, 0), wc, MAT.SmoothPlastic)
+		wedge(m, V3(bw + 2, rh, 10), cf * CF(0, bh + rh / 2, -5), rc, MAT.Slate)
+		wedge(m, V3(bw + 2, rh, 10), cf * CF(0, bh + rh / 2, 5) * FLIP, rc, MAT.Slate)
+		detail(m, V3(4, 7, 0.4), cf * CF(-g * (tall and 5 or 6), 3.5, 9.2), COL.door, MAT.Wood).Name = "Door"
+		detail(m, V3(4.5, 3.5, 0.3), cf * CF(g * 4, tall and 15 or 6, 9.15), COL.glass, MAT.Glass)
+		if tall then detail(m, V3(4.5, 3.5, 0.3), cf * CF(-g * 5, 15, 9.15), COL.glass, MAT.Glass) end
+		part(m, V3(12, 9, 16), cf * CF(gx, 4.5, 1), wc, MAT.SmoothPlastic).Name = "Garage"
+		detail(m, V3(10, 7.5, 0.3), cf * CF(gx, 3.75, 9.15), COL.rollup, MAT.Metal).Name = "GarageDoor"
+		mark(m, V3(10, 0.2, drive), cf * CF(gx, 0.1, 9 + drive / 2), COL.path).Material = MAT.Concrete
+		if SETTINGS.furniture then
+			part(m, V3(1, 3.8, 1.6), cf * CF(gx - g * 7.5, 1.9, 9 + drive - 1.2), COL.mail, MAT.Metal).Name = "Mailbox"
 		end
-		top += ch
 	end
-	if crown >= 2 then
-		part(m, V3(1.2, 40, 1.2), CF(x, top + 20, z), COL.metal, MAT.Metal)
-		part(m, V3(1.8, 1.8, 1.8), CF(x, top + 40.8, z), COL.red, MAT.Neon, BALL)
-	end
-	part(m, V3(math.min(10, tw * 0.25), 4, math.min(8, td * 0.25)), CF(x + tw * 0.22, top + 2, z - td * 0.2), COL.metal, MAT.Metal)
 end
 
--- homes with garages -------------------------------------------------------------
-local homes = folder("Homes")
-for _, l in ipairs(LAWNS) do
-	part(homes, V3(l[3] - l[1], 0.2, l[4] - l[2]), CF((l[1] + l[3]) / 2, PAD + 0.1, (l[2] + l[4]) / 2), COL.lawn, MAT.Grass)
-end
-for _, hs in ipairs(HOUSES) do
-	local x, z, rot, wall, roof, g, drive, y = table.unpack(hs)
-	local m = model(homes, "House")
-	local cf = CF(x, y, z) * yaw(rot)
-	local wc, rc = WALLS[wall], ROOFS[roof]
-	m.PrimaryPart = part(m, V3(22, 12, 18), cf * CF(0, 6, 0), wc, MAT.SmoothPlastic)
-	for k = 0, 3 do
-		part(m, V3(24, 1.4, 20 * (1 - k / 4)), cf * CF(0, 12.7 + k * 1.4, 0), rc, MAT.Slate)
-	end
-	part(m, V3(4, 7, 0.4), cf * CF(-g * 5, 3.5, 9.2), COL.door, MAT.Wood)
-	part(m, V3(4, 3.5, 0.3), cf * CF(g * 4, 7, 9.15), COL.glass, MAT.Glass)
-	part(m, V3(12, 9, 16), cf * CF(g * 17, 4.5, 1), wc, MAT.SmoothPlastic)
-	part(m, V3(12.4, 1, 16.4), cf * CF(g * 17, 9.5, 1), rc, MAT.Slate)
-	part(m, V3(10, 7.5, 0.3), cf * CF(g * 17, 3.75, 9.15), COL.rollup, MAT.Metal)
-	part(m, V3(10, 0.2, drive), cf * CF(g * 17, 0.1, 9 + drive / 2), COL.path, MAT.Concrete)
-end
-
--- parks ---------------------------------------------------------------------------
-local parks = folder("Parks")
-for _, p in ipairs(PARKS) do
-	local x0, z0, x1, z1 = table.unpack(p)
-	local cx, cz = (x0 + x1) / 2, (z0 + z1) / 2
-	local m = model(parks, "Park")
-	m.PrimaryPart = part(m, V3(x1 - x0, 0.2, z1 - z0), CF(cx, PAD + 0.1, cz), COL.lawn, MAT.Grass)
-	part(m, V3(x1 - x0, 0.1, 8), CF(cx, PAD + 0.25, cz), COL.path, MAT.Concrete)
-	part(m, V3(8, 0.1, z1 - z0), CF(cx, PAD + 0.25, cz), COL.path, MAT.Concrete)
-	part(m, V3(2, 26, 26), CF(cx, PAD + 1.2, cz) * UPRIGHT, COL.stone, MAT.Cobblestone, CYL)
-	local water = part(m, V3(0.4, 23, 23), CF(cx, PAD + 2.1, cz) * UPRIGHT, COL.water, MAT.Glass, CYL)
-	water.Transparency = 0.2
-	part(m, V3(6, 2.4, 2.4), CF(cx, PAD + 4, cz) * UPRIGHT, COL.stone, MAT.Cobblestone, CYL)
-	part(m, V3(0.8, 8, 8), CF(cx, PAD + 6.5, cz) * UPRIGHT, COL.stone, MAT.Cobblestone, CYL)
-end
-
--- parking garages -------------------------------------------------------------------
-local garages = folder("ParkingGarages")
-for _, g in ipairs(GARAGES) do
-	local x0, z0, x1, z1, lv, y0 = table.unpack(g)
-	local m = model(garages, "ParkingGarage")
-	local dx0 = x0 + 16
-	local w, d = x1 - dx0, z1 - z0
-	local cx, cz = (dx0 + x1) / 2, (z0 + z1) / 2
-	local rl = math.min(d - 20, 90)
-	local function wall(za, zb, y)
-		if zb - za > 0.5 then part(m, V3(0.8, 3, zb - za), CF(dx0 + 0.4, y + 1.5, (za + zb) / 2), COL.concrete, MAT.Concrete) end
-	end
-	for k = 1, lv do
-		local y = y0 + k * LH
-		local slabPart = part(m, V3(w, 1, d), CF(cx, y - 0.5, cz), COL.concrete, MAT.Concrete)
-		if k == 1 then m.PrimaryPart = slabPart end
-		part(m, V3(w, 3, 0.8), CF(cx, y + 1.5, z0 + 0.4), COL.concrete, MAT.Concrete)
-		part(m, V3(w, 3, 0.8), CF(cx, y + 1.5, z1 - 0.4), COL.concrete, MAT.Concrete)
-		part(m, V3(0.8, 3, d), CF(x1 - 0.4, y + 1.5, cz), COL.concrete, MAT.Concrete)
-		wall(z0, z0 + 10, y)
-		wall(z0 + 24, z0 + rl - 4, y)
-		wall(z0 + 10 + rl, z1, y)
-		local lo, hi = V3(x0 + 9, y - LH, z0 + 10), V3(x0 + 9, y, z0 + 10 + rl)
-		local rcf = CFrame.lookAt((lo + hi) / 2, hi)
-		local len = (hi - lo).Magnitude
-		part(m, V3(14, 1, len + 0.5), rcf * CF(0, -0.5, 0), COL.concrete, MAT.Concrete)
-		part(m, V3(0.8, 3, len), (rcf + V3(-7.4, 0, 0)) * CF(0, 1, 0), COL.concrete, MAT.Concrete)
-	end
-	local top = y0 + lv * LH
-	for x = dx0 + 1, x1 - 1, math.max(20, (x1 - dx0 - 2) / math.max(1, math.floor((x1 - dx0) / 32))) do
-		part(m, V3(2, top - y0, 2), CF(x, (y0 + top) / 2, z0 + 1), COL.concrete, MAT.Concrete)
-		part(m, V3(2, top - y0, 2), CF(x, (y0 + top) / 2, z1 - 1), COL.concrete, MAT.Concrete)
-	end
-	for z = z0 + 1, z1 - 1, math.max(20, (d - 2) / math.max(1, math.floor(d / 32))) do
-		part(m, V3(2, top - y0, 2), CF(x1 - 1, (y0 + top) / 2, z), COL.concrete, MAT.Concrete)
-	end
-	local sign = part(m, V3(26, 6, 0.6), CF(cx, top + 5, z0 - 0.4), COL.blue, MAT.SmoothPlastic)
-	label(sign, "P  PARKING", Enum.NormalId.Front)
-	part(m, V3(0.6, 5, 0.6), CF(cx - 10, top + 2, z0 - 0.4), COL.metal, MAT.Metal)
-	part(m, V3(0.6, 5, 0.6), CF(cx + 10, top + 2, z0 - 0.4), COL.metal, MAT.Metal)
-end
-
--- surface parking lots ----------------------------------------------------------------
+-- shops with parking ---------------------------------------------------------------------
 local lotFolder = folder("ParkingLots")
-for _, l in ipairs(LOTS) do
-	local x0, z0, x1, z1 = table.unpack(l)
+local function parkingLot(l)
+	local x0, z0, x1, z1, dir, y = table.unpack(l)
 	local m = model(lotFolder, "ParkingLot")
-	m.PrimaryPart = part(m, V3(x1 - x0, 0.4, z1 - z0), CF((x0 + x1) / 2, 0, (z0 + z1) / 2), COL.asphalt, MAT.Asphalt)
-	local z = z0 + 6
-	while z + 18 <= z1 - 6 do
-		local x = x0 + 6
-		while x <= x1 - 6 do
-			part(m, V3(0.4, 0.1, 17), CF(x, 0.25, z + 9), COL.line, MAT.SmoothPlastic)
-			x += 10
+	m.PrimaryPart = part(m, V3(x1 - x0, 0.4, z1 - z0), CF((x0 + x1) / 2, y, (z0 + z1) / 2), COL.asphalt, MAT.Asphalt)
+	if dir == 0 then
+		local z = z0 + 6
+		while z + 18 <= z1 - 6 do
+			local x = x0 + 6
+			while x <= x1 - 6 do
+				mark(m, V3(0.4, 0.1, 17), CF(x, y + 0.25, z + 9), COL.line)
+				x += 10
+			end
+			z += 42
 		end
-		z += 42
-	end
-end
-
--- outskirts: warehouses, auto repair, gas stations, billboards ---------------------
-local outskirts = folder("Outskirts")
-for _, wh in ipairs(WAREHOUSES) do
-	local x, z, w, d, h, rot = table.unpack(wh)
-	local m = model(outskirts, "Warehouse")
-	local cf = CF(x, 0, z) * yaw(rot)
-	m.PrimaryPart = part(m, V3(w, h, d), cf * CF(0, h / 2, 0), COL.warehouse, MAT.Metal)
-	part(m, V3(w + 1, 1, d + 1), cf * CF(0, h + 0.5, 0), COL.metal, MAT.Metal)
-	local n = math.max(2, math.floor(w / 30))
-	for i = 1, n do
-		part(m, V3(12, 14, 0.4), cf * CF(-w / 2 + (i - 0.5) * w / n, 7, d / 2 + 0.2), COL.rollup, MAT.Metal)
-	end
-	part(m, V3(w, 0.3, 16), cf * CF(0, 0.15, d / 2 + 8), COL.concrete, MAT.Concrete)
-	part(m, V3(20, 12, 14), cf * CF(w / 2 + 10, 6, d / 2 - 7), COL.cream, MAT.SmoothPlastic)
-	local s = part(m, V3(34, 6, 0.4), cf * CF(0, h - 5, d / 2 + 0.3), COL.blue, MAT.SmoothPlastic)
-	label(s, "WAREHOUSE", Enum.NormalId.Back)
-end
-for _, r in ipairs(REPAIRS) do
-	local x, z, rot = table.unpack(r)
-	local m = model(outskirts, "AutoRepairGarage")
-	local cf = CF(x, 0, z) * yaw(rot)
-	m.PrimaryPart = part(m, V3(84, 20, 36), cf * CF(0, 10, 0), COL.cream, MAT.Brick)
-	part(m, V3(85, 1.2, 37), cf * CF(0, 20.6, 0), COL.accent, MAT.SmoothPlastic)
-	for i = -1, 1 do
-		part(m, V3(16, 14, 0.4), cf * CF(i * 26, 7, 18.2), COL.rollup, MAT.Metal)
-	end
-	local s = part(m, V3(44, 5, 0.6), cf * CF(0, 17.2, 18.4), COL.accent, MAT.SmoothPlastic)
-	label(s, "AUTO REPAIR", Enum.NormalId.Back)
-	part(m, V3(84, 0.3, 20), cf * CF(0, 0.15, 28), COL.concrete, MAT.Concrete)
-end
-for _, gs in ipairs(GAS) do
-	local x, z, rot = table.unpack(gs)
-	local m = model(outskirts, "GasStation")
-	local cf = CF(x, 0, z) * yaw(rot)
-	m.PrimaryPart = part(m, V3(80, 0.3, 50), cf * CF(0, 0.15, 12), COL.concrete, MAT.Concrete)
-	part(m, V3(70, 2, 40), cf * CF(0, 17, 12), COL.canopy, MAT.SmoothPlastic)
-	part(m, V3(70.4, 1, 40.4), cf * CF(0, 16, 12), COL.accent, MAT.SmoothPlastic)
-	for _, px in ipairs({ -26, 26 }) do
-		for _, pz in ipairs({ 0, 24 }) do
-			part(m, V3(2, 16, 2), cf * CF(px, 8, pz), COL.canopy, MAT.SmoothPlastic)
-		end
-	end
-	for _, ix in ipairs({ -18, 0, 18 }) do
-		part(m, V3(3, 0.6, 14), cf * CF(ix, 0.6, 12), COL.concrete, MAT.Concrete)
-		part(m, V3(2, 5, 1.6), cf * CF(ix, 3.3, 8), COL.accent, MAT.SmoothPlastic)
-		part(m, V3(2, 5, 1.6), cf * CF(ix, 3.3, 16), COL.accent, MAT.SmoothPlastic)
-	end
-	part(m, V3(40, 13, 24), cf * CF(0, 6.5, -26), COL.cream, MAT.SmoothPlastic)
-	part(m, V3(30, 8, 0.3), cf * CF(0, 4.5, -13.85), COL.glass, MAT.Glass)
-	local ms = part(m, V3(30, 4, 0.5), cf * CF(0, 11, -13.7), COL.accent, MAT.SmoothPlastic)
-	label(ms, "MARKET", Enum.NormalId.Back)
-	part(m, V3(1.2, 26, 1.2), cf * CF(38, 13, 34), COL.metal, MAT.Metal)
-	local gsgn = part(m, V3(12, 8, 1), cf * CF(38, 28, 34), COL.accent, MAT.SmoothPlastic)
-	label(gsgn, "GAS", Enum.NormalId.Back)
-	label(gsgn, "GAS", Enum.NormalId.Front)
-end
-for _, bb in ipairs(BILLBOARDS) do
-	local x, z, rot, text = table.unpack(bb)
-	local m = model(outskirts, "Billboard")
-	local cf = CF(x, 0, z) * yaw(rot)
-	for _, px in ipairs({ -12, 12 }) do
-		part(m, V3(1.2, 22, 1.2), cf * CF(px, 11, 0), COL.metal, MAT.Metal)
-	end
-	local board = part(m, V3(36, 12, 1), cf * CF(0, 28, 0), COL.billboard, MAT.SmoothPlastic)
-	m.PrimaryPart = board
-	label(board, text, Enum.NormalId.Back, Color3.fromRGB(255, 214, 90))
-	label(board, text, Enum.NormalId.Front, Color3.fromRGB(255, 214, 90))
-end
-
--- ring highway ------------------------------------------------------------------------
-local hwy = folder("Highway")
-local gaps = {}
-for _, r in ipairs(RAMPS) do
-	local x, zh = r[1], r[3]
-	local side = x > 0 and 1 or -1
-	local dir = zh > r[2] and 1 or -1
-	local bx = x - side * 7.75
-	table.insert(gaps, { bx - 2, math.min(zh, zh + dir * 70), bx + 2, math.max(zh, zh + dir * 70) })
-end
-local centre = roundedRect(RX, RZ, RC, ARC)
-ribbon(hwy, centre, DECK, H - 1, 2, COL.asphalt, MAT.Asphalt)
-ribbon(hwy, roundedRect(RX + DECK / 2 - 0.75, RZ + DECK / 2 - 0.75, RC + DECK / 2 - 0.75, ARC), 1.5, H + 1.5, 3, COL.barrier, MAT.Concrete, gaps)
-ribbon(hwy, roundedRect(RX - DECK / 2 + 0.75, RZ - DECK / 2 + 0.75, RC - DECK / 2 + 0.75, ARC), 1.5, H + 1.5, 3, COL.barrier, MAT.Concrete)
-ribbon(hwy, centre, 2, H + 1.5, 3, COL.barrier, MAT.Concrete)
-for _, o in ipairs({ -15, 15 }) do
-	ribbon(hwy, roundedRect(RX + o, RZ + o, RC + o, ARC), 0.5, H + 0.05, 0.1, COL.line, MAT.SmoothPlastic)
-end
-local function underRoad(x, z)
-	for _, sx in ipairs(SPOKE_X) do
-		if math.abs(x - sx) < ROAD / 2 + 7 and math.abs(z) > CZ / 2 then return true end
-	end
-	for _, sz in ipairs(SPOKE_Z) do
-		if math.abs(z - sz) < ROAD / 2 + 7 and math.abs(x) > CX / 2 then return true end
-	end
-	return false
-end
-alongPath(centre, 64, function(x, z, hx, hz)
-	if underRoad(x, z) then return end
-	part(hwy, V3(6, H - 3, 6), CF(x, (H - 3) / 2, z), COL.concrete, MAT.Concrete)
-	part(hwy, V3(5, 3, DECK - 8), CF(x, H - 3.5, z) * CFrame.Angles(0, math.atan2(-hz, hx), 0), COL.concrete, MAT.Concrete)
-end)
-alongPath(centre, 130, function(x, z, hx, hz)
-	local turn = CFrame.Angles(0, math.atan2(-hz, hx), 0)
-	part(hwy, V3(0.8, 14, 0.8), CF(x, H + 7, z), COL.pole, MAT.Metal)
-	part(hwy, V3(0.5, 0.5, 22), CF(x, H + 14, z) * turn, COL.pole, MAT.Metal)
-	for _, s in ipairs({ -10, 10 }) do
-		local lamp = part(hwy, V3(2.4, 0.5, 1.4), CF(x, H + 13.6, z) * turn * CF(0, 0, s), COL.lamp, MAT.Neon)
-		local pl = Instance.new("PointLight")
-		pl.Range = 40
-		pl.Brightness = 1.2
-		pl.Color = Color3.fromRGB(255, 214, 150)
-		pl.Parent = lamp
-	end
-end)
-for _, r in ipairs(RAMPS) do
-	local x, zl, zh = table.unpack(r)
-	local side = x > 0 and 1 or -1
-	local dir = zh > zl and 1 or -1
-	local lo, hi = V3(x, 0, zl), V3(x, H, zh)
-	local cf = CFrame.lookAt((lo + hi) / 2, hi)
-	local len = (hi - lo).Magnitude
-	local ramp = model(hwy, "OnRamp")
-	ramp.PrimaryPart = part(ramp, V3(14, 1, len + 1), cf * CF(0, -0.5, 0), COL.asphalt, MAT.Asphalt)
-	for _, s in ipairs({ -1, 1 }) do
-		part(ramp, V3(1.2, 3, len), (cf + V3(s * 6.4, 0, 0)) * CF(0, 1.4, 0), COL.barrier, MAT.Concrete)
-	end
-	local zm = zh + dir * 35
-	part(ramp, V3(14, 2, 70), CF(x, H - 1, zm), COL.asphalt, MAT.Asphalt)
-	part(ramp, V3(1.2, 3, 70), CF(x + side * 6.4, H + 1.5, zm), COL.barrier, MAT.Concrete)
-	part(ramp, V3(14, 3, 1.2), CF(x, H + 1.5, zh + dir * 70), COL.barrier, MAT.Concrete)
-	for _, t in ipairs({ 0.35, 0.65, 0.9 }) do
-		local ht = H * t
-		part(ramp, V3(4, ht - 1, 4), CF(x, (ht - 1) / 2, zl + (zh - zl) * t), COL.concrete, MAT.Concrete)
-	end
-	part(ramp, V3(4, H - 2, 4), CF(x, (H - 2) / 2, zm), COL.concrete, MAT.Concrete)
-end
-
--- street furniture, trees and parked cars -------------------------------------------
-local furniture = folder("StreetFurniture")
-for _, p in ipairs(PROPS) do
-	local k, x, z, rot, y = table.unpack(p)
-	local cf = CF(x, y, z) * yaw(rot)
-	if k == 1 then
-		local m = model(furniture, "Bench")
-		m.PrimaryPart = part(m, V3(6, 0.5, 2), cf * CF(0, 1.8, 0), COL.wood, MAT.Wood)
-		part(m, V3(6, 2, 0.4), cf * CF(0, 3, -1), COL.wood, MAT.Wood)
-		part(m, V3(0.4, 1.6, 2), cf * CF(-2.6, 0.8, 0), COL.metal, MAT.Metal)
-		part(m, V3(0.4, 1.6, 2), cf * CF(2.6, 0.8, 0), COL.metal, MAT.Metal)
-	elseif k == 2 then
-		part(furniture, V3(3.2, 2.4, 2.4), cf * CF(0, 1.6, 0) * UPRIGHT, COL.bin, MAT.Metal, CYL).Name = "Bin"
-	elseif k == 3 then
-		local m = model(furniture, "Hydrant")
-		m.PrimaryPart = part(m, V3(2.6, 1.4, 1.4), cf * CF(0, 1.3, 0) * UPRIGHT, COL.red, MAT.Metal, CYL)
-		part(m, V3(1.5, 1.5, 1.5), cf * CF(0, 2.7, 0), COL.red, MAT.Metal, BALL)
-	elseif k == 4 then
-		local m = model(furniture, "Mailbox")
-		m.PrimaryPart = part(m, V3(0.5, 1.4, 0.5), cf * CF(0, 0.7, 0), COL.metal, MAT.Metal)
-		part(m, V3(2, 3, 1.6), cf * CF(0, 2.9, 0), COL.blue, MAT.Metal)
 	else
-		local m = model(furniture, "BusStop")
-		m.PrimaryPart = part(m, V3(12, 0.4, 5), cf * CF(0, 8.6, 0), COL.metal, MAT.Metal)
-		part(m, V3(12, 6.5, 0.3), cf * CF(0, 4.6, -2.3), COL.glass, MAT.Glass).Transparency = 0.5
-		part(m, V3(0.4, 8.4, 0.4), cf * CF(-5.8, 4.2, 2.2), COL.metal, MAT.Metal)
-		part(m, V3(0.4, 8.4, 0.4), cf * CF(5.8, 4.2, 2.2), COL.metal, MAT.Metal)
-		part(m, V3(8, 0.5, 1.6), cf * CF(0, 1.8, -1.2), COL.wood, MAT.Wood)
-		part(m, V3(0.4, 7.4, 0.4), cf * CF(7.6, 3.7, 1.5), COL.metal, MAT.Metal)
-		local s = part(m, V3(2.6, 2.6, 0.3), cf * CF(7.6, 8.6, 1.5), COL.blue, MAT.Metal)
-		label(s, "BUS", Enum.NormalId.Back)
+		local x = x0 + 6
+		while x + 18 <= x1 - 6 do
+			local z = z0 + 6
+			while z <= z1 - 6 do
+				mark(m, V3(17, 0.1, 0.4), CF(x + 9, y + 0.25, z), COL.line)
+				z += 10
+			end
+			x += 42
+		end
 	end
 end
-for _, t in ipairs(TREES) do
-	tree(treeFolder, t[1], t[2], t[3], t[4])
+for _, l in ipairs(LOTS) do
+	local inCity = l[6] > 0
+	if (inCity and SETTINGS.shops) or (not inCity and SETTINGS.outskirts) then parkingLot(l) end
 end
-local parked = folder("ParkedCars")
-for _, c in ipairs(CARS) do
-	vehicle(parked, CF(c[1], c[2], c[3]) * yaw(c[4]), c[5], PAINT[c[6]])
+if SETTINGS.shops then
+	local shopFolder = folder("Shops")
+	for _, s in ipairs(SHOPS) do
+		local x, z, w, rot, col, name = table.unpack(s)
+		local m = model(shopFolder, "Shop")
+		m.Name = SHOP_NAMES[name]
+		local cf = CF(x, PAD, z) * yaw(rot)
+		m.PrimaryPart = part(m, V3(w, 14, 36), cf * CF(0, 7, 0), SHOP_COLORS[col], MAT.Brick)
+		detail(m, V3(w - 4, 8, 0.3), cf * CF(0, 4.5, 18.15), COL.glass, MAT.Glass)
+		part(m, V3(w - 2, 0.6, 5), cf * CF(0, 10, 20.5), AWNINGS[col], MAT.Fabric)
+		local sign = detail(m, V3(w - 6, 2.6, 0.4), cf * CF(0, 12.4, 18.3), COL.white, MAT.SmoothPlastic)
+		label(sign, SHOP_NAMES[name], Enum.NormalId.Back, Color3.fromRGB(30, 34, 40))
+	end
 end
 
--- spawn point, traffic script, camera -----------------------------------------------
+-- apartments and office towers ----------------------------------------------------------
+if SETTINGS.buildings then
+	local buildings = folder("Buildings")
+	for _, b in ipairs(BUILDINGS) do
+		local x, z, w, d, h, s, crown = table.unpack(b)
+		local st = STYLES[s + 1]
+		local m = model(buildings, "Building")
+		m.PrimaryPart = part(m, V3(w, h, d), CF(x, PAD + h / 2, z), st[1], st[3])
+		part(m, V3(w + 0.4, 7, d + 0.4), CF(x, PAD + 4.5, z), COL.glass, MAT.Glass)
+		local k = 1
+		while k * FLOOR + 9 <= h - 3 do
+			detail(m, V3(w + 0.3, 5, d + 0.3), CF(x, PAD + k * FLOOR + 6.5, z), st[2], MAT.Glass)
+			k += 1
+		end
+		part(m, V3(w + 0.8, 1.2, d + 0.8), CF(x, PAD + h + 0.6, z), st[1], st[3])
+		local top = PAD + h + 1.2
+		local tw, td = w, d
+		if crown >= 1 then
+			tw, td = w * 0.62, d * 0.62
+			local ch = FLOOR * math.max(2, math.floor(h * 0.12 / FLOOR + 0.5))
+			part(m, V3(tw, ch, td), CF(x, top + ch / 2, z), st[1], st[3])
+			local kk = 1
+			while (kk - 1) * FLOOR + 9 <= ch - 2 do
+				part(m, V3(tw + 0.3, 5, td + 0.3), CF(x, top + (kk - 1) * FLOOR + 6.5, z), st[2], MAT.Glass)
+				kk += 1
+			end
+			top += ch
+		end
+		if crown >= 2 then
+			part(m, V3(1.2, 40, 1.2), CF(x, top + 20, z), COL.metal, MAT.Metal)
+			part(m, V3(1.8, 1.8, 1.8), CF(x, top + 40.8, z), COL.red, MAT.Neon, BALL)
+		end
+		part(m, V3(math.min(10, tw * 0.25), 4, math.min(8, td * 0.25)), CF(x + tw * 0.22, top + 2, z - td * 0.2), COL.metal, MAT.Metal)
+	end
+end
+
+-- parks ---------------------------------------------------------------------------------
+if SETTINGS.parks then
+	local parks = folder("Parks")
+	for _, p in ipairs(PARKS) do
+		local x0, z0, x1, z1, kind = table.unpack(p)
+		local cx, cz = (x0 + x1) / 2, (z0 + z1) / 2
+		local m = model(parks, "Park")
+		m.PrimaryPart = part(m, V3(x1 - x0, 0.2, z1 - z0), CF(cx, PAD + 0.1, cz), COL.lawn, MAT.Grass)
+		mark(m, V3(x1 - x0, 0.1, 8), CF(cx, PAD + 0.25, cz), COL.path)
+		mark(m, V3(8, 0.1, z1 - z0), CF(cx, PAD + 0.25, cz), COL.path)
+		part(m, V3(2, 26, 26), CF(cx, PAD + 1.2, cz) * UPRIGHT, COL.stone, MAT.Cobblestone, CYL)
+		local water = part(m, V3(0.4, 23, 23), CF(cx, PAD + 2.1, cz) * UPRIGHT, COL.water, MAT.Glass, CYL)
+		water.Transparency = 0.2
+		part(m, V3(6, 2.4, 2.4), CF(cx, PAD + 4, cz) * UPRIGHT, COL.stone, MAT.Cobblestone, CYL)
+		part(m, V3(0.8, 8, 8), CF(cx, PAD + 6.5, cz) * UPRIGHT, COL.stone, MAT.Cobblestone, CYL)
+		if kind == 2 then
+			local q = (x1 - x0) / 4
+			local kx, kz = cx - q, cz - q
+			mark(m, V3(50, 0.2, 30), CF(kx, PAD + 0.3, kz), COL.court).Name = "BasketballCourt"
+			for _, s in ipairs({ -1, 1 }) do
+				part(m, V3(0.5, 10, 0.5), CF(kx + s * 26, PAD + 5, kz), COL.metal, MAT.Metal)
+				part(m, V3(0.3, 4, 6), CF(kx + s * 25.6, PAD + 10.5, kz), COL.white, MAT.SmoothPlastic)
+				part(m, V3(0.2, 1.8, 1.8), CF(kx + s * 24.5, PAD + 9, kz) * UPRIGHT, COL.accent, MAT.Metal, CYL)
+			end
+			local px, pz = cx + q, cz + q
+			part(m, V3(6, 8, 6), CF(px - 6, PAD + 4, pz), COL.play, MAT.Plastic)
+			wedge(m, V3(4, 7.6, 12), CF(px + 3, PAD + 4, pz) * yaw(90), COL.accent, MAT.Plastic)
+			for _, s in ipairs({ -1, 1 }) do
+				part(m, V3(0.5, 8, 0.5), CF(px - 4 + s * 5, PAD + 4, pz + 14), COL.metal, MAT.Metal)
+				part(m, V3(1.6, 0.3, 1), CF(px - 4 + s * 2, PAD + 2, pz + 14), COL.play, MAT.Plastic)
+			end
+			part(m, V3(10.5, 0.5, 0.5), CF(px - 4, PAD + 8, pz + 14), COL.metal, MAT.Metal)
+		end
+	end
+end
+
+-- parking garages ------------------------------------------------------------------------
+if SETTINGS.buildings then
+	local garages = folder("ParkingGarages")
+	for _, g in ipairs(GARAGES) do
+		local x0, z0, x1, z1, lv, y0 = table.unpack(g)
+		local inCity = y0 > 0
+		if inCity or SETTINGS.outskirts then
+			local m = model(garages, "ParkingGarage")
+			local dx0 = x0 + 16
+			local w, d = x1 - dx0, z1 - z0
+			local cx, cz = (dx0 + x1) / 2, (z0 + z1) / 2
+			local rl = math.min(d - 20, 90)
+			local function wall(za, zb, y)
+				if zb - za > 0.5 then part(m, V3(0.8, 3, zb - za), CF(dx0 + 0.4, y + 1.5, (za + zb) / 2), COL.concrete, MAT.Concrete) end
+			end
+			for k = 1, lv do
+				local y = y0 + k * LH
+				local slabPart = part(m, V3(w, 1, d), CF(cx, y - 0.5, cz), COL.concrete, MAT.Concrete)
+				if k == 1 then m.PrimaryPart = slabPart end
+				part(m, V3(w, 3, 0.8), CF(cx, y + 1.5, z0 + 0.4), COL.concrete, MAT.Concrete)
+				part(m, V3(w, 3, 0.8), CF(cx, y + 1.5, z1 - 0.4), COL.concrete, MAT.Concrete)
+				part(m, V3(0.8, 3, d), CF(x1 - 0.4, y + 1.5, cz), COL.concrete, MAT.Concrete)
+				wall(z0, z0 + 10, y)
+				wall(z0 + 24, z0 + rl - 4, y)
+				wall(z0 + 10 + rl, z1, y)
+				local lo, hi = V3(x0 + 9, y - LH, z0 + 10), V3(x0 + 9, y, z0 + 10 + rl)
+				local rcf = CFrame.lookAt((lo + hi) / 2, hi)
+				local len = (hi - lo).Magnitude
+				part(m, V3(14, 1, len + 0.5), rcf * CF(0, -0.5, 0), COL.concrete, MAT.Concrete)
+				part(m, V3(0.8, 3, len), (rcf + V3(-7.4, 0, 0)) * CF(0, 1, 0), COL.concrete, MAT.Concrete)
+			end
+			local top = y0 + lv * LH
+			for x = dx0 + 1, x1 - 1, math.max(20, (x1 - dx0 - 2) / math.max(1, math.floor((x1 - dx0) / 32))) do
+				part(m, V3(2, top - y0, 2), CF(x, (y0 + top) / 2, z0 + 1), COL.concrete, MAT.Concrete)
+				part(m, V3(2, top - y0, 2), CF(x, (y0 + top) / 2, z1 - 1), COL.concrete, MAT.Concrete)
+			end
+			for z = z0 + 1, z1 - 1, math.max(20, (d - 2) / math.max(1, math.floor(d / 32))) do
+				part(m, V3(2, top - y0, 2), CF(x1 - 1, (y0 + top) / 2, z), COL.concrete, MAT.Concrete)
+			end
+			local sign = part(m, V3(26, 6, 0.6), CF(cx, top + 5, z0 - 0.4), COL.blue, MAT.SmoothPlastic)
+			label(sign, "P  PARKING", Enum.NormalId.Front)
+			part(m, V3(0.6, 5, 0.6), CF(cx - 10, top + 2, z0 - 0.4), COL.metal, MAT.Metal)
+			part(m, V3(0.6, 5, 0.6), CF(cx + 10, top + 2, z0 - 0.4), COL.metal, MAT.Metal)
+		end
+	end
+end
+
+-- outskirts: warehouses, auto repair, gas stations -----------------------------------------
+local outskirts = folder("Outskirts")
+if SETTINGS.outskirts then
+	for _, wh in ipairs(WAREHOUSES) do
+		local x, z, w, d, h, rot = table.unpack(wh)
+		local m = model(outskirts, "Warehouse")
+		local cf = CF(x, 0, z) * yaw(rot)
+		m.PrimaryPart = part(m, V3(w, h, d), cf * CF(0, h / 2, 0), COL.warehouse, MAT.Metal)
+		part(m, V3(w + 1, 1, d + 1), cf * CF(0, h + 0.5, 0), COL.metal, MAT.Metal)
+		local n = math.max(2, math.floor(w / 30))
+		for i = 1, n do
+			part(m, V3(12, 14, 0.4), cf * CF(-w / 2 + (i - 0.5) * w / n, 7, d / 2 + 0.2), COL.rollup, MAT.Metal)
+		end
+		mark(m, V3(w, 0.3, 16), cf * CF(0, 0.15, d / 2 + 8), COL.concrete).Material = MAT.Concrete
+		part(m, V3(20, 12, 14), cf * CF(w / 2 + 10, 6, d / 2 - 7), COL.cream, MAT.SmoothPlastic)
+		local s = part(m, V3(34, 6, 0.4), cf * CF(0, h - 5, d / 2 + 0.3), COL.blue, MAT.SmoothPlastic)
+		label(s, "WAREHOUSE", Enum.NormalId.Back)
+	end
+	for _, r in ipairs(REPAIRS) do
+		local x, z, rot = table.unpack(r)
+		local m = model(outskirts, "AutoRepairGarage")
+		local cf = CF(x, 0, z) * yaw(rot)
+		m.PrimaryPart = part(m, V3(84, 20, 36), cf * CF(0, 10, 0), COL.cream, MAT.Brick)
+		part(m, V3(85, 1.2, 37), cf * CF(0, 20.6, 0), COL.accent, MAT.SmoothPlastic)
+		for i = -1, 1 do
+			part(m, V3(16, 14, 0.4), cf * CF(i * 26, 7, 18.2), COL.rollup, MAT.Metal)
+		end
+		local s = part(m, V3(44, 5, 0.6), cf * CF(0, 17.2, 18.4), COL.accent, MAT.SmoothPlastic)
+		label(s, "AUTO REPAIR", Enum.NormalId.Back)
+		mark(m, V3(84, 0.3, 20), cf * CF(0, 0.15, 28), COL.concrete).Material = MAT.Concrete
+	end
+	for _, gs in ipairs(GAS) do
+		local x, z, rot = table.unpack(gs)
+		local m = model(outskirts, "GasStation")
+		local cf = CF(x, 0, z) * yaw(rot)
+		m.PrimaryPart = mark(m, V3(80, 0.3, 50), cf * CF(0, 0.15, 12), COL.concrete)
+		m.PrimaryPart.Material = MAT.Concrete
+		part(m, V3(70, 2, 40), cf * CF(0, 17, 12), COL.canopy, MAT.SmoothPlastic)
+		part(m, V3(70.4, 1, 40.4), cf * CF(0, 16, 12), COL.accent, MAT.SmoothPlastic)
+		for _, px in ipairs({ -26, 26 }) do
+			for _, pz in ipairs({ 0, 24 }) do
+				part(m, V3(2, 16, 2), cf * CF(px, 8, pz), COL.canopy, MAT.SmoothPlastic)
+			end
+		end
+		for _, ix in ipairs({ -18, 0, 18 }) do
+			part(m, V3(3, 0.6, 14), cf * CF(ix, 0.6, 12), COL.concrete, MAT.Concrete)
+			part(m, V3(2, 5, 1.6), cf * CF(ix, 3.3, 8), COL.accent, MAT.SmoothPlastic)
+			part(m, V3(2, 5, 1.6), cf * CF(ix, 3.3, 16), COL.accent, MAT.SmoothPlastic)
+		end
+		part(m, V3(40, 13, 24), cf * CF(0, 6.5, -26), COL.cream, MAT.SmoothPlastic)
+		part(m, V3(30, 8, 0.3), cf * CF(0, 4.5, -13.85), COL.glass, MAT.Glass)
+		local ms = part(m, V3(30, 4, 0.5), cf * CF(0, 11, -13.7), COL.accent, MAT.SmoothPlastic)
+		label(ms, "MARKET", Enum.NormalId.Back)
+		part(m, V3(1.2, 26, 1.2), cf * CF(38, 13, 34), COL.metal, MAT.Metal)
+		local gsgn = part(m, V3(12, 8, 1), cf * CF(38, 28, 34), COL.accent, MAT.SmoothPlastic)
+		label(gsgn, "GAS", Enum.NormalId.Back)
+		label(gsgn, "GAS", Enum.NormalId.Front)
+	end
+end
+
+-- ring highway ----------------------------------------------------------------------------
+if SETTINGS.highway then
+	local hwy = folder("Highway")
+	local gaps = {}
+	for _, r in ipairs(RAMPS) do
+		local x, zh = r[1], r[3]
+		local side = x > 0 and 1 or -1
+		local dir = zh > r[2] and 1 or -1
+		local bx = x - side * 7.75
+		table.insert(gaps, { bx - 2, math.min(zh, zh + dir * 70), bx + 2, math.max(zh, zh + dir * 70) })
+	end
+	local centre = roundedRect(RX, RZ, RC, ARC)
+	ribbon(hwy, centre, DECK, H - 1, 2, COL.asphalt, MAT.Asphalt)
+	ribbon(hwy, roundedRect(RX + DECK / 2 - 0.75, RZ + DECK / 2 - 0.75, RC + DECK / 2 - 0.75, ARC), 1.5, H + 1.5, 3, COL.barrier, MAT.Concrete, gaps)
+	ribbon(hwy, roundedRect(RX - DECK / 2 + 0.75, RZ - DECK / 2 + 0.75, RC - DECK / 2 + 0.75, ARC), 1.5, H + 1.5, 3, COL.barrier, MAT.Concrete)
+	ribbon(hwy, centre, 2, H + 1.5, 3, COL.barrier, MAT.Concrete)
+	for _, o in ipairs({ -15, 15 }) do
+		ribbon(hwy, roundedRect(RX + o, RZ + o, RC + o, ARC), 0.5, H + 0.05, 0.1, COL.line, nil, nil, true)
+	end
+	local function underRoad(x, z)
+		for _, sx in ipairs(SPOKE_X) do
+			if math.abs(x - sx) < ROAD / 2 + 7 and math.abs(z) > CZ / 2 then return true end
+		end
+		for _, sz in ipairs(SPOKE_Z) do
+			if math.abs(z - sz) < ROAD / 2 + 7 and math.abs(x) > CX / 2 then return true end
+		end
+		return false
+	end
+	alongPath(centre, 64, function(x, z, hx, hz)
+		if underRoad(x, z) then return end
+		part(hwy, V3(6, H - 3, 6), CF(x, (H - 3) / 2, z), COL.concrete, MAT.Concrete)
+		part(hwy, V3(5, 3, DECK - 8), CF(x, H - 3.5, z) * CFrame.Angles(0, math.atan2(-hz, hx), 0), COL.concrete, MAT.Concrete)
+	end)
+	alongPath(centre, 130, function(x, z, hx, hz)
+		local turn = CFrame.Angles(0, math.atan2(-hz, hx), 0)
+		part(hwy, V3(0.8, 14, 0.8), CF(x, H + 7, z), COL.pole, MAT.Metal)
+		part(hwy, V3(0.5, 0.5, 22), CF(x, H + 14, z) * turn, COL.pole, MAT.Metal)
+		for _, s in ipairs({ -10, 10 }) do
+			local lamp = mark(hwy, V3(2.4, 0.5, 1.4), CF(x, H + 13.6, z) * turn * CF(0, 0, s), COL.lamp)
+			lamp.Material = MAT.Neon
+			if SETTINGS.lampGlow and s > 0 then -- one real light per post is enough
+				local pl = Instance.new("PointLight")
+				pl.Range = 48
+				pl.Brightness = 1.2
+				pl.Color = Color3.fromRGB(255, 214, 150)
+				pl.Parent = lamp
+			end
+		end
+	end)
+	for _, r in ipairs(RAMPS) do
+		local x, zl, zh = table.unpack(r)
+		local side = x > 0 and 1 or -1
+		local dir = zh > zl and 1 or -1
+		local lo, hi = V3(x, 0, zl), V3(x, H, zh)
+		local cf = CFrame.lookAt((lo + hi) / 2, hi)
+		local len = (hi - lo).Magnitude
+		local ramp = model(hwy, "OnRamp")
+		ramp.PrimaryPart = part(ramp, V3(14, 1, len + 1), cf * CF(0, -0.5, 0), COL.asphalt, MAT.Asphalt)
+		for _, s in ipairs({ -1, 1 }) do
+			part(ramp, V3(1.2, 3, len), (cf + V3(s * 6.4, 0, 0)) * CF(0, 1.4, 0), COL.barrier, MAT.Concrete)
+		end
+		local zm = zh + dir * 35
+		part(ramp, V3(14, 2, 70), CF(x, H - 1, zm), COL.asphalt, MAT.Asphalt)
+		part(ramp, V3(1.2, 3, 70), CF(x + side * 6.4, H + 1.5, zm), COL.barrier, MAT.Concrete)
+		part(ramp, V3(14, 3, 1.2), CF(x, H + 1.5, zh + dir * 70), COL.barrier, MAT.Concrete)
+		for _, t in ipairs({ 0.35, 0.65, 0.9 }) do
+			local ht = H * t
+			part(ramp, V3(4, ht - 1, 4), CF(x, (ht - 1) / 2, zl + (zh - zl) * t), COL.concrete, MAT.Concrete)
+		end
+		part(ramp, V3(4, H - 2, 4), CF(x, (H - 2) / 2, zm), COL.concrete, MAT.Concrete)
+	end
+	for _, bb in ipairs(BILLBOARDS) do
+		local x, z, rot, text = table.unpack(bb)
+		local m = model(hwy, "Billboard")
+		local cf = CF(x, 0, z) * yaw(rot)
+		for _, px in ipairs({ -12, 12 }) do
+			part(m, V3(1.2, 22, 1.2), cf * CF(px, 11, 0), COL.metal, MAT.Metal)
+		end
+		local board = part(m, V3(36, 12, 1), cf * CF(0, 28, 0), COL.billboard, MAT.SmoothPlastic)
+		m.PrimaryPart = board
+		label(board, text, Enum.NormalId.Back, Color3.fromRGB(255, 214, 90))
+		label(board, text, Enum.NormalId.Front, Color3.fromRGB(255, 214, 90))
+	end
+end
+
+-- street furniture, trees and parked cars -----------------------------------------------
+if SETTINGS.furniture then
+	local furniture = folder("StreetFurniture")
+	for _, p in ipairs(PROPS) do
+		local k, x, z, rot, y = table.unpack(p)
+		local cf = CF(x, y, z) * yaw(rot)
+		if k == 1 then
+			local m = model(furniture, "Bench")
+			m.PrimaryPart = part(m, V3(6, 0.5, 2), cf * CF(0, 1.8, 0), COL.wood, MAT.Wood)
+			part(m, V3(6, 2, 0.4), cf * CF(0, 3, -1), COL.wood, MAT.Wood)
+			part(m, V3(0.4, 1.6, 2), cf * CF(-2.6, 0.8, 0), COL.metal, MAT.Metal)
+			part(m, V3(0.4, 1.6, 2), cf * CF(2.6, 0.8, 0), COL.metal, MAT.Metal)
+		elseif k == 2 then
+			part(furniture, V3(3.2, 2.4, 2.4), cf * CF(0, 1.6, 0) * UPRIGHT, COL.bin, MAT.Metal, CYL).Name = "Bin"
+		elseif k == 3 then
+			local m = model(furniture, "Hydrant")
+			m.PrimaryPart = part(m, V3(2.6, 1.4, 1.4), cf * CF(0, 1.3, 0) * UPRIGHT, COL.red, MAT.Metal, CYL)
+			part(m, V3(1.5, 1.5, 1.5), cf * CF(0, 2.7, 0), COL.red, MAT.Metal, BALL)
+		else
+			local m = model(furniture, "BusStop")
+			m.PrimaryPart = part(m, V3(12, 0.4, 5), cf * CF(0, 8.6, 0), COL.metal, MAT.Metal)
+			part(m, V3(12, 6.5, 0.3), cf * CF(0, 4.6, -2.3), COL.glass, MAT.Glass).Transparency = 0.5
+			part(m, V3(0.4, 8.4, 0.4), cf * CF(-5.8, 4.2, 2.2), COL.metal, MAT.Metal)
+			part(m, V3(0.4, 8.4, 0.4), cf * CF(5.8, 4.2, 2.2), COL.metal, MAT.Metal)
+			part(m, V3(8, 0.5, 1.6), cf * CF(0, 1.8, -1.2), COL.wood, MAT.Wood)
+			part(m, V3(0.4, 7.4, 0.4), cf * CF(7.6, 3.7, 1.5), COL.metal, MAT.Metal)
+			local s = part(m, V3(2.6, 2.6, 0.3), cf * CF(7.6, 8.6, 1.5), COL.blue, MAT.Metal)
+			label(s, "BUS", Enum.NormalId.Back)
+		end
+	end
+end
+if SETTINGS.trees then
+	for _, t in ipairs(TREES) do
+		tree(treeFolder, t[1], t[2], t[3], t[4])
+	end
+end
+if SETTINGS.parkedCars then
+	local parked = folder("ParkedCars")
+	for _, c in ipairs(CARS) do
+		vehicle(parked, CF(c[1], c[2], c[3]) * yaw(c[4]), c[5], PAINT[c[6]])
+	end
+end
+
+-- spawn point, traffic script, camera -----------------------------------------------------
 local spawns = 0
 for _, s in ipairs(workspace:GetChildren()) do
 	if s:IsA("SpawnLocation") then
@@ -1660,10 +1985,16 @@ local playerScripts = game:GetService("StarterPlayer"):FindFirstChildOfClass("St
 if playerScripts then
 	local oldTraffic = playerScripts:FindFirstChild("CityTraffic")
 	if oldTraffic then oldTraffic:Destroy() end
-	local ls = Instance.new("LocalScript")
-	ls.Name = "CityTraffic"
-	ls.Source = TRAFFIC_SOURCE
-	ls.Parent = playerScripts
+	if SETTINGS.traffic then
+		local ls = Instance.new("LocalScript")
+		ls.Name = "CityTraffic"
+		ls.Source = TRAFFIC_SOURCE
+			:gsub("__CITY_CARS__", tostring(math.floor(SETTINGS.cityCars)))
+			:gsub("__HWY_CARS__", tostring(SETTINGS.highway and math.floor(SETTINGS.highwayCars) or 0))
+			:gsub("__CITY_SPEED__", tostring(SETTINGS.citySpeed))
+			:gsub("__HWY_SPEED__", tostring(SETTINGS.highwaySpeed))
+		ls.Parent = playerScripts
+	end
 end
 
 workspace.CurrentCamera.CFrame = CFrame.lookAt(V3(MX * 0.75, MX * 0.55, MZ * 0.75), V3(0, 0, 0))
@@ -1672,7 +2003,7 @@ local count = 0
 for _, d in ipairs(root:GetDescendants()) do
 	if d:IsA("BasePart") then count += 1 end
 end
-print(("City built: %d parts. Press Play to see ${T.city + T.hwy} cars of traffic."):format(count))
+print(("City built: %d parts. Press Play to see the traffic."):format(count))
 return true -- lets this file also run as a ModuleScript: require(game.ServerStorage.BuildCity:Clone())
 `;
 }
@@ -1681,12 +2012,23 @@ return true -- lets this file also run as a ModuleScript: require(game.ServerSto
    3D preview (three.js), mirroring the Studio build
    ===================================================================== */
 let GEO, MAT;
+function wedgeGeometry(){
+  // Roblox wedge: full bottom and back (+Z) faces, slope rising from the bottom front edge to the top back edge
+  const A = [-.5,-.5,-.5], Bv = [.5,-.5,-.5], Cv = [.5,-.5,.5], D = [-.5,-.5,.5], E = [-.5,.5,.5], F = [.5,.5,.5];
+  const tris = [A,Bv,Cv, A,Cv,D, D,Cv,F, D,F,E, A,E,F, A,F,Bv, A,D,E, Bv,F,Cv];
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(tris.flat(), 3));
+  g.computeVertexNormals();
+  return g;
+}
 function initAssets(){
   GEO = {
     box: new THREE.BoxGeometry(1,1,1),
     cyl: new THREE.CylinderGeometry(0.5,0.5,1,14),
     cylx: new THREE.CylinderGeometry(0.5,0.5,1,14).rotateZ(Math.PI/2),
     ball: new THREE.SphereGeometry(0.5,14,10),
+    wedge: wedgeGeometry(),
+    plane: new THREE.PlaneGeometry(1,1),
   };
   MAT = {
     std: new THREE.MeshLambertMaterial({color:0xffffff}),
@@ -1695,7 +2037,21 @@ function initAssets(){
     winDark: new THREE.MeshLambertMaterial({color:0xffffff}),
     neon: new THREE.MeshBasicMaterial({color:0xffffff}),
     water: new THREE.MeshPhongMaterial({color:0xffffff, shininess:120, specular:0x99bbdd}),
+    stop: new THREE.MeshBasicMaterial({map: stopTexture(), transparent:true, alphaTest:0.5}),
   };
+}
+function stopTexture(){
+  const cv = document.createElement('canvas'); cv.width = cv.height = 128;
+  const g = cv.getContext('2d');
+  g.fillStyle = '#FFFFFF'; g.beginPath();
+  for (let i = 0; i < 8; i++){ const a = Math.PI/8 + i*Math.PI/4; g.lineTo(64 + 62*Math.cos(a), 64 + 62*Math.sin(a)); }
+  g.fill();
+  g.fillStyle = '#BE2622'; g.beginPath();
+  for (let i = 0; i < 8; i++){ const a = Math.PI/8 + i*Math.PI/4; g.lineTo(64 + 56*Math.cos(a), 64 + 56*Math.sin(a)); }
+  g.fill();
+  g.fillStyle = '#FFFFFF'; g.font = '800 36px Overpass, Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText('STOP', 64, 67);
+  const t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding; return t;
 }
 const _c = () => new THREE.Color();
 class Batch {
@@ -1718,8 +2074,8 @@ class Batch {
         m4.compose(p, q, s); mesh.setMatrixAt(i, m4);
         c.setRGB(g.d[o+7]/255, g.d[o+8]/255, g.d[o+9]/255).convertSRGBToLinear(); mesh.setColorAt(i, c);
       }
-      mesh.castShadow = g.mat !== 'neon' && g.mat !== 'water';
-      mesh.receiveShadow = g.mat !== 'neon';
+      mesh.castShadow = !['neon','water','stop'].includes(g.mat);
+      mesh.receiveShadow = g.mat !== 'neon' && g.mat !== 'stop';
       parent.add(mesh);
     }
   }
@@ -1731,6 +2087,7 @@ function lookQ(fx, fy, fz, tx, ty, tz){
 
 function emitScene(M, S, signs, lamps){
   const {ROAD, WALK, PAD, DECK, H, FLOOR, LH, ARC} = C;
+  const P = M.P;
   const box = (col, x, y, z, sx, sy, sz, ry = 0, mat = 'std') => S.add('box', mat, col, x, y, z, sx, sy, sz, ry);
   const slab = (x0, z0, x1, z1, y0, y1, col) => { if (x1-x0 > 0.05 && z1-z0 > 0.05) box(col, (x0+x1)/2, (y0+y1)/2, (z0+z1)/2, x1-x0, y1-y0, z1-z0); };
   const strip = (ax, az, bx, bz, w, y, h, col, extra = 0, mat = 'std') => { const dx = bx-ax, dz = bz-az, len = Math.hypot(dx,dz); if (len < 0.05) return; box(col, (ax+bx)/2, y, (az+bz)/2, len+extra, h, w, Math.atan2(-dz, dx), mat); };
@@ -1739,9 +2096,10 @@ function emitScene(M, S, signs, lamps){
   const tree = (x, z, s, y) => { const h = s*0.7, t = Math.max(1.2, s*0.13); box(COL.trunk, x, y+h/2, z, t, h, t); S.add('ball','std', COL[LEAVES[((Math.floor(x+z)%3)+3)%3]], x, y+h+s*0.25, z, s, s, s); };
   const vehicle = (x, y, z, rot, kind, paint) => {
     const ry = -rot*Math.PI/180, L = at(x, y, z, rot);
-    for (const p of VEH[kind].parts){ const [wx,wy,wz] = L(p[3], p[4], p[5]); S.add(p[7] === 1 ? 'cylx' : 'box', ROLE_MAT[p[6]], ROLE_COL[p[6]] || PAINT[paint], wx, wy, wz, p[0], p[1], p[2], ry); }
+    for (const p of VEH[kind].parts){ if (p[6] >= 4) continue; const [wx,wy,wz] = L(p[3], p[4], p[5]); S.add(p[7] === 1 ? 'cylx' : 'box', ROLE_MAT[p[6]], ROLE_COL[p[6]] || PAINT[paint], wx, wy, wz, p[0], p[1], p[2], ry); }
   };
   const sign = (text, x, y, z, w, h, ry, bg, fg) => signs.push({text, x, y, z, w, h, ry, bg, fg});
+  const local = (x, y, z, rot) => { const ry = -rot*Math.PI/180, L = at(x, y, z, rot); return (col, lx, ly, lz, sx, sy, sz, mat = 'std', shape = 'box', extra = 0) => { const p = L(lx, ly, lz); S.add(shape, mat, col, p[0], p[1], p[2], sx, sy, sz, ry + extra); }; };
 
   // ground and roads
   slab(-M.MX, -M.MZ, M.MX, -M.CZ/2, -4, 0, COL.grass);
@@ -1754,10 +2112,10 @@ function emitScene(M, S, signs, lamps){
   const sx0 = M.SX[0], sxN = M.SX[M.NX], sz0 = M.SZ[0], szN = M.SZ[M.NZ];
   for (const [s,e] of spans(-M.CX/2, M.CX/2, M.spokeX)){ slab(s, -M.CZ/2, e, sz0-ROAD/2, 0, PAD, COL.sidewalk); slab(s, szN+ROAD/2, e, M.CZ/2, 0, PAD, COL.sidewalk); }
   for (const [s,e] of spans(-M.CZ/2, M.CZ/2, M.spokeZ)){ slab(-M.CX/2, s, sx0-ROAD/2, e, 0, PAD, COL.sidewalk); slab(sxN+ROAD/2, s, M.CX/2, e, 0, PAD, COL.sidewalk); }
-  const DX = [1,-1,0,0], DZ = [0,0,1,-1];
+  const DX = [1,-1,0,0], DZ = [0,0,1,-1], OPP = [1,0,3,2];
   const edgeToCity = (n, dx, dz) => dx !== 0 ? M.CX/2 - dx*M.nodes[n].x : M.CZ/2 - dz*M.nodes[n].z;
   const crosswalk = (nx, nz, dx, dz, sy) => { const rx = -dz, rz = dx, s = ROAD/2 + WALK/2; for (let i = -5; i <= 5; i += 2){ const o = i*2; box(COL.line, nx+dx*s+rx*o, sy+0.05, nz+dz*s+rz*o, dx !== 0 ? WALK-1 : 2, 0.1, dx !== 0 ? 2 : WALK-1); } };
-  const stopLine = (nx, nz, dx, dz, city, sy) => { const back = ROAD/2 + (city ? WALK : 0) + 1, rx = -dz, rz = dx; box(COL.line, nx-dx*back+rx*ROAD/4, sy+0.05, nz-dz*back+rz*ROAD/4, dx !== 0 ? 1 : ROAD/2-1, 0.1, dx !== 0 ? ROAD/2-1 : 1); };
+  const stopLine = (n, dx, dz, sy) => { const N = M.nodes[n], back = ROAD/2 + (hasCrosswalk(N) ? WALK : 2) + 1, rx = -dz, rz = dx; box(COL.line, N.x-dx*back+rx*ROAD/4, sy+0.05, N.z-dz*back+rz*ROAD/4, dx !== 0 ? 1 : ROAD/2-1, 0.1, dx !== 0 ? ROAD/2-1 : 1); };
   for (let a = 0; a < M.nodes.length; a++) for (const k of [0,2]){
     const b = M.links[a][k]; if (b < 0) continue;
     const A = M.nodes[a], Bn = M.nodes[b], dx = DX[k], dz = DZ[k], rx = -dz, rz = dx;
@@ -1768,41 +2126,43 @@ function emitScene(M, S, signs, lamps){
       if (cb) s1 = len - edgeToCity(b, -dx, -dz);
       strip(A.x+dx*s0, A.z+dz*s0, A.x+dx*s1, A.z+dz*s1, ROAD, -0.4, 1.2, COL.asphalt);
     }
-    const ma = ROAD/2 + (ca ? WALK : 0) + 2, mb = ROAD/2 + (cb ? WALK : 0) + 2;
+    const ma = ROAD/2 + (hasCrosswalk(A) ? WALK : 0) + 2, mb = ROAD/2 + (hasCrosswalk(Bn) ? WALK : 0) + 2;
     for (const o of [-0.45, 0.45]) strip(A.x+dx*ma+rx*o, A.z+dz*ma+rz*o, A.x+dx*(len-mb)+rx*o, A.z+dz*(len-mb)+rz*o, 0.4, sy+0.05, 0.1, COL.yellow);
-    if (ca) crosswalk(A.x, A.z, dx, dz, sy);
-    if (cb) crosswalk(Bn.x, Bn.z, -dx, -dz, sy);
-    if (Bn.off >= 0) stopLine(Bn.x, Bn.z, dx, dz, cb, sy);
-    if (A.off >= 0) stopLine(A.x, A.z, -dx, -dz, ca, sy);
+    if (hasCrosswalk(A)) crosswalk(A.x, A.z, dx, dz, sy);
+    if (hasCrosswalk(Bn)) crosswalk(Bn.x, Bn.z, -dx, -dz, sy);
+    if (mustStop(Bn, k)) stopLine(b, dx, dz, sy);
+    if (mustStop(A, OPP[k])) stopLine(a, -dx, -dz, sy);
   }
-  // traffic lights
-  const OPP = [1,0,3,2];
+  // traffic lights and stop signs
   M.nodes.forEach((n, i) => {
-    if (n.off < 0) return;
+    if (n.ctl === 0) return;
     for (let k = 0; k < 4; k++){
-      if (M.links[i][OPP[k]] < 0) continue;
+      if (M.links[i][OPP[k]] < 0 || !mustStop(n, k)) continue;
       const dx = DX[k], dz = DZ[k], rx = -dz, rz = dx, off = ROAD/2 + 3;
       const px = n.x - dx*off + rx*off, pz = n.z - dz*off + rz*off, y = n.city ? PAD : 0;
-      box(COL.pole, px, y+8, pz, 0.8, 16, 0.8);
-      const q = lookQ(px, y+12, pz, px-dx, y+12, pz-dz);
-      S.add('box', 'std', COL.pole, px, y+12, pz, 2.2, 6.6, 1.6, 0, q);
-      ['R','Y','G'].forEach((l, j) => lamps.push({x: px - dx*0.8, y: y + 12 + 2.1 - 2.1*j, z: pz - dz*0.8, node: i, axisX: k <= 1, l}));
+      if (n.ctl === 1){
+        box(COL.pole, px, y+8, pz, 0.8, 16, 0.8);
+        S.add('box', 'std', COL.pole, px, y+12, pz, 2.2, 6.6, 1.6, 0, lookQ(px, y+12, pz, px-dx, y+12, pz-dz));
+        ['R','Y','G'].forEach((l, j) => lamps.push({x: px - dx*0.8, y: y + 12 + 2.1 - 2.1*j, z: pz - dz*0.8, node: i, axisX: k <= 1, l}));
+      } else {
+        box(COL.metal, px, y+4.5, pz, 0.5, 9, 0.5);
+        S.add('plane', 'stop', COL.white, px - dx*0.46, y+8.6, pz - dz*0.46, 3.2, 3.2, 1, Math.atan2(-dx, -dz));
+      }
     }
   });
   // street lights and street trees
-  let li = 0;
   forEachCityEdge(M, (ax, az, dx, dz, len) => {
     const rx = -dz, rz = dx, s0 = ROAD/2 + WALK + 12;
     let idx = 0;
     for (let s = s0; s <= len - s0; s += 28){
       for (const side of [1,-1]){
-        if ((idx + (side === 1 ? 0 : 1)) % 2 === 0){
+        const slot = (idx + (side === 1 ? 0 : 2)) % 4;
+        if (slot === 0){
+          if (!P.streetLights) continue;
           const lat = side*(ROAD/2 + 1.5), px = ax+dx*s+rx*lat, pz = az+dz*s+rz*lat;
           box(COL.pole, px, PAD+8, pz, 0.7, 16, 0.7);
-          const ex = px - rx*side*4.5, ez = pz - rz*side*4.5;
-          strip(px, pz, ex, ez, 0.5, PAD+15.6, 0.5, COL.pole);
-          box(COL.lamp, ex, PAD+15.2, ez, 2.2, 0.5, 1.4, Math.atan2(-rz, rx), 'neon'); li++;
-        } else {
+          box(COL.lamp, px - rx*side*1.3, PAD+15.7, pz - rz*side*1.3, 2.6, 0.5, 1.4, Math.atan2(-rz, rx), 'neon');
+        } else if (slot === 2 && P.streetTrees){
           const lat = side*(ROAD/2 + 5.5);
           tree(ax+dx*s+rx*lat, az+dz*s+rz*lat, 9, PAD);
         }
@@ -1810,14 +2170,44 @@ function emitScene(M, S, signs, lamps){
       idx++;
     }
   });
-  // buildings
+  // houses with garages
+  for (const l of M.lawns) box(COL.lawn, (l[0]+l[2])/2, PAD+0.1, (l[1]+l[3])/2, l[2]-l[0], 0.2, l[3]-l[1]);
+  for (const [x, z, rot, wall, roof, g, drive, y, style] of M.houses){
+    const B2 = local(x, y, z, rot), wc = WALLS[wall], rc = ROOFS[roof];
+    const tall = style === 1, bw = tall ? 22 : 24, bh = tall ? 20 : 11, rh = tall ? 7 : 6, gx = g*(bw/2 + 6);
+    B2(wc, 0, bh/2, 0, bw, bh, 18);
+    B2(rc, 0, bh + rh/2, -5, bw+2, rh, 10, 'std', 'wedge');
+    B2(rc, 0, bh + rh/2, 5, bw+2, rh, 10, 'std', 'wedge', Math.PI);
+    B2(COL.door, -g*(tall ? 5 : 6), 3.5, 9.2, 4, 7, 0.4);
+    B2(COL.glass, g*4, tall ? 15 : 6, 9.15, 4.5, 3.5, 0.3, 'win');
+    if (tall) B2(COL.glass, -g*5, 15, 9.15, 4.5, 3.5, 0.3, 'win');
+    B2(wc, gx, 4.5, 1, 12, 9, 16);
+    B2(COL.rollup, gx, 3.75, 9.15, 10, 7.5, 0.3);
+    B2(COL.path, gx, 0.1, 9 + drive/2, 10, 0.2, drive);
+    if (P.furniture) B2(COL.mail, gx - g*7.5, 1.9, 9 + drive - 1.2, 1, 3.8, 1.6);
+  }
+  // parking lots
+  for (const [x0, z0, x1, z1, dir, y] of M.lots){
+    box(COL.asphalt, (x0+x1)/2, y, (z0+z1)/2, x1-x0, 0.4, z1-z0);
+    if (dir === 0){ for (let z = z0+6; z+18 <= z1-6; z += 42) for (let x = x0+6; x <= x1-6; x += 10) box(COL.line, x, y+0.25, z+9, 0.4, 0.1, 17); }
+    else { for (let x = x0+6; x+18 <= x1-6; x += 42) for (let z = z0+6; z <= z1-6; z += 10) box(COL.line, x+9, y+0.25, z, 17, 0.1, 0.4); }
+  }
+  // shops
+  for (const [x, z, w, rot, col, name] of M.shops){
+    const B2 = local(x, PAD, z, rot), L = at(x, PAD, z, rot), ry = -rot*Math.PI/180;
+    B2(SHOP_COLS[col], 0, 7, 0, w, 14, 36);
+    B2(COL.glass, 0, 4.5, 18.15, w-4, 8, 0.3, 'win');
+    B2(AWNINGS[col], 0, 10, 20.5, w-2, 0.6, 5);
+    B2(COL.white, 0, 12.4, 18.3, w-6, 2.6, 0.4);
+    const p = L(0, 12.4, 18.55); sign(SHOP_NAMES[name], p[0], p[1], p[2], w-6, 2.6, ry, '#EDEDE8', '#1E2228');
+  }
+  // apartments and offices
   M.buildings.forEach((b, bi) => {
     const [x, z, w, d, h, s, crown] = b, st = STYLES[s];
     const bodyMat = st.mat === 'Glass' ? 'glass' : 'std';
     box(st.body, x, PAD+h/2, z, w, h, d, 0, bodyMat);
     box(COL.glass, x, PAD+4.5, z, w+0.4, 7, d+0.4, 0, 'win');
-    let k = 1;
-    while (k*FLOOR + 9 <= h - 3){ box(st.band, x, PAD+k*FLOOR+6.5, z, w+0.3, 5, d+0.3, 0, ((bi*7 + k*13) % 10) < 6 ? 'win' : 'winDark'); k++; }
+    for (let k = 1; k*FLOOR + 9 <= h - 3; k++) box(st.band, x, PAD+k*FLOOR+6.5, z, w+0.3, 5, d+0.3, 0, ((bi*7 + k*13) % 10) < 6 ? 'win' : 'winDark');
     box(st.body, x, PAD+h+0.6, z, w+0.8, 1.2, d+0.8, 0, bodyMat);
     let top = PAD + h + 1.2, tw = w, td = d;
     if (crown >= 1){
@@ -1830,22 +2220,8 @@ function emitScene(M, S, signs, lamps){
     if (crown >= 2){ box(COL.metal, x, top+20, z, 1.2, 40, 1.2); S.add('ball','neon', COL.red, x, top+40.8, z, 1.8, 1.8, 1.8); }
     box(COL.metal, x+tw*0.22, top+2, z-td*0.2, Math.min(10, tw*0.25), 4, Math.min(8, td*0.25));
   });
-  // homes
-  for (const l of M.lawns) box(COL.lawn, (l[0]+l[2])/2, PAD+0.1, (l[1]+l[3])/2, l[2]-l[0], 0.2, l[3]-l[1]);
-  for (const hs of M.houses){
-    const [x, z, rot, wall, roof, g, drive, y] = hs, ry = -rot*Math.PI/180, L = at(x, y, z, rot), wc = WALLS[wall], rc = ROOFS[roof];
-    const B2 = (col, lx, ly, lz, sx, sy, sz, mat) => { const p = L(lx, ly, lz); box(col, p[0], p[1], p[2], sx, sy, sz, ry, mat); };
-    B2(wc, 0, 6, 0, 22, 12, 18);
-    for (let k = 0; k < 4; k++) B2(rc, 0, 12.7+k*1.4, 0, 24, 1.4, 20*(1-k/4));
-    B2(COL.door, -g*5, 3.5, 9.2, 4, 7, 0.4);
-    B2(COL.glass, g*4, 7, 9.15, 4, 3.5, 0.3, 'win');
-    B2(wc, g*17, 4.5, 1, 12, 9, 16);
-    B2(rc, g*17, 9.5, 1, 12.4, 1, 16.4);
-    B2(COL.rollup, g*17, 3.75, 9.15, 10, 7.5, 0.3);
-    B2(COL.path, g*17, 0.1, 9+drive/2, 10, 0.2, drive);
-  }
   // parks
-  for (const [x0, z0, x1, z1] of M.parks){
+  for (const [x0, z0, x1, z1, kind] of M.parks){
     const cx = (x0+x1)/2, cz = (z0+z1)/2;
     box(COL.lawn, cx, PAD+0.1, cz, x1-x0, 0.2, z1-z0);
     box(COL.path, cx, PAD+0.25, cz, x1-x0, 0.1, 8);
@@ -1854,6 +2230,16 @@ function emitScene(M, S, signs, lamps){
     S.add('cyl','water', COL.water, cx, PAD+2.1, cz, 23, 0.4, 23);
     S.add('cyl','std', COL.stone, cx, PAD+4, cz, 2.4, 6, 2.4);
     S.add('cyl','std', COL.stone, cx, PAD+6.5, cz, 8, 0.8, 8);
+    if (kind === 2){
+      const q = (x1-x0)/4, kx = cx - q, kz = cz - q;
+      box(COL.court, kx, PAD+0.3, kz, 50, 0.2, 30);
+      for (const s of [-1,1]){ box(COL.metal, kx+s*26, PAD+5, kz, 0.5, 10, 0.5); box(COL.white, kx+s*25.6, PAD+10.5, kz, 0.3, 4, 6); S.add('cyl','std', COL.accent, kx+s*24.5, PAD+9, kz, 1.8, 0.2, 1.8); }
+      const px = cx + q, pz = cz + q;
+      box(COL.play, px-6, PAD+4, pz, 6, 8, 6);
+      S.add('wedge','std', COL.accent, px+3, PAD+4, pz, 4, 7.6, 12, -90*Math.PI/180);
+      for (const s of [-1,1]){ box(COL.metal, px-4+s*5, PAD+4, pz+14, 0.5, 8, 0.5); box(COL.play, px-4+s*2, PAD+2, pz+14, 1.6, 0.3, 1); }
+      box(COL.metal, px-4, PAD+8, pz+14, 10.5, 0.5, 0.5);
+    }
   }
   // parking garages
   for (const [x0, z0, x1, z1, lv, y0] of M.garages){
@@ -1880,14 +2266,9 @@ function emitScene(M, S, signs, lamps){
     sign('P  PARKING', cx, top+5, z0-0.75, 26, 6, Math.PI, '#244C9C', '#FFFFFF');
     box(COL.metal, cx-10, top+2, z0-0.4, 0.6, 5, 0.6); box(COL.metal, cx+10, top+2, z0-0.4, 0.6, 5, 0.6);
   }
-  // parking lots
-  for (const [x0, z0, x1, z1] of M.lots){
-    box(COL.asphalt, (x0+x1)/2, 0, (z0+z1)/2, x1-x0, 0.4, z1-z0);
-    for (let z = z0+6; z+18 <= z1-6; z += 42) for (let x = x0+6; x <= x1-6; x += 10) box(COL.line, x, 0.25, z+9, 0.4, 0.1, 17);
-  }
   // outskirts
   for (const [x, z, w, d, h, rot] of M.warehouses){
-    const ry = -rot*Math.PI/180, L = at(x, 0, z, rot), B2 = (col, lx, ly, lz, sx, sy, sz) => { const p = L(lx, ly, lz); box(col, p[0], p[1], p[2], sx, sy, sz, ry); };
+    const B2 = local(x, 0, z, rot), L = at(x, 0, z, rot), ry = -rot*Math.PI/180;
     B2(COL.warehouse, 0, h/2, 0, w, h, d); B2(COL.metal, 0, h+0.5, 0, w+1, 1, d+1);
     const n = Math.max(2, Math.floor(w/30)); for (let i = 1; i <= n; i++) B2(COL.rollup, -w/2+(i-0.5)*w/n, 7, d/2+0.2, 12, 14, 0.4);
     B2(COL.concrete, 0, 0.15, d/2+8, w, 0.3, 16); B2(COL.cream, w/2+10, 6, d/2-7, 20, 12, 14);
@@ -1895,14 +2276,14 @@ function emitScene(M, S, signs, lamps){
     const p = L(0, h-5, d/2+0.55); sign('WAREHOUSE', p[0], p[1], p[2], 34, 6, ry, '#244C9C', '#FFFFFF');
   }
   for (const [x, z, rot] of M.repairs){
-    const ry = -rot*Math.PI/180, L = at(x, 0, z, rot), B2 = (col, lx, ly, lz, sx, sy, sz) => { const p = L(lx, ly, lz); box(col, p[0], p[1], p[2], sx, sy, sz, ry); };
+    const B2 = local(x, 0, z, rot), L = at(x, 0, z, rot), ry = -rot*Math.PI/180;
     B2(COL.cream, 0, 10, 0, 84, 20, 36); B2(COL.accent, 0, 20.6, 0, 85, 1.2, 37);
     for (let i = -1; i <= 1; i++) B2(COL.rollup, i*26, 7, 18.2, 16, 14, 0.4);
     B2(COL.accent, 0, 17.2, 18.4, 44, 5, 0.6); B2(COL.concrete, 0, 0.15, 28, 84, 0.3, 20);
     const p = L(0, 17.2, 18.75); sign('AUTO REPAIR', p[0], p[1], p[2], 44, 5, ry, '#CC3428', '#FFFFFF');
   }
   for (const [x, z, rot] of M.gas){
-    const ry = -rot*Math.PI/180, L = at(x, 0, z, rot), B2 = (col, lx, ly, lz, sx, sy, sz, mat) => { const p = L(lx, ly, lz); box(col, p[0], p[1], p[2], sx, sy, sz, ry, mat); };
+    const B2 = local(x, 0, z, rot), L = at(x, 0, z, rot), ry = -rot*Math.PI/180;
     B2(COL.concrete, 0, 0.15, 12, 80, 0.3, 50); B2(COL.canopy, 0, 17, 12, 70, 2, 40); B2(COL.accent, 0, 16, 12, 70.4, 1, 40.4);
     for (const px of [-26,26]) for (const pz of [0,24]) B2(COL.canopy, px, 8, pz, 2, 16, 2);
     for (const ix of [-18,0,18]){ B2(COL.concrete, ix, 0.6, 12, 3, 0.6, 14); B2(COL.accent, ix, 3.3, 8, 2, 5, 1.6); B2(COL.accent, ix, 3.3, 16, 2, 5, 1.6); }
@@ -1911,57 +2292,57 @@ function emitScene(M, S, signs, lamps){
     let p = L(0, 11, -13.4); sign('MARKET', p[0], p[1], p[2], 30, 4, ry, '#CC3428', '#FFFFFF');
     p = L(38, 28, 34.55); sign('GAS', p[0], p[1], p[2], 12, 8, ry, '#CC3428', '#FFFFFF');
   }
-  for (const [x, z, rot, text] of M.billboards){
-    const ry = -rot*Math.PI/180, L = at(x, 0, z, rot);
-    for (const px of [-12,12]){ const p = L(px, 11, 0); box(COL.metal, p[0], p[1], p[2], 1.2, 22, 1.2, ry); }
-    const p = L(0, 28, 0); box(COL.billboard, p[0], p[1], p[2], 36, 12, 1, ry);
-    const f = L(0, 28, 0.55); sign(text, f[0], f[1], f[2], 36, 12, ry, '#222834', '#FFD65A');
-    const bk = L(0, 28, -0.55); sign(text, bk[0], bk[1], bk[2], 36, 12, ry + Math.PI, '#222834', '#FFD65A');
-  }
   // highway
-  const gaps = M.ramps.map(r => { const side = r[0] > 0 ? 1 : -1, dir = r[2] > r[1] ? 1 : -1, bx = r[0] - side*7.75; return [bx-2, Math.min(r[2], r[2]+dir*70), bx+2, Math.max(r[2], r[2]+dir*70)]; });
-  const centre = roundedRect(M.RX, M.RZ, C.RC, ARC);
-  ribbon(centre, DECK, H-1, 2, COL.asphalt);
-  ribbon(roundedRect(M.RX+DECK/2-0.75, M.RZ+DECK/2-0.75, C.RC+DECK/2-0.75, ARC), 1.5, H+1.5, 3, COL.barrier, gaps);
-  ribbon(roundedRect(M.RX-DECK/2+0.75, M.RZ-DECK/2+0.75, C.RC-DECK/2+0.75, ARC), 1.5, H+1.5, 3, COL.barrier);
-  ribbon(centre, 2, H+1.5, 3, COL.barrier);
-  for (const o of [-15, 15]) ribbon(roundedRect(M.RX+o, M.RZ+o, C.RC+o, ARC), 0.5, H+0.05, 0.1, COL.line);
-  const underRoad = (x, z) => M.spokeX.some(sx => Math.abs(x-sx) < ROAD/2+7 && Math.abs(z) > M.CZ/2) || M.spokeZ.some(sz => Math.abs(z-sz) < ROAD/2+7 && Math.abs(x) > M.CX/2);
-  alongPath(centre, 64, (x, z, hx, hz) => { if (underRoad(x,z)) return; box(COL.concrete, x, (H-3)/2, z, 6, H-3, 6); box(COL.concrete, x, H-3.5, z, 5, 3, DECK-8, Math.atan2(-hz, hx)); });
-  alongPath(centre, 130, (x, z, hx, hz) => {
-    const ry = Math.atan2(-hz, hx);
-    box(COL.pole, x, H+7, z, 0.8, 14, 0.8); box(COL.pole, x, H+14, z, 0.5, 0.5, 22, ry);
-    for (const s of [-10,10]){ const px = x + s*Math.sin(ry), pz = z + s*Math.cos(ry); box(COL.lamp, px, H+13.6, pz, 2.4, 0.5, 1.4, ry, 'neon'); }
-  });
-  for (const [x, zl, zh] of M.ramps){
-    const side = x > 0 ? 1 : -1, dir = zh > zl ? 1 : -1, len = Math.hypot(H, zh-zl);
-    const q = lookQ(x, H/2, (zl+zh)/2, x, H, zh), up = new THREE.Vector3(0,1,0).applyQuaternion(q);
-    S.add('box','std', COL.asphalt, x - up.x*0.5, H/2 - up.y*0.5, (zl+zh)/2 - up.z*0.5, 14, 1, len+1, 0, q);
-    for (const s of [-1,1]) S.add('box','std', COL.barrier, x + s*6.4 + up.x*1.4, H/2 + up.y*1.4, (zl+zh)/2 + up.z*1.4, 1.2, 3, len, 0, q);
-    const zm = zh + dir*35;
-    box(COL.asphalt, x, H-1, zm, 14, 2, 70); box(COL.barrier, x+side*6.4, H+1.5, zm, 1.2, 3, 70); box(COL.barrier, x, H+1.5, zh+dir*70, 14, 3, 1.2);
-    for (const t of [0.35, 0.65, 0.9]){ const ht = H*t; box(COL.concrete, x, (ht-1)/2, zl+(zh-zl)*t, 4, ht-1, 4); }
-    box(COL.concrete, x, (H-2)/2, zm, 4, H-2, 4);
+  if (P.highway){
+    for (const [x, z, rot, text] of M.billboards){
+      const L = at(x, 0, z, rot), ry = -rot*Math.PI/180;
+      for (const px of [-12,12]){ const p = L(px, 11, 0); box(COL.metal, p[0], p[1], p[2], 1.2, 22, 1.2, ry); }
+      const p = L(0, 28, 0); box(COL.billboard, p[0], p[1], p[2], 36, 12, 1, ry);
+      const f = L(0, 28, 0.55); sign(text, f[0], f[1], f[2], 36, 12, ry, '#222834', '#FFD65A');
+      const bk = L(0, 28, -0.55); sign(text, bk[0], bk[1], bk[2], 36, 12, ry + Math.PI, '#222834', '#FFD65A');
+    }
+    const gaps = M.ramps.map(r => { const side = r[0] > 0 ? 1 : -1, dir = r[2] > r[1] ? 1 : -1, bx = r[0] - side*7.75; return [bx-2, Math.min(r[2], r[2]+dir*70), bx+2, Math.max(r[2], r[2]+dir*70)]; });
+    const centre = roundedRect(M.RX, M.RZ, C.RC, ARC);
+    ribbon(centre, DECK, H-1, 2, COL.asphalt);
+    ribbon(roundedRect(M.RX+DECK/2-0.75, M.RZ+DECK/2-0.75, C.RC+DECK/2-0.75, ARC), 1.5, H+1.5, 3, COL.barrier, gaps);
+    ribbon(roundedRect(M.RX-DECK/2+0.75, M.RZ-DECK/2+0.75, C.RC-DECK/2+0.75, ARC), 1.5, H+1.5, 3, COL.barrier);
+    ribbon(centre, 2, H+1.5, 3, COL.barrier);
+    for (const o of [-15, 15]) ribbon(roundedRect(M.RX+o, M.RZ+o, C.RC+o, ARC), 0.5, H+0.05, 0.1, COL.line);
+    const underRoad = (x, z) => M.spokeX.some(sx => Math.abs(x-sx) < ROAD/2+7 && Math.abs(z) > M.CZ/2) || M.spokeZ.some(sz => Math.abs(z-sz) < ROAD/2+7 && Math.abs(x) > M.CX/2);
+    alongPath(centre, 64, (x, z, hx, hz) => { if (underRoad(x,z)) return; box(COL.concrete, x, (H-3)/2, z, 6, H-3, 6); box(COL.concrete, x, H-3.5, z, 5, 3, DECK-8, Math.atan2(-hz, hx)); });
+    alongPath(centre, 130, (x, z, hx, hz) => {
+      const ry = Math.atan2(-hz, hx);
+      box(COL.pole, x, H+7, z, 0.8, 14, 0.8); box(COL.pole, x, H+14, z, 0.5, 0.5, 22, ry);
+      for (const s of [-10,10]){ const px = x + s*Math.sin(ry), pz = z + s*Math.cos(ry); box(COL.lamp, px, H+13.6, pz, 2.4, 0.5, 1.4, ry, 'neon'); }
+    });
+    for (const [x, zl, zh] of M.ramps){
+      const side = x > 0 ? 1 : -1, dir = zh > zl ? 1 : -1, len = Math.hypot(H, zh-zl);
+      const q = lookQ(x, H/2, (zl+zh)/2, x, H, zh), up = new THREE.Vector3(0,1,0).applyQuaternion(q);
+      S.add('box','std', COL.asphalt, x - up.x*0.5, H/2 - up.y*0.5, (zl+zh)/2 - up.z*0.5, 14, 1, len+1, 0, q);
+      for (const s of [-1,1]) S.add('box','std', COL.barrier, x + s*6.4 + up.x*1.4, H/2 + up.y*1.4, (zl+zh)/2 + up.z*1.4, 1.2, 3, len, 0, q);
+      const zm = zh + dir*35;
+      box(COL.asphalt, x, H-1, zm, 14, 2, 70); box(COL.barrier, x+side*6.4, H+1.5, zm, 1.2, 3, 70); box(COL.barrier, x, H+1.5, zh+dir*70, 14, 3, 1.2);
+      for (const t of [0.35, 0.65, 0.9]){ const ht = H*t; box(COL.concrete, x, (ht-1)/2, zl+(zh-zl)*t, 4, ht-1, 4); }
+      box(COL.concrete, x, (H-2)/2, zm, 4, H-2, 4);
+    }
   }
   // street furniture
   for (const [k, x, z, rot, y] of M.props){
-    const ry = -rot*Math.PI/180, L = at(x, y, z, rot), B2 = (col, lx, ly, lz, sx, sy, sz, mat) => { const p = L(lx, ly, lz); box(col, p[0], p[1], p[2], sx, sy, sz, ry, mat); };
+    const B2 = local(x, y, z, rot);
     if (k === 1){ B2(COL.wood, 0, 1.8, 0, 6, 0.5, 2); B2(COL.wood, 0, 3, -1, 6, 2, 0.4); B2(COL.metal, -2.6, 0.8, 0, 0.4, 1.6, 2); B2(COL.metal, 2.6, 0.8, 0, 0.4, 1.6, 2); }
     else if (k === 2) S.add('cyl','std', COL.bin, x, y+1.6, z, 2.4, 3.2, 2.4);
     else if (k === 3){ S.add('cyl','std', COL.red, x, y+1.3, z, 1.4, 2.6, 1.4); S.add('ball','std', COL.red, x, y+2.7, z, 1.5, 1.5, 1.5); }
-    else if (k === 4){ B2(COL.metal, 0, 0.7, 0, 0.5, 1.4, 0.5); B2(COL.blue, 0, 2.9, 0, 2, 3, 1.6); }
     else { B2(COL.metal, 0, 8.6, 0, 12, 0.4, 5); B2(COL.glass, 0, 4.6, -2.3, 12, 6.5, 0.3, 'glass'); B2(COL.metal, -5.8, 4.2, 2.2, 0.4, 8.4, 0.4); B2(COL.metal, 5.8, 4.2, 2.2, 0.4, 8.4, 0.4); B2(COL.wood, 0, 1.8, -1.2, 8, 0.5, 1.6); B2(COL.metal, 7.6, 3.7, 1.5, 0.4, 7.4, 0.4); B2(COL.blue, 7.6, 8.6, 1.5, 2.6, 2.6, 0.3); }
   }
   for (const [x, z, s, y] of M.trees) tree(x, z, s, y);
   for (const [x, y, z, rot, kind, paint] of M.cars) vehicle(x, y, z, rot, kind, paint);
-  return li;
 }
 
 /* ---------- traffic simulation (same rules as the Luau CityTraffic script) ---------- */
 function makeTraffic(M){
-  const T = trafficCounts(M);
+  const P = M.P;
   const {ROAD, WALK, LANE} = C;
-  const CITY_SPEED = 34, TURN_SPEED = 15, ACCEL = 16, BRAKE = 42, GREEN = 12, YELLOW = 3, CYCLE = 2*(GREEN+YELLOW);
+  const CITY_SPEED = 34, HWY_SPEED = 72, TURN_SPEED = 15, ACCEL = 16, BRAKE = 42, GREEN = 12, YELLOW = 3, CYCLE = 2*(GREEN+YELLOW);
   const DX = [1,-1,0,0], DZ = [0,0,1,-1], OPP = [1,0,3,2];
   const nodes = M.nodes, links = M.links;
   const rand = Math.random, randInt = (a,b) => a + Math.floor(rand()*(b-a+1));
@@ -1981,16 +2362,16 @@ function makeTraffic(M){
   };
   const approach = (c, target, dt) => { c.v = c.v < target ? Math.min(target, c.v + ACCEL*dt) : target; c.wait = c.v < 0.5 ? c.wait + dt : 0; };
   const vehicles = [];
-  const newVehicle = kind => { const v = {kind, len: VEH[kind].L, paint: randInt(0, PAINT.length-1), v: 0, wait: 0, x:0, y:0, z:0, hx:1, hz:0}; vehicles.push(v); return v; };
+  const newVehicle = kind => { const v = {kind, len: VEH[kind].L, paint: randInt(0, PAINT.length-1), v: 0, wait: 0, stopT: 0, cleared: false, x:0, y:0, z:0, hx:1, hz:0}; vehicles.push(v); return v; };
 
   const city = [];
-  for (let i = 0; i < T.city; i++){
+  for (let i = 0; i < P.cityCars; i++){
     for (let tries = 0; tries < 30; tries++){
       const a = randInt(0, nodes.length-1), k = randInt(0,3), b = links[a][k];
       if (b < 0) continue;
-      const len = edgeLen(a,b), s = ROAD/2 + 10 + rand()*(len - ROAD - 40);
+      const len = edgeLen(a,b), s = ROAD/2 + 10 + rand()*(len - ROAD - 50);
       if (city.some(o => o.a === a && o.b === b && Math.abs(o.s - s) < 40)) continue;
-      const c = newVehicle(pickKind([0.72,0.14,0.07,0.07]));
+      const c = newVehicle(pickKind([0.74,0.14,0.05,0.07]));
       Object.assign(c, {a, b, k, s, turning:false, nk: pickNext(b,k)});
       city.push(c); break;
     }
@@ -2010,10 +2391,25 @@ function makeTraffic(M){
     c.blen = Math.max(4, (dist(p0x,p0z,p1x,p1z) + dist(p1x,p1z,p2x,p2z) + dist(p0x,p0z,p2x,p2z))/2);
     c.nxt = links[b][k2]; c.turning = true; c.u = 0;
   };
+  const mainClear = (b, groups) => {
+    const axis = nodes[b].axis;
+    for (let k = 0; k < 4; k++){
+      if ((k <= 1 ? 1 : 2) !== axis) continue;
+      const m = links[b][OPP[k]]; if (m < 0) continue;
+      const g = groups.get(m*4096 + b); if (!g) continue;
+      const len = edgeLen(m, b);
+      for (const o of g) if (!o.turning && len - o.s < 55 && o.v > 1) return false;
+    }
+    return true;
+  };
+  const occ = new Map();
+  const inc = n => occ.set(n, (occ.get(n) || 0) + 1);
   const stepCity = (dt, now) => {
     const groups = new Map();
+    occ.clear();
     for (const c of city){
-      if (c.turning){ c.key = c.b*4096 + c.nxt; c.gs = ROAD/2 - (1-c.u)*c.blen; } else { c.key = c.a*4096 + c.b; c.gs = c.s; }
+      if (c.turning){ c.key = c.b*4096 + c.nxt; c.gs = ROAD/2 - (1-c.u)*c.blen; inc(c.b); }
+      else { c.key = c.a*4096 + c.b; c.gs = c.s; if (c.cleared) inc(c.b); }
       let g = groups.get(c.key); if (!g){ g = []; groups.set(c.key, g); } g.push(c);
     }
     for (const c of city){
@@ -2023,15 +2419,27 @@ function makeTraffic(M){
         const target = c.k === c.nk ? CITY_SPEED : TURN_SPEED;
         approach(c, Math.min(target, Math.sqrt(2*BRAKE*Math.max(0, lead - c.gs))), dt);
         c.u += c.v*dt/c.blen;
-        if (c.u >= 1){ c.a = c.b; c.b = c.nxt; c.k = c.nk; c.s = ROAD/2; c.turning = false; c.nk = pickNext(c.b, c.k); }
+        if (c.u >= 1){ c.a = c.b; c.b = c.nxt; c.k = c.nk; c.s = ROAD/2; c.turning = false; c.cleared = false; c.stopT = 0; c.nk = pickNext(c.b, c.k); }
       } else {
-        const len = edgeLen(c.a, c.b), sEnd = len - ROAD/2;
+        const len = edgeLen(c.a, c.b), sEnd = len - ROAD/2, node = nodes[c.b], ctl = node.ctl;
         let limit = lead;
-        const light = lightFor(c.b, c.k <= 1, now);
-        if (light !== 'G'){
-          const stopAt = len - ROAD/2 - (nodes[c.b].city ? WALK : 0) - 1.5 - c.len/2;
-          const canStop = (stopAt - c.s) > (c.v*c.v)/(2*BRAKE) - 1;
-          if (c.s <= stopAt + 0.5 && (light === 'R' || canStop)) limit = Math.min(limit, stopAt);
+        const stopAt = len - ROAD/2 - (hasCrosswalk(node) ? WALK : 2) - 1.5 - c.len/2;
+        if (ctl === 1){
+          const light = lightFor(c.b, c.k <= 1, now);
+          if (light !== 'G'){
+            const canStop = (stopAt - c.s) > (c.v*c.v)/(2*BRAKE) - 1;
+            if (c.s <= stopAt + 0.5 && (light === 'R' || canStop)) limit = Math.min(limit, stopAt);
+          }
+        } else if (ctl >= 2){
+          if (mustStop(node, c.k)){
+            if (!c.cleared){
+              if (c.s >= stopAt - 1.5 && c.v < 0.5){
+                c.stopT += dt;
+                if (c.wait > 12 || (c.stopT > 0.8 && !(occ.get(c.b) > 0) && (ctl === 3 || mainClear(c.b, groups)))){ c.cleared = true; inc(c.b); }
+              }
+              if (!c.cleared) limit = Math.min(limit, stopAt);
+            }
+          } else if (occ.get(c.b) > 0 && c.s < sEnd - 3 && c.wait < 6) limit = Math.min(limit, sEnd - 3);
         }
         const g = groups.get(c.b*4096 + links[c.b][c.nk]);
         if (g && c.wait < 4) for (const o of g) if (o.gs - o.len/2 < ROAD/2 + c.len + 2){ limit = Math.min(limit, sEnd - 0.5); break; }
@@ -2040,7 +2448,7 @@ function makeTraffic(M){
         vmax = Math.min(vmax, Math.sqrt(2*BRAKE*Math.max(0, limit - c.s)));
         approach(c, vmax, dt);
         c.s = Math.min(c.s + c.v*dt, Math.max(c.s, limit));
-        if (c.s >= sEnd) startTurn(c);
+        if (c.s >= sEnd){ startTurn(c); if (!c.cleared) inc(c.b); }
       }
       if (c.turning){
         const p = c.p, u = Math.min(c.u, 1), w0 = (1-u)*(1-u), w1 = 2*(1-u)*u, w2 = u*u;
@@ -2061,43 +2469,46 @@ function makeTraffic(M){
     if (o < 0) pts = pts.slice().reverse();
     const cum = [0]; let total = 0;
     for (let i = 0; i < pts.length; i++){ const a = pts[i], b = pts[(i+1)%pts.length]; total += Math.hypot(b[0]-a[0], b[1]-a[1]); cum.push(total); }
-    return {pts, cum, total};
+    return {pts, cum, total, cars: []};
   });
   const hwy = [];
-  const perLane = Math.ceil(T.hwy / lanes.length);
-  for (let i = 0; i < T.hwy; i++){
+  const nh = P.highway ? P.hwyCars : 0, perLane = Math.max(1, Math.ceil(nh / lanes.length));
+  for (let i = 0; i < nh; i++){
     const lane = i % lanes.length, c = newVehicle(pickKind([0.55,0.15,0.05,0.25]));
     c.lane = lane; c.seg = 0;
     c.s = (Math.floor(i/lanes.length) + rand()*0.3) * lanes[lane].total / perLane;
-    c.vmax = lane % 2 === 0 ? 62 + rand()*10 : 72 + rand()*12;
-    if (c.kind >= 2) c.vmax = Math.min(c.vmax, 60);
-    c.v = c.vmax; hwy.push(c);
+    c.vmax = HWY_SPEED * (lane % 2 === 0 ? 0.82 + rand()*0.13 : 0.95 + rand()*0.15);
+    if (c.kind >= 2) c.vmax = Math.min(c.vmax, HWY_SPEED*0.8);
+    c.v = c.vmax; hwy.push(c); lanes[lane].cars.push(c);
   }
   const stepHwy = dt => {
-    for (const c of hwy){
-      const lane = lanes[c.lane];
-      let gap = Infinity, leader = null;
-      for (const o of hwy) if (o !== c && o.lane === c.lane){ const d = ((o.s - c.s) % lane.total + lane.total) % lane.total; if (d > 0 && d < gap){ gap = d; leader = o; } }
-      const free = leader ? gap - (leader.len + c.len)/2 - 8 : Infinity;
-      approach(c, Math.min(c.vmax, Math.sqrt(2*BRAKE*Math.max(0, free))), dt);
-      c.s += c.v*dt;
-      if (c.s >= lane.total){ c.s -= lane.total; c.seg = 0; }
-      while (c.seg < lane.pts.length-1 && lane.cum[c.seg+1] < c.s) c.seg++;
-      const a = lane.pts[c.seg], b = lane.pts[(c.seg+1) % lane.pts.length];
-      const segLen = lane.cum[c.seg+1] - lane.cum[c.seg], t = segLen > 0 ? (c.s - lane.cum[c.seg])/segLen : 0;
-      c.x = a[0] + (b[0]-a[0])*t; c.z = a[1] + (b[1]-a[1])*t; c.y = C.H + 0.1; c.hx = b[0]-a[0]; c.hz = b[1]-a[1];
+    for (const lane of lanes){
+      const list = lane.cars;
+      list.sort((a,b) => a.s - b.s);
+      list.forEach((c, i) => {
+        const leader = list[(i+1) % list.length];
+        let free = Infinity;
+        if (leader !== c) free = ((leader.s - c.s) % lane.total + lane.total) % lane.total - (leader.len + c.len)/2 - 8;
+        approach(c, Math.min(c.vmax, Math.sqrt(2*BRAKE*Math.max(0, free))), dt);
+        c.s += c.v*dt;
+        if (c.s >= lane.total){ c.s -= lane.total; c.seg = 0; }
+        while (c.seg < lane.pts.length-1 && lane.cum[c.seg+1] < c.s) c.seg++;
+        const a = lane.pts[c.seg], b = lane.pts[(c.seg+1) % lane.pts.length];
+        const segLen = lane.cum[c.seg+1] - lane.cum[c.seg], t = segLen > 0 ? (c.s - lane.cum[c.seg])/segLen : 0;
+        c.x = a[0] + (b[0]-a[0])*t; c.z = a[1] + (b[1]-a[1])*t; c.y = C.H + 0.1; c.hx = b[0]-a[0]; c.hz = b[1]-a[1];
+      });
     }
   };
-  return { vehicles, city, hwy, lightFor, T, step(dt, now){ stepCity(dt, now); stepHwy(dt); } };
+  return { vehicles, city, hwy, lightFor, step(dt, now){ stepCity(dt, now); stepHwy(dt); } };
 }
 
 /* ---------- renderer ---------- */
 const V = { ok:false };
 function initView(){
   const host = $('#view');
-  if (!window.THREE || !THREE.OrbitControls){ noGL('The 3D library could not load, so the preview is off. The build script below still works.'); return; }
+  if (!window.THREE || !THREE.OrbitControls){ noGL('The 3D library could not load, so the preview is off. The build script still works.'); return; }
   try { V.renderer = new THREE.WebGLRenderer({antialias:true}); }
-  catch (e){ noGL('Your browser could not start WebGL, so the preview is off. The build script below still works.'); return; }
+  catch (e){ noGL('Your browser could not start WebGL, so the preview is off. The build script still works.'); return; }
   initAssets();
   const r = V.renderer;
   r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -2133,21 +2544,19 @@ function signMesh(s){
 }
 
 function buildWorld(M){
-  if (!V.ok) return;
-  if (V.root){ V.scene.remove(V.root); V.root.traverse(o => { if (o.isInstancedMesh) o.dispose && o.dispose(); if (o.material && o.material.map){ o.material.map.dispose(); o.material.dispose(); o.geometry.dispose(); } }); }
+  if (!V.ok) return 0;
+  if (V.root){ V.scene.remove(V.root); V.root.traverse(o => { if (o.isInstancedMesh) o.dispose && o.dispose(); else if (o.material && o.material.map){ o.material.map.dispose(); o.material.dispose(); o.geometry.dispose(); } }); }
   V.root = new THREE.Group(); V.scene.add(V.root);
   const S = new Batch(), signs = [], lamps = [];
   emitScene(M, S, signs, lamps);
   S.build(V.root);
-  V.partCount = S.count;
   for (const s of signs) V.root.add(signMesh(s));
-  // traffic-light lamps
   V.lamps = lamps;
-  V.lampMesh = new THREE.InstancedMesh(GEO.ball, MAT.neon, lamps.length);
+  V.lampMesh = new THREE.InstancedMesh(GEO.ball, MAT.neon, Math.max(1, lamps.length));
+  V.lampMesh.count = lamps.length;
   const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(1.6,1.6,1.6);
   lamps.forEach((l,i) => { m4.compose(new THREE.Vector3(l.x,l.y,l.z), q, sc); V.lampMesh.setMatrixAt(i, m4); V.lampMesh.setColorAt(i, _c()); });
   V.root.add(V.lampMesh);
-  // traffic
   V.sim = makeTraffic(M);
   const parts = new Map();
   V.carParts = [];
@@ -2167,25 +2576,25 @@ function buildWorld(M){
     V.root.add(mesh);
     V.carParts.push({mesh, list});
   }
-  // lights, fog, camera framing
   const ext = Math.max(M.MX, M.MZ);
   V.ext = ext;
   const sh = V.sun.shadow.camera; sh.left = -ext; sh.right = ext; sh.top = ext; sh.bottom = -ext; sh.near = 10; sh.far = ext*5; sh.updateProjectionMatrix();
   V.sun.position.set(ext*0.6, ext*1.4, ext*0.35); V.sun.target.position.set(0,0,0);
   V.controls.maxDistance = ext*4;
-  if (!V.framed){ V.camera.position.set(ext*0.95, ext*0.72, ext*1.05); V.controls.target.set(0, 0, 0); V.framed = true; }
+  if (!V.framed){ V.camera.position.set(ext*0.72, ext*0.5, ext*0.8); V.controls.target.set(0, 0, 0); V.framed = true; }
   applyTime();
+  return S.count;
 }
 
 const LAMP_ON = {R:[255,60,50], Y:[255,196,40], G:[70,235,100]}, LAMP_OFF = {R:[70,22,20], Y:[70,56,18], G:[18,60,28]};
 function updateLamps(now){
+  if (!V.lamps.length) return;
   const c = _c();
   V.lamps.forEach((l, i) => { const on = V.sim.lightFor(l.node, l.axisX, now) === l.l; const col = on ? LAMP_ON[l.l] : LAMP_OFF[l.l]; c.setRGB(col[0]/255, col[1]/255, col[2]/255).convertSRGBToLinear(); V.lampMesh.setColorAt(i, c); });
   V.lampMesh.instanceColor.needsUpdate = true;
 }
-const _m4 = () => new THREE.Matrix4();
 function drawCars(){
-  const m4 = _m4(), p = new THREE.Vector3(), s = new THREE.Vector3(), q = new THREE.Quaternion(), e = new THREE.Euler();
+  const m4 = new THREE.Matrix4(), p = new THREE.Vector3(), s = new THREE.Vector3(), q = new THREE.Quaternion(), e = new THREE.Euler();
   for (const {mesh, list} of V.carParts){
     for (let i = 0; i < list.length; i++){
       const {v, p: part} = list[i];
@@ -2234,58 +2643,103 @@ function setCam(mode){
   state.cam = mode;
   ['orbit','car','hwy'].forEach(m => $('#cam-'+m).setAttribute('aria-pressed', String(m === mode)));
   if (!V.ok || !V.sim) return;
-  if (mode === 'orbit'){
-    if (state.follow){ V.controls.target.set(state.follow.x, 0, state.follow.z); }
+  const list = mode === 'car' ? V.sim.city : mode === 'hwy' ? V.sim.hwy : null;
+  if (mode === 'orbit' || !list || !list.length){
+    if (state.follow) V.controls.target.set(state.follow.x, 0, state.follow.z);
     state.follow = null; V.controls.enabled = true;
-    $('#chip-hint').textContent = 'Drag to orbit · right-drag to pan · scroll to zoom';
-  } else {
-    const list = mode === 'car' ? V.sim.city : V.sim.hwy;
-    state.follow = list[Math.floor(Math.random()*list.length)];
-    V.controls.enabled = false;
-    $('#chip-hint').textContent = `Following a ${VEH[state.follow.kind].name.toLowerCase()} · press again for another one`;
+    $('#chip-hint').textContent = list && !list.length ? 'No cars there. Add some under Traffic.' : 'Drag to orbit · right-drag to pan · scroll to zoom';
+    if (mode !== 'orbit'){ state.cam = 'orbit'; ['orbit','car','hwy'].forEach(m => $('#cam-'+m).setAttribute('aria-pressed', String(m === 'orbit'))); }
+    return;
   }
+  state.follow = list[Math.floor(Math.random()*list.length)];
+  V.controls.enabled = false;
+  $('#chip-hint').textContent = `Following a ${VEH[state.follow.kind].name.toLowerCase()} · press again for another one`;
 }
 
 /* =====================================================================
    UI
    ===================================================================== */
-let model = null, luaText = '';
-function params(){ return { nx: +$('#f-nx').value, nz: +$('#f-nz').value, block: +$('#f-block').value, seed: Math.max(1, Math.min(99999, Math.round(+$('#f-seed').value || 1))) }; }
+const KEY = 'city-blueprint-v2';
+let P = loadSettings(), model = null, luaText = '';
+function loadSettings(){
+  try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && s.mix) return Object.assign(structuredClone(DEFAULTS), s, {mix: Object.assign({}, DEFAULTS.mix, s.mix)}); } catch (e) {}
+  return structuredClone(DEFAULTS);
+}
+function saveSettings(){ try { localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) {} }
 const fmt = n => n.toLocaleString('en-US');
+const MIXKEYS = ['houses','shops','parks','apartments','offices'];
+function syncControls(){
+  for (const k of MIXKEYS) $('#m-'+k).value = P.mix[k];
+  $('#f-floors').value = P.maxFloors;
+  $('#f-nx').value = P.nx; $('#f-nz').value = P.nz; $('#f-block').value = P.block; $('#f-lot').value = P.lot; $('#f-seed').value = P.seed;
+  for (const t of TOGGLES) $('#o-'+t).checked = !!P[t];
+  $('#o-ramps').disabled = !P.highway; $('#o-lampGlow').disabled = !P.streetLights;
+  $('#f-trees').value = P.trees; $('#f-parked').value = P.parked; $('#f-cityCars').value = P.cityCars; $('#f-hwyCars').value = P.hwyCars;
+  $('#f-hwyCars').disabled = !P.highway;
+  document.querySelectorAll('[data-preset]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.preset === P.preset)));
+  $('#preset-note').textContent = P.preset === 'custom' ? 'Custom mix' : '';
+  syncLabels();
+}
+function syncLabels(){
+  const tot = MIXKEYS.reduce((s,k) => s + P.mix[k], 0) || 1;
+  for (const k of MIXKEYS) $('#v-m-'+k).textContent = Math.round(P.mix[k]/tot*100) + '%';
+  $('#v-floors').textContent = `${P.maxFloors} floors`;
+  $('#v-nx').textContent = P.nx; $('#v-nz').textContent = P.nz;
+  $('#v-block').textContent = P.block + ' studs'; $('#v-lot').textContent = P.lot + ' studs';
+  $('#v-trees').textContent = P.trees + '%'; $('#v-parked').textContent = P.parked + '%';
+  $('#v-cityCars').textContent = P.cityCars; $('#v-hwyCars').textContent = P.highway ? P.hwyCars : 'off';
+}
+function readControls(){
+  for (const k of MIXKEYS) P.mix[k] = +$('#m-'+k).value;
+  P.maxFloors = +$('#f-floors').value;
+  P.nx = +$('#f-nx').value; P.nz = +$('#f-nz').value; P.block = +$('#f-block').value; P.lot = +$('#f-lot').value;
+  P.seed = Math.max(1, Math.min(99999, Math.round(+$('#f-seed').value || 1)));
+  for (const t of TOGGLES) P[t] = $('#o-'+t).checked;
+  P.trees = +$('#f-trees').value; P.parked = +$('#f-parked').value; P.cityCars = +$('#f-cityCars').value; P.hwyCars = +$('#f-hwyCars').value;
+}
 function regenerate(){
-  const P = params();
-  $('#v-nx').textContent = P.nx; $('#v-nz').textContent = P.nz; $('#v-block').textContent = P.block + ' studs';
+  saveSettings();
   model = generate(P);
   luaText = buildLuau(model);
   window.__cityLuau = luaText;
   $('#lua').textContent = luaText;
   $('#lua-meta').textContent = `${fmt(luaText.split('\n').length)} lines · ${Math.round(luaText.length/1024)} KB`;
-  let parts = 0;
-  if (V.ok){ buildWorld(model); parts = V.partCount; if (state.cam !== 'orbit') setCam(state.cam); }
-  else { const S = {count:0, add(){ this.count++; }}; try { emitScene(model, S, [], []); parts = S.count; } catch (err) { parts = 0; } }
-  const T = trafficCounts(model);
+  let parts;
+  if (V.ok){ parts = buildWorld(model); if (state.cam !== 'orbit') setCam(state.cam); }
+  else { const S = {count:0, add(){ this.count++; }}; try { emitScene(model, S, [], []); } catch (err) {} parts = S.count; }
   const w = Math.round(model.MX*2), d = Math.round(model.MZ*2);
-  const lots = model.lotList.map(l => l.kind);
+  const L = roadLength(model);
+  const ctl = t => model.nodes.filter(n => n.ctl === t).length;
   const rows = [
     ['Map size', `${fmt(w)} × ${fmt(d)} studs`],
-    ['Downtown', `${fmt(Math.round(model.CX))} × ${fmt(Math.round(model.CZ))} studs`],
-    ['Buildings', fmt(model.buildings.length)],
-    ['Homes with garages', fmt(model.houses.length)],
-    ['Parking garages', fmt(model.garages.length)],
+    ['Houses with garages', fmt(model.houses.length)],
+    ['Shops', fmt(model.shops.length)],
+    ['Parks', fmt(model.parks.length)],
+    ['Apartments & offices', fmt(model.buildings.length)],
     ['Parked cars', fmt(model.cars.length)],
-    ['Traffic', `${T.city} city · ${T.hwy} highway`],
-    ['Signals', fmt(model.nodes.filter(n => n.off >= 0).length) + ' junctions'],
-    ['Road length', `${fmt(Math.round((T.roadLen + T.ring)/100)*100)} studs`],
+    ['Junctions', `${ctl(1)} lights · ${ctl(2) + ctl(3)} stop`],
+    ['Road length', `${fmt(Math.round((L.city + (P.highway ? L.ring : 0))/100)*100)} studs`],
+    ['Traffic', `${P.cityCars} street · ${P.highway ? P.hwyCars : 0} highway`],
     ['Parts in Studio', '≈ ' + fmt(Math.round(parts/100)*100)],
   ];
   $('#stats').innerHTML = rows.map(([k,v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
-  $('#scale-note').textContent = `This map is ${fmt(w)} × ${fmt(d)} studs, which is small next to Roblox's limits. Positions this close to the centre are precise to about 0.0001 studs, and no part here needs to be longer than 2,048 studs. The largest settings (10 × 10 blocks of 260 studs) make a map about 4,000 studs across, which still works well with streaming. A driving city could grow to tens of thousands of studs; part count and memory will limit you long before a hard cap does.`;
+  $('#scale-note').textContent = `This map is ${fmt(w)} × ${fmt(d)} studs, which is small next to Roblox's limits. Positions this close to the centre are precise to about 0.0001 studs, and no part here needs to be longer than 2,048 studs. The largest settings (10 × 10 blocks of 280 studs) make a map about 4,200 studs across, which still works well with streaming. A driving city could grow to tens of thousands of studs; part count and memory will limit you long before a hard cap does.`;
 }
 let regenTimer = null;
-const queueRegen = () => { clearTimeout(regenTimer); regenTimer = setTimeout(regenerate, 180); };
-['#f-nx','#f-nz','#f-block'].forEach(s => $(s).addEventListener('input', () => { const P = params(); $('#v-nx').textContent = P.nx; $('#v-nz').textContent = P.nz; $('#v-block').textContent = P.block + ' studs'; queueRegen(); }));
-$('#f-seed').addEventListener('change', regenerate);
-$('#b-shuffle').addEventListener('click', () => { $('#f-seed').value = 1 + Math.floor(Math.random()*99998); regenerate(); });
+const queueRegen = () => { clearTimeout(regenTimer); regenTimer = setTimeout(regenerate, 220); };
+document.querySelectorAll('.side input').forEach(el => el.addEventListener(el.type === 'number' ? 'change' : 'input', e => {
+  readControls();
+  if (e.target.id.startsWith('m-') || e.target.id === 'f-floors') P.preset = 'custom';
+  syncControls();
+  queueRegen();
+}));
+document.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => {
+  const pr = PRESETS[b.dataset.preset];
+  P.preset = b.dataset.preset; P.mix = {...pr.mix}; P.maxFloors = pr.maxFloors;
+  syncControls(); regenerate();
+}));
+$('#b-shuffle').addEventListener('click', () => { P.seed = 1 + Math.floor(Math.random()*99998); syncControls(); regenerate(); });
+$('#b-reset').addEventListener('click', () => { P = structuredClone(DEFAULTS); syncControls(); regenerate(); });
 $('#cam-orbit').addEventListener('click', () => setCam('orbit'));
 $('#cam-car').addEventListener('click', () => setCam('car'));
 $('#cam-hwy').addEventListener('click', () => setCam('hwy'));
@@ -2299,6 +2753,7 @@ $('#b-copy').addEventListener('click', e => {
 });
 
 initView();
+syncControls();
 regenerate();
 requestAnimationFrame(frame);
 })();

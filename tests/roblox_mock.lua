@@ -73,7 +73,7 @@ STATS = { parts = 0, maxSize = 0, bad = {}, tags = {}, byClass = {} }
 local Inst = {}
 local function isA(obj, cls)
 	if obj.ClassName == cls then return true end
-	if cls == "BasePart" then return obj.ClassName == "Part" or obj.ClassName == "SpawnLocation" end
+	if cls == "BasePart" then return obj.ClassName == "Part" or obj.ClassName == "SpawnLocation" or obj.ClassName == "WedgePart" end
 	if cls == "Instance" then return true end
 	return false
 end
@@ -124,12 +124,12 @@ instMT.__newindex = function(obj, k, v)
 	end
 	if k == "Shape" and props.Size then error("set Shape before Size to avoid resize") end
 	props[k] = v
-	if (k == "Size" or k == "CFrame") and (obj.ClassName == "Part" or obj.ClassName == "SpawnLocation") then checkPart(obj) end
+	if (k == "Size" or k == "CFrame") and (obj.ClassName == "Part" or obj.ClassName == "SpawnLocation" or obj.ClassName == "WedgePart") then checkPart(obj) end
 end
 function Instance_new(cls)
 	local obj = setmetatable({ __children = {}, __attrs = {}, __props = { ClassName = cls, Name = cls } }, instMT)
 	rawset(obj, "ClassName", cls)
-	if cls == "Part" or cls == "SpawnLocation" then STATS.parts += 1 end
+	if cls == "Part" or cls == "SpawnLocation" or cls == "WedgePart" then STATS.parts += 1 end
 	STATS.byClass[cls] = (STATS.byClass[cls] or 0) + 1
 	return obj
 end

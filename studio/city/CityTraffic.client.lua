@@ -1,34 +1,43 @@
 --!nocheck
--- CityTraffic: ambient traffic and signals for the city made by Roblox City Blueprint.
+-- CityTraffic: ambient traffic, traffic lights and stop signs for the city made by Roblox City Blueprint.
 -- It runs on each player's device, so the moving cars cost no network bandwidth.
+-- Reference copy with the default settings; BuildCity.lua installs this script for you.
 local RunService = game:GetService("RunService")
 local CollectionService = game:GetService("CollectionService")
 
+local CITY_CARS, HWY_CARS = 100, 60
+local CITY_SPEED, HWY_SPEED = 34, 72
+local TURN_SPEED, ACCEL, BRAKE = 15, 16, 42
 local ROAD, WALK, LANE, Y = 24, 8, 6, 0.1
-local CITY_SPEED, TURN_SPEED = 34, 15
-local ACCEL, BRAKE = 16, 42
 local GREEN, YELLOW = 12, 3
 local CYCLE = 2 * (GREEN + YELLOW)
-local CITY_CARS, HWY_CARS = 130, 80
-local HWY = { rx = 690, rz = 690, rc = 140, h = 34 }
+local HWY = { rx = 860, rz = 860, rc = 140, h = 34 }
 
-local NODES = { -- x, z, signal offset (-1 = no signal), is city street
-	{-550, -550, -1, 1}, {-330, -550, 7, 1}, {-110, -550, 14, 1}, {110, -550, 21, 1}, {330, -550, 28, 1}, {550, -550, -1, 1},
-	{-550, -330, 12, 1}, {-330, -330, 19, 1}, {-110, -330, 26, 1}, {110, -330, 3, 1}, {330, -330, 10, 1}, {550, -330, 17, 1},
-	{-550, -110, 24, 1}, {-330, -110, 1, 1}, {-110, -110, 8, 1}, {110, -110, 15, 1}, {330, -110, 22, 1}, {550, -110, 29, 1},
-	{-550, 110, 6, 1}, {-330, 110, 13, 1}, {-110, 110, 20, 1}, {110, 110, 27, 1}, {330, 110, 4, 1}, {550, 110, 11, 1},
-	{-550, 330, 18, 1}, {-330, 330, 25, 1}, {-110, 330, 2, 1}, {110, 330, 9, 1}, {330, 330, 16, 1}, {550, 330, 23, 1},
-	{-550, 550, -1, 1}, {-330, 550, 7, 1}, {-110, 550, 14, 1}, {110, 550, 21, 1}, {330, 550, 28, 1}, {550, 550, -1, 1},
-	{-961, -961, -1, 0}, {961, -961, -1, 0}, {961, 961, -1, 0}, {-961, 961, -1, 0}, {-110, -961, 10, 0}, {-110, 961, 17, 0},
-	{110, -961, 24, 0}, {110, 961, 1, 0}, {-961, -110, 8, 0}, {961, -110, 15, 0}, {-961, 110, 22, 0}, {961, 110, 29, 0},
+-- junctions: x, z, signal offset, is city street, control (0 none, 1 lights, 2 two-way stop, 3 all-way stop), main road axis (1 x, 2 z)
+local NODES = {
+	{-720, -720, -1, 1, 0, 0}, {-480, -720, -1, 1, 2, 1}, {-240, -720, 14, 1, 1, 0}, {0, -720, -1, 1, 2, 1}, {240, -720, 28, 1, 1, 0},
+	{480, -720, -1, 1, 2, 1}, {720, -720, -1, 1, 0, 0}, {-720, -480, -1, 1, 2, 2}, {-480, -480, -1, 1, 3, 0}, {-240, -480, -1, 1, 2, 2},
+	{0, -480, -1, 1, 3, 0}, {240, -480, -1, 1, 2, 2}, {480, -480, -1, 1, 3, 0}, {720, -480, -1, 1, 2, 2}, {-720, -240, 8, 1, 1, 0},
+	{-480, -240, -1, 1, 2, 1}, {-240, -240, 22, 1, 1, 0}, {0, -240, -1, 1, 2, 1}, {240, -240, 6, 1, 1, 0}, {480, -240, -1, 1, 2, 1},
+	{720, -240, 20, 1, 1, 0}, {-720, 0, -1, 1, 2, 2}, {-480, 0, -1, 1, 3, 0}, {-240, 0, -1, 1, 2, 2}, {0, 0, -1, 1, 3, 0},
+	{240, 0, -1, 1, 2, 2}, {480, 0, -1, 1, 3, 0}, {720, 0, -1, 1, 2, 2}, {-720, 240, 16, 1, 1, 0}, {-480, 240, -1, 1, 2, 1},
+	{-240, 240, 0, 1, 1, 0}, {0, 240, -1, 1, 2, 1}, {240, 240, 14, 1, 1, 0}, {480, 240, -1, 1, 2, 1}, {720, 240, 28, 1, 1, 0},
+	{-720, 480, -1, 1, 2, 2}, {-480, 480, -1, 1, 3, 0}, {-240, 480, -1, 1, 2, 2}, {0, 480, -1, 1, 3, 0}, {240, 480, -1, 1, 2, 2},
+	{480, 480, -1, 1, 3, 0}, {720, 480, -1, 1, 2, 2}, {-720, 720, -1, 1, 0, 0}, {-480, 720, -1, 1, 2, 1}, {-240, 720, 8, 1, 1, 0},
+	{0, 720, -1, 1, 2, 1}, {240, 720, 22, 1, 1, 0}, {480, 720, -1, 1, 2, 1}, {720, 720, -1, 1, 0, 0}, {-1131, -1131, -1, 0, 0, 0},
+	{1131, -1131, -1, 0, 0, 0}, {1131, 1131, -1, 0, 0, 0}, {-1131, 1131, -1, 0, 0, 0}, {-240, -1131, 11, 0, 1, 0}, {-240, 1131, 18, 0, 1, 0},
+	{240, -1131, 25, 0, 1, 0}, {240, 1131, 2, 0, 1, 0}, {-1131, -240, 9, 0, 1, 0}, {1131, -240, 16, 0, 1, 0}, {-1131, 240, 23, 0, 1, 0},
+	{1131, 240, 0, 0, 1, 0},
 }
 local LINKS = { -- neighbour to the east, west, south, north (0 = none)
-	{2, 0, 7, 0}, {3, 1, 8, 0}, {4, 2, 9, 41}, {5, 3, 10, 43}, {6, 4, 11, 0}, {0, 5, 12, 0}, {8, 0, 13, 1}, {9, 7, 14, 2},
-	{10, 8, 15, 3}, {11, 9, 16, 4}, {12, 10, 17, 5}, {0, 11, 18, 6}, {14, 45, 19, 7}, {15, 13, 20, 8}, {16, 14, 21, 9}, {17, 15, 22, 10},
-	{18, 16, 23, 11}, {46, 17, 24, 12}, {20, 47, 25, 13}, {21, 19, 26, 14}, {22, 20, 27, 15}, {23, 21, 28, 16}, {24, 22, 29, 17}, {48, 23, 30, 18},
-	{26, 0, 31, 19}, {27, 25, 32, 20}, {28, 26, 33, 21}, {29, 27, 34, 22}, {30, 28, 35, 23}, {0, 29, 36, 24}, {32, 0, 0, 25}, {33, 31, 0, 26},
-	{34, 32, 42, 27}, {35, 33, 44, 28}, {36, 34, 0, 29}, {0, 35, 0, 30}, {41, 0, 45, 0}, {0, 43, 46, 0}, {0, 44, 0, 48}, {42, 0, 0, 47},
-	{43, 37, 3, 0}, {44, 40, 0, 33}, {38, 41, 4, 0}, {39, 42, 0, 34}, {13, 0, 47, 37}, {0, 18, 48, 38}, {19, 0, 40, 45}, {0, 24, 39, 46},
+	{2, 0, 8, 0}, {3, 1, 9, 0}, {4, 2, 10, 54}, {5, 3, 11, 0}, {6, 4, 12, 56}, {7, 5, 13, 0}, {0, 6, 14, 0}, {9, 0, 15, 1},
+	{10, 8, 16, 2}, {11, 9, 17, 3}, {12, 10, 18, 4}, {13, 11, 19, 5}, {14, 12, 20, 6}, {0, 13, 21, 7}, {16, 58, 22, 8}, {17, 15, 23, 9},
+	{18, 16, 24, 10}, {19, 17, 25, 11}, {20, 18, 26, 12}, {21, 19, 27, 13}, {59, 20, 28, 14}, {23, 0, 29, 15}, {24, 22, 30, 16}, {25, 23, 31, 17},
+	{26, 24, 32, 18}, {27, 25, 33, 19}, {28, 26, 34, 20}, {0, 27, 35, 21}, {30, 60, 36, 22}, {31, 29, 37, 23}, {32, 30, 38, 24}, {33, 31, 39, 25},
+	{34, 32, 40, 26}, {35, 33, 41, 27}, {61, 34, 42, 28}, {37, 0, 43, 29}, {38, 36, 44, 30}, {39, 37, 45, 31}, {40, 38, 46, 32}, {41, 39, 47, 33},
+	{42, 40, 48, 34}, {0, 41, 49, 35}, {44, 0, 0, 36}, {45, 43, 0, 37}, {46, 44, 55, 38}, {47, 45, 0, 39}, {48, 46, 57, 40}, {49, 47, 0, 41},
+	{0, 48, 0, 42}, {54, 0, 58, 0}, {0, 56, 59, 0}, {0, 57, 0, 61}, {55, 0, 0, 60}, {56, 50, 3, 0}, {57, 53, 0, 45}, {51, 54, 5, 0},
+	{52, 55, 0, 47}, {15, 0, 60, 50}, {0, 21, 61, 51}, {29, 0, 53, 58}, {0, 35, 52, 59},
 }
 local VEH = {
 	{ name = "Car", L = 14, parts = { {7, 2.6, 14, 0, 2.3, 0, 1, 0}, {6.4, 2.2, 7.5, 0, 4.7, 1, 2, 0}, {7.6, 2.6, 2.6, 0, 1.3, -4.6, 3, 1}, {7.6, 2.6, 2.6, 0, 1.3, 4.6, 3, 1}, {5.4, 0.6, 0.3, 0, 2.9, -7.05, 4, 0}, {5.4, 0.6, 0.3, 0, 2.9, 7.05, 5, 0} } },
@@ -56,7 +65,7 @@ local parts, cframes = {}, {}
 local function newVehicle(kind)
 	local def = VEH[kind]
 	local paint = PAINT[rng:NextInteger(1, #PAINT)]
-	local v = { kind = kind, len = def.L, first = #parts + 1, offs = {}, v = 0, wait = 0 }
+	local v = { kind = kind, len = def.L, first = #parts + 1, offs = {}, v = 0, wait = 0, stopT = 0, cleared = false }
 	for _, p in ipairs(def.parts) do
 		local part = Instance.new("Part")
 		part.Anchored = true
@@ -67,6 +76,7 @@ local function newVehicle(kind)
 		part.Size = Vector3.new(p[1], p[2], p[3])
 		part.Color = ROLE_COLOR[p[7]] or paint
 		part.Material = ROLE_MAT[p[7]]
+		part.CastShadow = p[7] <= 2
 		part.TopSurface = Enum.SurfaceType.Smooth
 		part.BottomSurface = Enum.SurfaceType.Smooth
 		part.Parent = folder
@@ -93,7 +103,7 @@ local function pickKind(weights)
 	return 1
 end
 
--- traffic signals ------------------------------------------------------------
+-- traffic lights ---------------------------------------------------------------
 local function lightFor(n, xAxis, now)
 	local off = NODES[n][3]
 	if off < 0 then return "G" end
@@ -121,9 +131,14 @@ local function updateLamps(now)
 	end
 end
 
--- city streets ---------------------------------------------------------------
+-- streets ------------------------------------------------------------------------
 local function edgeLen(a, b)
 	return math.abs(NODES[b][1] - NODES[a][1]) + math.abs(NODES[b][2] - NODES[a][2])
+end
+
+local function mustStop(n, k)
+	local ctl = NODES[n][5]
+	return ctl == 1 or ctl == 3 or (ctl == 2 and (k <= 2 and 1 or 2) ~= NODES[n][6])
 end
 
 local function pickNext(b, k)
@@ -172,7 +187,7 @@ for _ = 1, CITY_CARS do
 		local b = LINKS[a][k]
 		if b ~= 0 then
 			local len = edgeLen(a, b)
-			local s = rng:NextNumber(ROAD / 2 + 10, len - ROAD / 2 - 30)
+			local s = rng:NextNumber(ROAD / 2 + 10, len - ROAD / 2 - 40)
 			local ok = true
 			for _, o in ipairs(cityCars) do
 				if o.a == a and o.b == b and math.abs(o.s - s) < 40 then
@@ -181,7 +196,7 @@ for _ = 1, CITY_CARS do
 				end
 			end
 			if ok then
-				local c = newVehicle(pickKind({ 0.72, 0.14, 0.07, 0.07 }))
+				local c = newVehicle(pickKind({ 0.74, 0.14, 0.05, 0.07 }))
 				c.a, c.b, c.k, c.s, c.turning = a, b, k, s, false
 				c.nk = pickNext(b, k)
 				table.insert(cityCars, c)
@@ -191,13 +206,37 @@ for _ = 1, CITY_CARS do
 	end
 end
 
+-- a car on a main road may cross a two-way stop only when no main-road car is close
+local function mainClear(b, groups)
+	local axis = NODES[b][6]
+	for k = 1, 4 do
+		if (k <= 2 and 1 or 2) == axis then
+			local m = LINKS[b][OPP[k]]
+			if m ~= 0 then
+				local g = groups[m * 4096 + b]
+				if g then
+					local len = edgeLen(m, b)
+					for _, o in ipairs(g) do
+						if not o.turning and len - o.s < 55 and o.v > 1 then return false end
+					end
+				end
+			end
+		end
+	end
+	return true
+end
+
+local occ = {}
 local function stepCity(dt, now)
 	local groups = {}
+	table.clear(occ)
 	for _, c in ipairs(cityCars) do
 		if c.turning then
 			c.key, c.gs = c.b * 4096 + c.nxt, ROAD / 2 - (1 - c.u) * c.blen
+			occ[c.b] = (occ[c.b] or 0) + 1
 		else
 			c.key, c.gs = c.a * 4096 + c.b, c.s
+			if c.cleared then occ[c.b] = (occ[c.b] or 0) + 1 end
 		end
 		local g = groups[c.key]
 		if not g then
@@ -219,18 +258,37 @@ local function stepCity(dt, now)
 			c.u += c.v * dt / c.blen
 			if c.u >= 1 then
 				c.a, c.b, c.k = c.b, c.nxt, c.nk
-				c.s, c.turning = ROAD / 2, false
+				c.s, c.turning, c.cleared, c.stopT = ROAD / 2, false, false, 0
 				c.nk = pickNext(c.b, c.k)
 			end
 		else
 			local len = edgeLen(c.a, c.b)
 			local sEnd = len - ROAD / 2
 			local limit = lead
-			local light = lightFor(c.b, c.k <= 2, now)
-			if light ~= "G" then
-				local stopAt = len - ROAD / 2 - (NODES[c.b][4] == 1 and WALK or 0) - 1.5 - c.len / 2
-				local canStop = (stopAt - c.s) > (c.v * c.v) / (2 * BRAKE) - 1
-				if c.s <= stopAt + 0.5 and (light == "R" or canStop) then limit = math.min(limit, stopAt) end
+			local node = NODES[c.b]
+			local ctl = node[5]
+			local stopAt = len - ROAD / 2 - ((node[4] == 1 and ctl == 1) and WALK or 2) - 1.5 - c.len / 2
+			if ctl == 1 then
+				local light = lightFor(c.b, c.k <= 2, now)
+				if light ~= "G" then
+					local canStop = (stopAt - c.s) > (c.v * c.v) / (2 * BRAKE) - 1
+					if c.s <= stopAt + 0.5 and (light == "R" or canStop) then limit = math.min(limit, stopAt) end
+				end
+			elseif ctl >= 2 then
+				if mustStop(c.b, c.k) then
+					if not c.cleared then
+						if c.s >= stopAt - 1.5 and c.v < 0.5 then
+							c.stopT += dt
+							if c.wait > 12 or (c.stopT > 0.8 and (occ[c.b] or 0) == 0 and (ctl == 3 or mainClear(c.b, groups))) then
+								c.cleared = true
+								occ[c.b] = (occ[c.b] or 0) + 1
+							end
+						end
+						if not c.cleared then limit = math.min(limit, stopAt) end
+					end
+				elseif (occ[c.b] or 0) > 0 and c.s < sEnd - 3 and c.wait < 6 then
+					limit = math.min(limit, sEnd - 3)
+				end
 			end
 			local g = groups[c.b * 4096 + LINKS[c.b][c.nk]]
 			if g and c.wait < 4 then
@@ -246,7 +304,10 @@ local function stepCity(dt, now)
 			vmax = math.min(vmax, math.sqrt(2 * BRAKE * math.max(0, limit - c.s)))
 			approach(c, vmax, dt)
 			c.s = math.min(c.s + c.v * dt, math.max(c.s, limit))
-			if c.s >= sEnd then startTurn(c) end
+			if c.s >= sEnd then
+				startTurn(c)
+				if not c.cleared then occ[c.b] = (occ[c.b] or 0) + 1 end
+			end
 		end
 		if c.turning then
 			local p, u = c.p, math.min(c.u, 1)
@@ -263,7 +324,7 @@ local function stepCity(dt, now)
 	end
 end
 
--- ring highway ---------------------------------------------------------------
+-- ring highway ---------------------------------------------------------------------
 local function roundedRect(hx, hz, r, n)
 	local pts = {}
 	local centres = { { hx - r, hz - r }, { -hx + r, hz - r }, { -hx + r, -hz + r }, { hx - r, -hz + r } }
@@ -291,54 +352,55 @@ for _, o in ipairs({ 9, 21, -9, -21 }) do
 		total += math.sqrt((b[1] - a[1]) ^ 2 + (b[2] - a[2]) ^ 2)
 		cum[i + 1] = total
 	end
-	table.insert(lanes, { pts = pts, cum = cum, total = total })
+	table.insert(lanes, { pts = pts, cum = cum, total = total, cars = {} })
 end
 
 local hwyCars = {}
+local perLane = math.max(1, math.ceil(HWY_CARS / #lanes))
 for i = 1, HWY_CARS do
 	local lane = (i - 1) % #lanes + 1
 	local c = newVehicle(pickKind({ 0.55, 0.15, 0.05, 0.25 }))
 	c.lane, c.seg = lane, 1
-	c.s = (math.floor((i - 1) / #lanes) + rng:NextNumber() * 0.3) * lanes[lane].total / math.ceil(HWY_CARS / #lanes)
-	c.vmax = (lane % 2 == 1) and rng:NextNumber(62, 72) or rng:NextNumber(72, 84)
-	if c.kind >= 3 then c.vmax = math.min(c.vmax, 60) end
+	c.s = (math.floor((i - 1) / #lanes) + rng:NextNumber() * 0.3) * lanes[lane].total / perLane
+	c.vmax = HWY_SPEED * ((lane % 2 == 1) and rng:NextNumber(0.82, 0.95) or rng:NextNumber(0.95, 1.1))
+	if c.kind >= 3 then c.vmax = math.min(c.vmax, HWY_SPEED * 0.8) end
 	c.v = c.vmax
 	table.insert(hwyCars, c)
+	table.insert(lanes[lane].cars, c)
 end
 
+local function bySpace(a, b) return a.s < b.s end
 local function stepHighway(dt)
-	for _, c in ipairs(hwyCars) do
-		local lane = lanes[c.lane]
-		local gap, leader = math.huge, nil
-		for _, o in ipairs(hwyCars) do
-			if o ~= c and o.lane == c.lane then
-				local d = (o.s - c.s) % lane.total
-				if d > 0 and d < gap then gap, leader = d, o end
+	for _, lane in ipairs(lanes) do
+		local list = lane.cars
+		table.sort(list, bySpace)
+		for i, c in ipairs(list) do
+			local leader = list[i % #list + 1]
+			local free = math.huge
+			if leader ~= c then free = (leader.s - c.s) % lane.total - (leader.len + c.len) / 2 - 8 end
+			approach(c, math.min(c.vmax, math.sqrt(2 * BRAKE * math.max(0, free))), dt)
+			c.s += c.v * dt
+			if c.s >= lane.total then
+				c.s -= lane.total
+				c.seg = 1
 			end
+			while c.seg < #lane.pts and lane.cum[c.seg + 1] < c.s do c.seg += 1 end
+			local a, b = lane.pts[c.seg], lane.pts[c.seg % #lane.pts + 1]
+			local segLen = lane.cum[c.seg + 1] - lane.cum[c.seg]
+			local t = segLen > 0 and (c.s - lane.cum[c.seg]) / segLen or 0
+			place(c, a[1] + (b[1] - a[1]) * t, HWY.h + Y, a[2] + (b[2] - a[2]) * t, b[1] - a[1], b[2] - a[2])
 		end
-		local free = leader and (gap - (leader.len + c.len) / 2 - 8) or math.huge
-		approach(c, math.min(c.vmax, math.sqrt(2 * BRAKE * math.max(0, free))), dt)
-		c.s += c.v * dt
-		if c.s >= lane.total then
-			c.s -= lane.total
-			c.seg = 1
-		end
-		while c.seg < #lane.pts and lane.cum[c.seg + 1] < c.s do c.seg += 1 end
-		local a, b = lane.pts[c.seg], lane.pts[c.seg % #lane.pts + 1]
-		local segLen = lane.cum[c.seg + 1] - lane.cum[c.seg]
-		local t = segLen > 0 and (c.s - lane.cum[c.seg]) / segLen or 0
-		place(c, a[1] + (b[1] - a[1]) * t, HWY.h + Y, a[2] + (b[2] - a[2]) * t, b[1] - a[1], b[2] - a[2])
 	end
 end
 
--- main loop ------------------------------------------------------------------
+-- main loop ------------------------------------------------------------------------
 local lampTimer = 1
 RunService.Heartbeat:Connect(function(dt)
 	dt = math.min(dt, 0.1)
 	local now = workspace:GetServerTimeNow()
 	stepCity(dt, now)
 	stepHighway(dt)
-	workspace:BulkMoveTo(parts, cframes, Enum.BulkMoveMode.FireCFrameChanged)
+	if #parts > 0 then workspace:BulkMoveTo(parts, cframes, Enum.BulkMoveMode.FireCFrameChanged) end
 	lampTimer += dt
 	if lampTimer > 0.25 then
 		lampTimer = 0
