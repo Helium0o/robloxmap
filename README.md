@@ -12,6 +12,12 @@ To build it:
 2. Open **View → Command Bar**, paste the whole of `BuildCity.lua` and press Enter.
 3. Press **Play** to see the traffic.
 
+If the Command Bar won't take the whole script, use a ModuleScript instead:
+
+1. In the Explorer, add a **ModuleScript** to **ServerStorage** and rename it `BuildCity`.
+2. Open it, replace its contents with `BuildCity.lua`, and close the tab.
+3. In the Command Bar, run `require(game.ServerStorage.BuildCity:Clone())`.
+
 The script puts everything in `Workspace.City` and installs `StarterPlayerScripts.CityTraffic`, a LocalScript that drives the cars and switches the signals on each player's device. It also removes the default Baseplate and moves the spawn onto a sidewalk. Running it again replaces the previous build.
 
 `studio/city/CityTraffic.client.lua` is a copy of that traffic script for reading. The build script already installs it.
@@ -29,6 +35,6 @@ Open `tools/city-blueprint.html` in a browser. It shows the city in 3D with movi
 `tests/roblox_mock.lua` is a minimal stand-in for the Roblox API. `tests/traffic_harness.lua` checks that every part is within the 2,048-stud limit, then runs the traffic for a few simulated minutes. It reports cars that leave the road, get stuck or overlap. You need the [Luau CLI](https://github.com/luau-lang/luau/releases):
 
 ```sh
-cat tests/roblox_mock.lua studio/city/BuildCity.lua tests/traffic_harness.lua > /tmp/run.lua
+{ cat tests/roblox_mock.lua; sed 's/^return true.*$//' studio/city/BuildCity.lua; cat tests/traffic_harness.lua; } > /tmp/run.lua
 luau /tmp/run.lua
 ```

@@ -145,6 +145,7 @@ a{color:var(--accent)}
           <li>Open <b>View → Command Bar</b>, paste the script, press Enter. It takes a few seconds.</li>
           <li>Press <b>Play</b>. Traffic and signals run on each player's device.</li>
         </ol>
+        <p class="note">If the Command Bar won't take the whole script, add a <b>ModuleScript</b> named <code>BuildCity</code> to ServerStorage, paste the script into it, then run <code>require(game.ServerStorage.BuildCity:Clone())</code> in the Command Bar.</p>
         <p class="note">Everything goes in <code>Workspace.City</code>; the traffic lives in <code>StarterPlayerScripts.CityTraffic</code>. Running it again replaces both. The script also removes the default Baseplate and moves the spawn onto a sidewalk. You can also paste it into Claude Desktop and say “run this Luau in Roblox Studio”, though it's long.</p>
         <div class="row" style="justify-content:space-between">
           <span class="note" id="lua-meta"></span>
@@ -894,6 +895,8 @@ function buildLuau(M){
   return `--!nocheck
 -- Roblox City Blueprint: seed ${M.P.seed}, ${M.NX} x ${M.NZ} blocks of ${M.B} studs, map ${size}
 -- Paste into Roblox Studio's Command Bar (View > Command Bar) and press Enter.
+-- Or paste it into a ModuleScript named BuildCity in ServerStorage and run this in the Command Bar:
+--   require(game.ServerStorage.BuildCity:Clone())
 -- Builds Workspace.City and adds StarterPlayerScripts.CityTraffic. Press Play to see the traffic.
 -- Running it again replaces both. Undo with Ctrl+Z.
 
@@ -1670,6 +1673,7 @@ for _, d in ipairs(root:GetDescendants()) do
 	if d:IsA("BasePart") then count += 1 end
 end
 print(("City built: %d parts. Press Play to see ${T.city + T.hwy} cars of traffic."):format(count))
+return true -- lets this file also run as a ModuleScript: require(game.ServerStorage.BuildCity:Clone())
 `;
 }
 

@@ -1,6 +1,8 @@
 --!nocheck
 -- Roblox City Blueprint: seed 2112, 5 x 5 blocks of 180 studs, map 2126 x 2126 studs
 -- Paste into Roblox Studio's Command Bar (View > Command Bar) and press Enter.
+-- Or paste it into a ModuleScript named BuildCity in ServerStorage and run this in the Command Bar:
+--   require(game.ServerStorage.BuildCity:Clone())
 -- Builds Workspace.City and adds StarterPlayerScripts.CityTraffic. Press Play to see the traffic.
 -- Running it again replaces both. Undo with Ctrl+Z.
 
@@ -1429,3 +1431,4 @@ for _, d in ipairs(root:GetDescendants()) do
 	if d:IsA("BasePart") then count += 1 end
 end
 print(("City built: %d parts. Press Play to see 210 cars of traffic."):format(count))
+return true -- lets this file also run as a ModuleScript: require(game.ServerStorage.BuildCity:Clone())
