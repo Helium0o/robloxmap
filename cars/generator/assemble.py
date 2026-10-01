@@ -40,7 +40,8 @@ def build(spec):
                    spec["arch_r"], end_r=spec.get("end_r", (0.08, 0.08)),
                    end_p=spec.get("end_p", 4.0), glass=spec.get("glass"),
                    flare=spec.get("flare", 0.02), bevel=spec.get("bevel", 0.006),
-                   crease_gap=spec.get("crease_gap", 0.07), panels=spec.get("panels"))
+                   crease_gap=spec.get("crease_gap", 0.07), panels=spec.get("panels"),
+                   ends=spec.get("ends"))
     for pname, (V, F) in body.mesh().items():
         base = pname[:-2] if pname[-2:] in ("_R", "_L") else pname
         if base in PANEL_THICKNESS:
@@ -52,7 +53,24 @@ def build(spec):
     car.body = body
 
     # ---- projected details --------------------------------------------
+    decals = []
     for d in spec["decals"]:
+        decals.append(d)
+        if d.get("frame"):
+            # raised lip around an opening so it reads as recessed
+            width, out = d["frame"]
+            pts = ck.resample_poly(d["poly"], 0.03)
+            path = pts + [pts[0]]
+            a, b = np.array(path[-2]), np.array(path[-1])
+            path[-1] = tuple(b - (b - a) / max(np.linalg.norm(b - a), 1e-9) * 0.012)
+            fr = line(d["view"], path, width=width, part=d.get("frame_part", "Trim"), out=out,
+                      sym=d.get("sym", True))
+            for k in ("yaw", "pitch", "pivot"):
+                if k in d:
+                    fr[k] = d[k]
+            fr["depth"] = 0.02
+            decals.append(fr)
+    for d in decals:
         part, view, poly = d["part"], d["view"], d["poly"]
         kw = {k: d[k] for k in ("out", "depth", "maxlen", "bulge", "yaw", "pitch", "pivot") if k in d}
         sym = d.get("sym", True)
@@ -177,19 +195,25 @@ def interior(seat_u, seat_s, dash_u, wheel_side, floor_h, belt_h, roof_h, half_w
     return fn
 
 
-def exhaust(u, s, h, r, length=0.20, oval=1.0, part="Exhaust", tilt=0.0):
+def exhaust(u, s, h, r, length=0.20, oval=1.0, part="Exhaust", poke=0.035):
+    """Exhaust tip. u=None places it 'poke' metres behind the rear bumper surface."""
     def fn(car, body):
+        if u is None:
+            back = body.surface_front(s, h + r + 0.03, front=False)
+            uu = (back if back is not None else 0.0) - poke
+        else:
+            uu = u
         prof = [(r * 0.80, 0.0), (r, 0.0), (r, length), (r * 0.8, length), (r * 0.8, 0.01)]
         V, F = ck.lathe(prof, (0, 0, 0), "u", 28)
         V = np.array(V)
         V[:, 2] *= 1.0 / oval
-        _add(car, part, (V + np.array([u, s, h]), F))
+        _add(car, part, (V + np.array([uu, s, h]), F))
         # dark inner
         inner = [(0.001, 0.03), (r * 0.79, 0.03), (r * 0.79, 0.06), (0.001, 0.06)]
         V, F = ck.lathe(inner, (0, 0, 0), "u", 20)
         V = np.array(V)
         V[:, 2] *= 1.0 / oval
-        _add(car, "Undertray", (V + np.array([u, s, h]), F))
+        _add(car, "Undertray", (V + np.array([uu, s, h]), F))
     return fn
 
 
@@ -237,21 +261,23 @@ def interior_markers(seat_u, seat_s, floor_h, driver_side):
 
 
 def splitter(depth=0.05, inset=0.06, h=None, back=0.30, part="Splitter"):
-    """Front lip / splitter plate following the nose outline."""
+    """Front lip / splitter plate that follows the curved nose outline."""
     def fn(car, body):
         L = body.L
-        pts = []
-        for t in np.linspace(0, 1, 14):
-            u = L - back + (back - 0.005) * t
-            w = body.params(u)["wB"] - inset
-            pr = body.profile(u)
-            w = min(w, pr[:, 0].max() - 0.01)
-            pts.append((u, w))
         hh = h if h is not None else body.params(L - 0.1)["zF"] + 0.005
-        outline = [(L - back, 0.0)] + pts + [(L + depth, pts[-1][1] * 0.92)]
-        right = outline[1:]
-        poly = right + [(u, -s) for u, s in right[::-1]]
-        poly = ck.rounded_poly(poly, 0.03, seg=3)
+        probe = hh + 0.03
+        right = []
+        wmax = body.params(L - 0.3)["wB"] - inset
+        for a in np.linspace(0, 1, 16):
+            sv = wmax * a
+            uf = body.surface_front(sv, probe)
+            if uf is None:
+                break
+            right.append((uf + depth * (1 - 0.6 * a ** 3), sv))
+        right.append((right[-1][0] - back * 0.5, right[-1][1]))
+        right.append((L - back - 0.1, right[-1][1] * 0.9))
+        poly = [(u, sv) for u, sv in right] + [(u, -sv) for u, sv in right[::-1] if sv > 1e-6]
+        poly = ck.rounded_poly(poly, 0.02, seg=3)
         _add(car, part, ck.prism(poly, hh - 0.012, hh + 0.008))
     return fn
 
@@ -260,7 +286,9 @@ def diffuser(width, fins=4, length=0.32, h0=None, part="Diffuser"):
     """Rear diffuser: an angled plate with vertical strakes."""
     def fn(car, body):
         zf = h0 if h0 is not None else body.params(0.3)["zF"]
-        u0, u1 = -0.02, length
+        tail = body.surface_front(0.0, zf + 0.06, front=False)
+        u0 = (tail if tail is not None else 0.0) - 0.02
+        u1 = u0 + length
         plate = [(u0, -width), (u1, -width), (u1, width), (u0, width)]
         V, F = ck.prism(plate, -0.006, 0.006)
         V = np.asarray(V, float)
@@ -269,7 +297,7 @@ def diffuser(width, fins=4, length=0.32, h0=None, part="Diffuser"):
         _add(car, part, (V, F))
         for k in range(fins):
             s = -width + 2 * width * (k + 1) / (fins + 1)
-            fV, fF = ck.box((0.12, s, 0), (0.24, 0.008, 0.08))
+            fV, fF = ck.box((u0 + 0.14, s, 0), (0.24, 0.008, 0.08))
             fV = np.asarray(fV, float)
             fV[:, 2] += zf - 0.01 + (u1 - fV[:, 0]) / (u1 - u0) * 0.07
             _add(car, part, (fV, fF))

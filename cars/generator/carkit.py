@@ -627,8 +627,10 @@ class Body:
     """
 
     def __init__(self, L, keys, wheels, arch_r, end_r=(0.08, 0.08), end_p=4.0, glass=None,
-                 flare=0.02, bevel=0.006, crease_gap=0.07, panels=None):
+                 flare=0.02, bevel=0.006, crease_gap=0.07, panels=None, ends=None):
         self.L = L
+        # shaping of the nose / tail: {"front": dict(zone, plan, top, bot), "rear": ...}
+        self.ends = ends or {}
         self.glass = glass or {}
         self.panels = panels or {}
         self.f = {k: curve(v) for k, v in keys.items()}
@@ -821,6 +823,7 @@ class Body:
             left = [(u, -s, h) for s, h in pr[-2:0:-1]]
             rings.append(right + left)
         V, F = grid_closed(rings, cap_start=True, cap_end=True)
+        V = self.warp(V)
         V, F = orient_closed(V, F)
         M = 2 * n - 2
         nquads = (len(us) - 1) * M
@@ -850,32 +853,67 @@ class Body:
         self.tu = np.arange(0, self.L + 1e-9, step)
         self.tp = np.array([self.profile(u) for u in self.tu])
 
-    def _station(self, u):
-        i = np.clip(np.searchsorted(self.tu, u) - 1, 0, len(self.tu) - 2)
-        t = (u - self.tu[i]) / (self.tu[i + 1] - self.tu[i])
-        return i, t
+    # ---- nose / tail shaping ------------------------------------------
+    def _end_amount(self, which, s, h):
+        """How far (m) each point of the end face is pulled back."""
+        e = self.ends.get(which)
+        if not e:
+            return np.zeros_like(s)
+        u_end = self.L if which == "front" else 0.0
+        p = self.params(min(max(u_end, 0.02), self.L - 0.02))
+        hb, ht = p["zF"], p["zT"]
+        hc = hb + e.get("mid", 0.45) * (ht - hb)
+        a = np.clip(np.abs(s) / e.get("width", 0.9), 0, 1)
+        top = np.clip((h - hc) / max(ht - hc, 1e-3), 0, 1)
+        bot = np.clip((hc - h) / max(hc - hb, 1e-3), 0, 1)
+        S = e["plan"] * a ** 2.2 + e["top"] * top ** 2 + e["bot"] * bot ** 2
+        return np.minimum(S, 0.45 * e["zone"])
 
-    @staticmethod
-    def _poly_max_s(poly, h):
-        best = None
-        for (s1, h1), (s2, h2) in zip(poly[:-1], poly[1:]):
-            if (h1 - h) * (h2 - h) <= 0 and h1 != h2:
-                s = s1 + (h - h1) * (s2 - s1) / (h2 - h1)
-                best = s if best is None else max(best, s)
-        return best
+    def warp(self, V):
+        """Sweep the corners back, lean the top back and tuck the chin under."""
+        V = np.array(V, float)
+        u, s_, h = V[:, 0], V[:, 1], V[:, 2]
+        if "front" in self.ends:
+            z = self.ends["front"]["zone"]
+            u0 = self.L - z
+            t = np.clip((u - u0) / z, 0, None)
+            V[:, 0] = np.where(u > u0, u - self._end_amount("front", s_, h) * t * t, V[:, 0])
+        if "rear" in self.ends:
+            z = self.ends["rear"]["zone"]
+            t = np.clip((z - u) / z, 0, None)
+            V[:, 0] = np.where(u < z, V[:, 0] + self._end_amount("rear", s_, h) * t * t, V[:, 0])
+        return V
 
-    @staticmethod
-    def _poly_max_h(poly, s):
-        best = None
-        for (s1, h1), (s2, h2) in zip(poly[:-1], poly[1:]):
-            if (s1 - s) * (s2 - s) <= 0 and s1 != s2:
-                h = h1 + (s - s1) * (h2 - h1) / (s2 - s1)
-                best = h if best is None else max(best, h)
-        return best
+    def unwarp_u(self, up, s, h):
+        """Inverse of warp() along u (vectorised). Points past the ends map outside."""
+        u = up.copy()
+        if "front" in self.ends:
+            z = self.ends["front"]["zone"]
+            u0 = self.L - z
+            S = self._end_amount("front", s, h)
+            m = up > u0
+            c = up - u0
+            disc = z * z - 4 * S * c
+            with np.errstate(invalid="ignore", divide="ignore"):
+                t = np.where(S > 1e-9, (z - np.sqrt(np.maximum(disc, 0))) / (2 * S), c / z)
+            t = np.where((disc < 0) | (t > 1), 2.0, t)
+            u = np.where(m, u0 + z * t, u)
+        if "rear" in self.ends:
+            z = self.ends["rear"]["zone"]
+            S = self._end_amount("rear", s, h)
+            m = up < z
+            c = z - up
+            disc = z * z - 4 * S * c
+            with np.errstate(invalid="ignore", divide="ignore"):
+                t = np.where(S > 1e-9, (z - np.sqrt(np.maximum(disc, 0))) / (2 * S), c / z)
+            t = np.where((disc < 0) | (t > 1), 2.0, t)
+            u = np.where(m, z - z * t, u)
+        return u
 
-    def inside(self, Q):
-        """Vectorised: are points (u, s, h) inside the body shell?"""
-        u = Q[:, 0]
+    def inside(self, Q, warped=True):
+        """Vectorised: are points (u, s, h) inside the body shell?
+        warped=False tests against the loft before the nose/tail shaping."""
+        u = self.unwarp_u(Q[:, 0], Q[:, 1], Q[:, 2]) if warped else Q[:, 0]
         step = self.tu[1] - self.tu[0]
         idx = np.clip(np.round(u / step).astype(int), 0, len(self.tu) - 1)
         polys = self.tp[idx]                       # (N, n, 2)
@@ -889,7 +927,7 @@ class Body:
         hit = (cond & (px < xi)).sum(axis=1) % 2 == 1
         return hit & (u >= 0) & (u <= self.L)
 
-    def raycast(self, origin, direction, tmax=5.0, step=0.008):
+    def raycast(self, origin, direction, tmax=5.0, step=0.008, miss_nan=False, warped=True):
         """March rays from outside until they enter the body, then bisect."""
         origin = np.asarray(origin, float)
         dvec = np.asarray(direction, float)
@@ -899,34 +937,40 @@ class Body:
             todo = np.isnan(t_hit)
             if not todo.any():
                 break
-            ins = self.inside(origin[todo] + dvec * t)
+            ins = self.inside(origin[todo] + dvec * t, warped)
             idx = np.where(todo)[0][ins]
             t_hit[idx] = t
         lo = np.where(np.isnan(t_hit), 0, t_hit - step)
         hi = np.where(np.isnan(t_hit), 0, t_hit)
         for _ in range(10):
             mid = 0.5 * (lo + hi)
-            ins = self.inside(origin + dvec * mid[:, None])
+            ins = self.inside(origin + dvec * mid[:, None], warped)
             hi = np.where(ins, mid, hi)
             lo = np.where(ins, lo, mid)
-        t = np.where(np.isnan(t_hit), np.nanmedian(t_hit) if np.any(~np.isnan(t_hit)) else 0, hi)
+        if miss_nan:
+            t = np.where(np.isnan(t_hit), np.nan, hi)
+        else:
+            t = np.where(np.isnan(t_hit), np.nanmedian(t_hit) if np.any(~np.isnan(t_hit)) else 0, hi)
         return origin + dvec * t[:, None]
 
     def surface_side(self, u, h):
-        i, t = self._station(u)
-        a = self._poly_max_s(self.tp[i], h)
-        b = self._poly_max_s(self.tp[i + 1], h)
-        a = b if a is None else a
-        b = a if b is None else b
-        return None if a is None else a * (1 - t) + b * t
+        """Outermost body |s| at (u, h), or None."""
+        p = self.raycast(np.array([[u, 2.0, h]]), np.array([0, -1.0, 0]), tmax=2.0,
+                         step=0.004, miss_nan=True)[0]
+        return None if np.isnan(p[1]) else float(p[1])
 
     def surface_top(self, u, s):
-        i, t = self._station(u)
-        a = self._poly_max_h(self.tp[i], abs(s))
-        b = self._poly_max_h(self.tp[i + 1], abs(s))
-        a = b if a is None else a
-        b = a if b is None else b
-        return None if a is None else a * (1 - t) + b * t
+        """Top body height at (u, s), or None."""
+        p = self.raycast(np.array([[u, s, 2.5]]), np.array([0, 0, -1.0]), tmax=2.5,
+                         step=0.004, miss_nan=True)[0]
+        return None if np.isnan(p[2]) else float(p[2])
+
+    def surface_front(self, s, h, front=True):
+        """u of the nose (front=True) or tail surface at (s, h), or None."""
+        o = np.array([[self.L + 1.0 if front else -1.0, s, h]])
+        p = self.raycast(o, np.array([-1.0 if front else 1.0, 0, 0]), tmax=2.0,
+                         step=0.004, miss_nan=True)[0]
+        return None if np.isnan(p[0]) else float(p[0])
 
 
 # --------------------------------------------------------------------------
@@ -962,7 +1006,7 @@ def project(body, view, a, b, side=1, yaw=0.0, pitch=0.0, pivot=None):
         d = np.array([fwd * math.cos(y) * math.cos(p), sgn * math.sin(y) * math.cos(p), math.sin(p)])
         # pivot plane: where a straight ray through the outline centre lands
         c = body.raycast(np.array([[body.L + 1 if fwd > 0 else -1, pa, pb]]),
-                         np.array([-fwd, 0, 0]))[0]
+                         np.array([-fwd, 0, 0]), warped=False)[0]
         base = np.stack([np.full_like(a, c[0]), a, b], axis=1)
     elif view == "side":
         d = np.array([0, float(side), 0])
@@ -973,7 +1017,9 @@ def project(body, view, a, b, side=1, yaw=0.0, pitch=0.0, pivot=None):
     else:
         raise ValueError(view)
     origin = base + d * 2.5
-    return body.raycast(origin, -d), d
+    # project onto the loft before the nose/tail shaping, then bend the hit
+    # points with the same warp so details follow the curved ends exactly
+    return body.warp(body.raycast(origin, -d, warped=False)), d
 
 
 def decal(body, poly, view, out=0.004, depth=0.012, maxlen=0.03, side=1, bulge=0.0,

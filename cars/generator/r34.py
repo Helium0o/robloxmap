@@ -67,14 +67,14 @@ D.append(dict(part="Indicators", view="front", out=0.006, **HL_PROJ,
               poly=rp([(0.765, 0.645), (0.815, 0.645), (0.830, 0.690), (0.782, 0.684)], 0.006)))
 # upper grille between the lights + badge
 D.append(dict(part="Grille", view="front", sym=False, out=0.003,
-              poly=rp([(-0.36, 0.680), (0.36, 0.680), (0.39, 0.735), (-0.39, 0.735)], 0.02)))
+              poly=rp([(-0.36, 0.680), (0.36, 0.680), (0.39, 0.735), (-0.39, 0.735)], 0.02), frame=(0.022, 0.014)))
 D.append(dict(part="Badge", view="front", sym=False, out=0.007,
               poly=rp([(-0.055, 0.695), (0.055, 0.695), (0.055, 0.722), (-0.055, 0.722)], 0.008)))
 # bumper: big centre intake + two side ducts + chin spoiler
 D.append(dict(part="Grille", view="front", sym=False, out=0.003,
-              poly=rp([(-0.33, 0.305), (0.33, 0.305), (0.36, 0.475), (-0.36, 0.475)], 0.04)))
+              poly=rp([(-0.33, 0.305), (0.33, 0.305), (0.36, 0.475), (-0.36, 0.475)], 0.04), frame=(0.022, 0.014)))
 D.append(dict(part="Grille", view="front", out=0.003,
-              poly=rp([(0.45, 0.305), (0.73, 0.330), (0.76, 0.470), (0.47, 0.470)], 0.035)))
+              poly=rp([(0.45, 0.305), (0.73, 0.330), (0.76, 0.470), (0.47, 0.470)], 0.035), frame=(0.022, 0.014)))
 D.append(dict(part="Trim", view="front", sym=False, out=0.004,
               poly=rp([(-0.70, 0.125), (0.70, 0.125), (0.72, 0.185), (-0.72, 0.185)], 0.02)))
 
@@ -125,8 +125,11 @@ SPEC = dict(
     length=L,
     body=BODY,
     arch_r=0.352,
-    end_r=(0.07, 0.06),
-    end_p=4.0,
+    end_r=(0.09, 0.08),
+    end_p=3.0,
+    # nose: corners swept back, bumper top leaning into the hood, chin tucked under
+    ends=dict(front=dict(zone=0.60, plan=0.17, top=0.07, bot=0.09),
+              rear=dict(zone=0.50, plan=0.11, top=0.05, bot=0.11)),
     flare=0.026,
     bevel=0.005,
     crease_gap=0.07,
@@ -180,6 +183,6 @@ SPEC["extras"] = [
     A.trunk_tub(0.22, 1.12, 0.62, 0.46, 0.95),
     A.interior(seat_u=2.30, seat_s=0.38, dash_u=3.05, wheel_side=1, floor_h=0.18,
                belt_h=0.93, roof_h=1.33, half_w=0.80, rear_seat_u=1.55),
-    A.exhaust(-0.03, -0.52, 0.255, 0.052, length=0.22),
+    A.exhaust(None, -0.52, 0.255, 0.052, length=0.22),
     A.undertray(0.25, 4.40, 0.60, 0.135),
 ]

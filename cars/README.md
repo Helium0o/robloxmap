@@ -103,7 +103,8 @@ python3 build.py --scale 0.22    # bigger, "Roblox-sized" cars
 
 - `r34.py`, `supra.py`: each car's spec. Body cross-sections are keyframed along the
   car's length (`BODY`). `panels` sets where the doors, hood and trunk are cut from the
-  shell, and `flare`, `bevel` and `crease_gap` set how aggressive the body lines are. Lights, grilles, glass, panel gaps etc. are 2D outlines
+  shell, and `flare`, `bevel` and `crease_gap` set how aggressive the body lines are. `ends` shapes the nose and tail:
+  `plan` sweeps the corners back, `top` leans the bumper top into the hood or trunk, and `bot` tucks the chin under. Lights, grilles, glass, panel gaps etc. are 2D outlines
   projected onto the body (`D`). Wing, mirrors, interior and exhaust are built
   separately.
 - `carkit.py`: the toolkit: lofted body with wheel-arch cut-outs, projected decals,

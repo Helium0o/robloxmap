@@ -67,9 +67,9 @@ for k, cs in enumerate((0.470, 0.585, 0.700)):
 # big centre mouth with the number plate recess above it
 D.append(dict(part="Grille", view="front", sym=False, out=0.003,
               poly=rp([(-0.40, 0.255), (0.40, 0.255), (0.36, 0.430), (0.0, 0.445),
-                       (-0.36, 0.430)], 0.07)))
+                       (-0.36, 0.430)], 0.07), frame=(0.022, 0.014)))
 D.append(dict(part="Grille", view="front", out=0.003,
-              poly=rp([(0.52, 0.265), (0.76, 0.300), (0.78, 0.380), (0.55, 0.375)], 0.035)))
+              poly=rp([(0.52, 0.265), (0.76, 0.300), (0.78, 0.380), (0.55, 0.375)], 0.035), frame=(0.022, 0.014)))
 D.append(dict(part="Indicators", view="front", out=0.005,
               poly=rp([(0.53, 0.400), (0.79, 0.410), (0.80, 0.445), (0.56, 0.440)], 0.015)))
 D.append(dict(part="Badge", view="front", sym=False, out=0.006,
@@ -119,8 +119,11 @@ SPEC = dict(
     length=L,
     body=BODY,
     arch_r=0.348,
-    end_r=(0.08, 0.10),
-    end_p=3.2,
+    end_r=(0.10, 0.12),
+    end_p=2.8,
+    # long pointed nose, rounded tail tucked under the bumper
+    ends=dict(front=dict(zone=0.80, plan=0.30, top=0.12, bot=0.10),
+              rear=dict(zone=0.55, plan=0.15, top=0.05, bot=0.12)),
     flare=0.040,
     bevel=0.010,
     crease_gap=0.06,
@@ -181,6 +184,6 @@ SPEC["extras"] = [
     A.trunk_tub(0.22, 1.15, 0.62, 0.44, 0.92),
     A.interior(seat_u=2.05, seat_s=0.38, dash_u=2.78, wheel_side=-1, floor_h=0.16,
                belt_h=0.88, roof_h=1.22, half_w=0.80, rear_seat_u=1.38),
-    A.exhaust(-0.03, 0.50, 0.24, 0.058, length=0.22),
+    A.exhaust(None, 0.50, 0.24, 0.058, length=0.22),
     A.undertray(0.25, 4.30, 0.60, 0.13),
 ]
