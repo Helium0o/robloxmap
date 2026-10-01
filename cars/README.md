@@ -62,8 +62,8 @@ underside and interior minimal; prefer fewer meshes
 
 | | Triangles | Parts | One wheel (tyre + rim + disc + caliper) |
 | --- | --- | --- | --- |
-| R34 | ~19.1k | 53 | ~750 |
-| Supra | ~19.2k | 53 | ~690 |
+| R34 | ~23.1k | 53 | ~750 |
+| Supra | ~23.8k | 53 | ~690 |
 
 Those totals include opening doors, hood and trunk (each a solid panel), an engine
 bay and a basic interior. `build.py` refuses to export a car over the hard
@@ -77,6 +77,11 @@ How it stays light:
 - **Crisp creases, smooth bends:** edges running along the car stay sharp, and bends
   toward the nose and tail are smooth-shaded.
 - **Wheels:** 20 slices, box spokes, no lug nuts.
+- **Lamp units:** headlights and round tail lamps are solid units built on a flat
+  plane fitted to the body. Their edges stay straight, their lenses stay round and
+  level, and they never ripple with the paint underneath.
+- **Nose and tail:** the end faces are built from evenly spaced rings, and details are
+  projected onto the exported triangles themselves, so no paint pokes through.
 - **Lights and trim:** raised layers have no hidden undersides. Flat layers have no
   side walls. Lamp circles use 10–20 points.
 - **Merged parts:** same-colour details share a part (`Chrome`, `Trim`, `Interior`,

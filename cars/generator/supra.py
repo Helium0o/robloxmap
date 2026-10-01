@@ -50,24 +50,19 @@ BODY = {
 
 D = []
 rp = ck.rounded_poly
-HL_PROJ = dict(yaw=24, pitch=28, pivot=(0.60, 0.64))
-TL_PROJ = dict(yaw=26, pitch=0, pivot=(0.55, 0.83))
 circ = ck.circle_poly
 
 # ---- front: oval tri-beam headlights on the nose corners
-HL = circ(0.600, 0.640, 0.205, 40, ry=0.052, rot=math.radians(5))
-D.append(dict(part="Trim", view="front", out=0.002, **HL_PROJ,
-              poly=circ(0.600, 0.640, 0.218, 40, ry=0.064, rot=math.radians(5))))
-D.append(dict(part="HeadLights", view="front", poly=HL, out=0.004, **HL_PROJ))
-# three projectors (two low-beam, one high-beam) sitting in chrome bowls
-for cs, r in ((0.462, 0.040), (0.585, 0.044), (0.708, 0.040)):
-    ch = 0.640 + (cs - 0.600) * math.tan(math.radians(5))
-    D += A.projector("front", cs, ch, r, HL_PROJ)
-D.append(dict(part="HeadlightGlass", view="front", poly=HL, out=0.026, bulge=0.006, **HL_PROJ))
+# oval housing (level, so the three equal projectors sit on one line)
+HL = circ(0.600, 0.640, 0.205, 28, ry=0.052)
+HL_BEZEL = circ(0.600, 0.640, 0.218, 28, ry=0.064)
+HL_ELS = (A.projector_els(0.470, 0.640, 0.040) + A.projector_els(0.600, 0.640, 0.040)
+          + A.projector_els(0.730, 0.640, 0.040)
+          + [dict(part="HeadlightGlass", poly=HL, z0=0.017, z1=0.020)])
 # big centre mouth with the number plate recess above it
-D.append(dict(part="Grille", view="front", sym=False, out=0.003,
+D.append(dict(part="Grille", view="front", sym=False,
               poly=rp([(-0.40, 0.255), (0.40, 0.255), (0.36, 0.430), (0.0, 0.445),
-                       (-0.36, 0.430)], 0.07), frame=(0.022, 0.014)))
+                       (-0.36, 0.430)], 0.07), out=0.012, frame=(0.022, 0.016)))
 D.append(dict(part="Grille", view="front", out=0.003,
               poly=rp([(0.52, 0.265), (0.76, 0.300), (0.78, 0.380), (0.55, 0.375)], 0.035), frame=(0.022, 0.014)))
 D.append(dict(part="Indicators", view="front", out=0.005,
@@ -86,8 +81,7 @@ D.append(dict(part="TailLightsDark", view="rear", sym=False, out=0.005,
 D.append(dict(part="TailLights", view="rear", sym=False, out=0.008,
               poly=rp([(-0.28, 0.852), (0.28, 0.852), (0.28, 0.864), (-0.28, 0.864)], 0.005)))
 # outer lamps: tail/brake with a reverse centre, inner lamps: amber turn ring
-D += A.round_lamp("rear", 0.660, 0.830, 0.084, TL_PROJ, centre="TailLightsInner")
-D += A.round_lamp("rear", 0.440, 0.830, 0.084, TL_PROJ, ring="Indicators")
+# (round lamps are solid units - see SPEC["extras"])
 D.append(dict(part="Badge", view="rear", sym=False, out=0.009,
               poly=rp([(-0.10, 0.818), (0.10, 0.818), (0.10, 0.842), (-0.10, 0.842)], 0.008)))
 D += A.plate("rear", -0.18, 0.18, 0.505, 0.635)
@@ -109,22 +103,22 @@ D.append(A.line("side", [(1.855, 0.235), (2.970, 0.225)], part="DoorTrim*"))
 D.append(dict(part="DoorTrim*", view="side", out=0.004,
               poly=rp([(1.93, 0.800), (2.09, 0.800), (2.09, 0.826), (1.93, 0.826)], 0.01)))
 D.append(dict(part="Indicators", view="side", out=0.004,
-              poly=rp([(4.12, 0.44), (4.26, 0.44), (4.26, 0.47), (4.12, 0.47)], 0.01)))
+              poly=rp([(3.94, 0.47), (4.06, 0.47), (4.06, 0.50), (3.94, 0.50)], 0.01)))
 D.append(dict(part="Reflectors", view="side", out=0.004,
               poly=rp([(0.22, 0.48), (0.36, 0.48), (0.36, 0.51), (0.22, 0.51)], 0.01)))
 D.append(A.line("top", [(4.43, -0.62), (4.47, 0.0), (4.43, 0.62)], sym=False))
-D.append(A.line("top", [(0.06, -0.66), (0.06, 0.66)], sym=False))
+D.append(A.line("top", [(0.16, -0.66), (0.16, 0.66)], sym=False))
 
 SPEC = dict(
     name="ToyotaSupra_MK4",
     length=L,
     body=BODY,
     arch_r=0.348,
-    end_r=(0.10, 0.12),
+    end_r=(0.0, 0.0),        # flat, tessellated end faces (no pinched rounding)
     end_p=2.8,
     # long pointed nose, rounded tail tucked under the bumper
-    ends=dict(front=dict(zone=0.80, plan=0.30, top=0.12, bot=0.10),
-              rear=dict(zone=0.55, plan=0.15, top=0.05, bot=0.12)),
+    ends=dict(front=dict(zone=0.80, plan=0.30, top=0.12, bot=0.10, top_pow=1.3, bot_pow=1),
+              rear=dict(zone=0.55, plan=0.15, top=0.05, bot=0.12, top_pow=1, bot_pow=1)),
     flare=0.040,
     bevel=0.010,
     crease_gap=0.06,
@@ -176,6 +170,10 @@ def hoop_wing(car, body):
 
 
 SPEC["extras"] = [
+    A.lamp_unit("front", HL, HL_ELS, bezel=HL_BEZEL),
+    # outer lamps: tail/brake with a reverse centre, inner lamps: amber turn ring
+    A.round_lamp_unit("rear", 0.660, 0.830, 0.084, centre="TailLightsInner"),
+    A.round_lamp_unit("rear", 0.440, 0.830, 0.084, ring="Indicators"),
     hoop_wing,
     A.mirrors(2.93, 0.975, 0.11, size=(0.08, 0.10, 0.052)),
     A.interior_markers(seat_u=2.05, seat_s=0.38, floor_h=0.16, driver_side=-1),

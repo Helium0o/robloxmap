@@ -170,10 +170,14 @@ def delaunay_flip(verts2d, tris, iters=2000):
     return [tuple(t) for t in T]
 
 
-def refine(verts2d, tris, maxlen):
-    """Conforming red-green refinement until every edge is shorter than maxlen."""
+def refine(verts2d, tris, maxlen, keep_boundary=False):
+    """Conforming red-green refinement until every edge is shorter than maxlen.
+    keep_boundary leaves the outline edges unsplit (so the patch still shares
+    its border vertices exactly with a neighbouring mesh)."""
     V = [np.array(v, float) for v in verts2d]
     T = [tuple(t) for t in tris]
+    nb = len(V)
+    outline = {(min(i, (i + 1) % nb), max(i, (i + 1) % nb)) for i in range(nb)} if keep_boundary else set()
     for _ in range(12):
         mids = {}
 
@@ -183,7 +187,7 @@ def refine(verts2d, tris, maxlen):
         long_edges = set()
         for t in T:
             for a, b in ((t[0], t[1]), (t[1], t[2]), (t[2], t[0])):
-                if np.linalg.norm(V[a] - V[b]) > maxlen:
+                if np.linalg.norm(V[a] - V[b]) > maxlen and key(a, b) not in outline:
                     long_edges.add(key(a, b))
         if not long_edges:
             break
@@ -292,6 +296,42 @@ def signed_volume(V, F):
     P = to_out(V)
     a, b, c = P[F[:, 0]], P[F[:, 1]], P[F[:, 2]]
     return np.sum(np.einsum("ij,ij->i", a, np.cross(b, c))) / 6.0
+
+
+def make_consistent(F):
+    """Flip faces so neighbours share edges in opposite directions (BFS)."""
+    F = [list(f) for f in F]
+    from collections import defaultdict, deque
+    edge_faces = defaultdict(list)
+    for fi, f in enumerate(F):
+        for k in range(3):
+            a, b = f[k], f[(k + 1) % 3]
+            if a != b:
+                edge_faces[(min(a, b), max(a, b))].append(fi)
+    seen = [False] * len(F)
+    for start in range(len(F)):
+        if seen[start]:
+            continue
+        seen[start] = True
+        q = deque([start])
+        while q:
+            fi = q.popleft()
+            f = F[fi]
+            for k in range(3):
+                a, b = f[k], f[(k + 1) % 3]
+                if a == b:
+                    continue
+                for gj in edge_faces[(min(a, b), max(a, b))]:
+                    if seen[gj]:
+                        continue
+                    g = F[gj]
+                    # neighbour must run the shared edge the other way (b -> a)
+                    same = any(g[m] == a and g[(m + 1) % 3] == b for m in range(3))
+                    if same:
+                        F[gj] = g[::-1]
+                    seen[gj] = True
+                    q.append(gj)
+    return np.array(F, int)
 
 
 def orient_closed(V, F):
@@ -751,10 +791,10 @@ class Body:
             self.kinds = kinds
         # square-ish nose and tail with a tight radius
         k = 1.0
-        if u < self.end_r[0]:
+        if self.end_r[0] > 0 and u < self.end_r[0]:
             d = (self.end_r[0] - u) / self.end_r[0]
             k = (1 - d ** self.end_p) ** (1 / self.end_p)
-        elif u > self.L - self.end_r[1]:
+        elif self.end_r[1] > 0 and u > self.L - self.end_r[1]:
             d = (u - (self.L - self.end_r[1])) / self.end_r[1]
             k = (1 - min(d, 1.0) ** self.end_p) ** (1 / self.end_p)
         if k < 1.0:
@@ -768,7 +808,12 @@ class Body:
         for wu, _ in self.wheels:
             for u in np.arange(wu - self.arch_r - 0.03, wu + self.arch_r + 0.03, fine):
                 us.add(round(u, 4))
+        # a little denser near the nose and tail, where the shape changes fastest
+        for d in np.arange(0.0, 0.26, 0.045):
+            us.update((round(d, 4), round(self.L - d, 4)))
         for r, sign in ((self.end_r[0], 0), (self.end_r[1], 1)):
+            if r <= 0:
+                continue
             for t in np.linspace(0, 1, 5):
                 d = r * (1 - math.cos(t * math.pi / 2))
                 us.add(round(d if sign == 0 else self.L - d, 4))
@@ -841,11 +886,47 @@ class Body:
             right = [(u, s, h) for s, h in pr]
             left = [(u, -s, h) for s, h in pr[-2:0:-1]]
             rings.append(right + left)
-        V, F = grid_closed(rings, cap_start=True, cap_end=True)
-        V = self.warp(V)
-        V, F = orient_closed(V, F)
         M = 2 * n - 2
+        V, F = grid_closed(rings, cap_start=False, cap_end=False)
+        V = list(map(tuple, V))
+        F = [tuple(f) for f in F]
         nquads = (len(us) - 1) * M
+        # nose and tail: end faces built from concentric rings shrinking toward
+        # the middle of the bumper, so triangles stay small and evenly shaped
+        # and follow the nose shaping without folds or spikes
+        K = 5
+        for ring_i, last in ((0, False), (len(us) - 1, True)):
+            base_ids = [ring_i * M + m for m in range(M)]
+            pts = np.array([(V[v][1], V[v][2]) for v in base_ids])
+            cs_, ch_ = 0.0, 0.5 * (pts[:, 1].min() + pts[:, 1].max())
+            prev = base_ids
+            u_end = us[ring_i]
+            for k in range(1, K):
+                f = 1.0 - k / K
+                cur = []
+                for (ps, ph) in pts:
+                    cur.append(len(V))
+                    V.append((u_end, cs_ + (ps - cs_) * f, ch_ + (ph - ch_) * f))
+                for m in range(M):
+                    a, b2 = prev[m], prev[(m + 1) % M]
+                    c, d2 = cur[(m + 1) % M], cur[m]
+                    F.extend([(a, b2, c), (a, c, d2)])
+                prev = cur
+            centre = len(V)
+            V.append((u_end, cs_, ch_))
+            for m in range(M):
+                F.append((prev[m], prev[(m + 1) % M], centre))
+        V = np.array(V, float)
+        F = np.array(F, int)
+        # weld coincident points (collapsed wheel-well corners) so the end caps
+        # and the loft form one connected surface
+        _, first, inv = np.unique(np.round(V, 6), axis=0, return_index=True, return_inverse=True)
+        F = first[inv.ravel()][F]
+        V = self.warp(V)
+        # orient: every face consistent with the loft, outward
+        F = make_consistent(F)
+        V, F = orient_closed(V, F)
+        self.tri_mesh = (V, F)
 
         def prof_idx(m):
             m %= M
@@ -885,7 +966,8 @@ class Body:
         a = np.clip(np.abs(s) / e.get("width", 0.9), 0, 1)
         top = np.clip((h - hc) / max(ht - hc, 1e-3), 0, 1)
         bot = np.clip((hc - h) / max(hc - hb, 1e-3), 0, 1)
-        S = e["plan"] * a ** 2.2 + e["top"] * top ** 2 + e["bot"] * bot ** 2
+        S = (e["plan"] * a ** e.get("plan_pow", 2.2) + e["top"] * top ** e.get("top_pow", 2)
+             + e["bot"] * bot ** e.get("bot_pow", 2))
         return np.minimum(S, 0.45 * e["zone"])
 
     def warp(self, V):
@@ -1036,9 +1118,45 @@ def project(body, view, a, b, side=1, yaw=0.0, pitch=0.0, pivot=None):
     else:
         raise ValueError(view)
     origin = base + d * 2.5
+    if getattr(body, "tri_mesh", None) is not None:
+        # hit the exported triangles themselves, so details sit exactly on the
+        # paint that is actually rendered (no paint poking through)
+        hit = mesh_raycast(body.tri_mesh, origin, -d)
+        miss = np.isnan(hit[:, 0])
+        if miss.any():
+            hit[miss] = body.warp(body.raycast(origin[miss], -d, warped=False))
+        return hit, d
     # project onto the loft before the nose/tail shaping, then bend the hit
     # points with the same warp so details follow the curved ends exactly
     return body.warp(body.raycast(origin, -d, warped=False)), d
+
+
+def mesh_raycast(VF, origin, direction):
+    """First hit of parallel rays on a triangle mesh (Moller-Trumbore).
+    Returns NaN rows for misses."""
+    V, F = VF
+    d = np.asarray(direction, float)
+    A, B, C = V[F[:, 0]], V[F[:, 1]], V[F[:, 2]]
+    e1, e2 = B - A, C - A
+    pvec = np.cross(d, e2)
+    det = np.einsum("ij,ij->i", e1, pvec)
+    ok = np.abs(det) > 1e-12
+    A, e1, e2, pvec, det = A[ok], e1[ok], e2[ok], pvec[ok], det[ok]
+    inv = 1.0 / det
+    out = np.full((len(origin), 3), np.nan)
+    for k, o in enumerate(origin):
+        tv = o - A
+        u = np.einsum("ij,ij->i", tv, pvec) * inv
+        m = (u >= -1e-9) & (u <= 1 + 1e-9)
+        if not m.any():
+            continue
+        qv = np.cross(tv[m], e1[m])
+        v = (qv @ d) * inv[m]
+        t = np.einsum("ij,ij->i", e2[m], qv) * inv[m]
+        good = (v >= -1e-9) & (u[m] + v <= 1 + 1e-9) & (t > 0)
+        if good.any():
+            out[k] = o + d * t[good].min()
+    return out
 
 
 def decal(body, poly, view, out=0.004, depth=0.012, maxlen=0.045, side=1, bulge=0.0,
@@ -1055,9 +1173,13 @@ def decal(body, poly, view, out=0.004, depth=0.012, maxlen=0.045, side=1, bulge=
     poly = [tuple(p) for p in poly]
     if poly_area(poly) < 0:
         poly = poly[::-1]
+    if view in ("front", "rear"):
+        out = max(out, 0.007)   # clear of the curved nose/tail paint (no z-fighting)
     poly = resample_poly(poly, maxlen)
     tris = delaunay_flip(poly, triangulate(poly))
-    V2, T = refine(poly, tris, max(maxlen * (2.5 if view in ("front", "rear") else 4), 0.09))
+    # front/rear details sit on the curved nose and tail, so they need a finer
+    # interior to stay on the paint; flatter side/top panels can be coarser
+    V2, T = refine(poly, tris, 0.05 if view in ("front", "rear") else max(maxlen * 4, 0.09))
     loop = boundary_loop(T)
     # dome factor for bulge: 1 in the middle, 0 on the outline
     if bulge:
@@ -1183,3 +1305,84 @@ def brake(disc_r, caliper_rgb_unused=None, offset=-0.03, caliper_ang=math.radian
         rings.append(prof)
     parts.append(("caliper", grid_closed(rings)))
     return parts
+
+
+# --------------------------------------------------------------------------
+# lamp units: solid, planar light clusters set into the body
+# --------------------------------------------------------------------------
+
+class LampPlane:
+    """A flat mounting face fitted to the body around a lamp.
+
+    Shapes are drawn in front/rear-view coordinates (s, h) and mapped onto the
+    plane, so straight edges stay straight and round lenses stay round and
+    level, however the paint underneath curves."""
+
+    def __init__(self, body, view, housing, yaw=None, pitch=None, clearance=0.002):
+        self.view = view
+        fwd = 1.0 if view == "front" else -1.0
+        d = np.array([fwd, 0.0, 0.0])
+        hp = np.asarray(housing, float)
+        s0, h0 = (hp[:, 0].min() + hp[:, 0].max()) / 2, (hp[:, 1].min() + hp[:, 1].max()) / 2
+        self.s0, self.h0 = s0, h0
+        # best-fit plane through the paint under the whole housing, so the
+        # unit sits as flush as a flat lamp can
+        ring = np.array(resample_poly([tuple(q) for q in hp], 0.04))
+        ss = np.concatenate([[s0], ring[:, 0], s0 + (ring[:, 0] - s0) * 0.5])
+        hh = np.concatenate([[h0], ring[:, 1], h0 + (ring[:, 1] - h0) * 0.5])
+        P, _ = project(body, view, ss, hh)
+        centre = P[0]
+        if yaw is None or pitch is None:
+            c = P.mean(axis=0)
+            n = np.linalg.svd(P - c)[2][-1]
+            if n @ d < 0:
+                n = -n
+            fy = math.degrees(math.atan2(n[1] * (np.sign(s0) or 1.0), n[0] * fwd))
+            fp = math.degrees(math.asin(np.clip(n[2], -1, 1)))
+            yaw = fy if yaw is None else yaw
+            pitch = fp if pitch is None else pitch
+        y, p = math.radians(yaw), math.radians(pitch)
+        sg = np.sign(s0) or 1.0
+        n = np.array([fwd * math.cos(y) * math.cos(p), sg * math.sin(y) * math.cos(p), math.sin(p)])
+        self.n = n / np.linalg.norm(n)
+        up = np.array([0, 0, 1.0])
+        e2 = up - self.n * (up @ self.n)
+        self.e2 = e2 / np.linalg.norm(e2)
+        sx = np.array([0, 1.0, 0])
+        e1 = sx - self.n * (sx @ self.n) - self.e2 * (sx @ self.e2)
+        self.e1 = e1 / np.linalg.norm(e1)
+        self.C = centre
+        # push the plane out until the whole housing sits on or above the paint,
+        # and find how deep the housing walls must reach to meet the paint
+        ring = np.array(resample_poly([tuple(q) for q in hp], 0.03))
+        Q = self.map(ring[:, 0], ring[:, 1], 0.0)
+        S = body.raycast(Q + self.n * 1.0, -self.n, tmax=2.0, step=0.004)
+        gap = (S - Q) @ self.n
+        self.off = gap.max() + clearance
+        self.depth = (self.off - gap.min()) + 0.02
+
+    def map(self, s, h, z):
+        s = np.atleast_1d(np.asarray(s, float))
+        h = np.atleast_1d(np.asarray(h, float))
+        z = np.broadcast_to(np.asarray(z, float), s.shape)
+        off = getattr(self, "off", 0.0)
+        return (self.C + np.outer(s - self.s0, self.e1) + np.outer(h - self.h0, self.e2)
+                + np.outer(z + off, self.n))
+
+    def prism(self, poly, z0, z1, taper=1.0):
+        """Straight-walled solid between depths z0 < z1 (z = 0 is the lamp face).
+        taper < 1 shrinks the front face toward the centre (domed lenses)."""
+        poly = [tuple(q) for q in poly]
+        if poly_area(poly) < 0:
+            poly = poly[::-1]
+        tris = delaunay_flip(poly, triangulate(poly))
+        P = np.asarray(poly, float)
+        c = P.mean(axis=0)
+        Pt = c + (P - c) * taper
+        n = len(P)
+        V = np.vstack([self.map(P[:, 0], P[:, 1], z0), self.map(Pt[:, 0], Pt[:, 1], z1)])
+        F = [(t[0], t[2], t[1]) for t in tris] + [(t[0] + n, t[1] + n, t[2] + n) for t in tris]
+        for i in range(n):
+            j = (i + 1) % n
+            F += [(i, j, j + n), (i, j + n, i + n)]
+        return V, np.array(F)

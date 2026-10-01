@@ -381,3 +381,44 @@ def round_lamp(view, cs, ch, r, proj, ring="TailLightsDark", core="TailLights",
         dict(part=core, view=view, poly=c(cs, ch, r * 0.50, 14), out=0.019, bulge=0.004, **proj),
         dict(part=centre, view=view, poly=c(cs, ch, r * 0.26, 10), out=0.026, **proj),
     ]
+
+
+def lamp_unit(view, housing, elements, housing_part="HeadLights", bezel=None, yaw=None,
+              pitch=None, sym=True):
+    """A solid light cluster on a plane fitted to the body (see ck.LampPlane).
+    elements: dicts with part, poly (s, h), z0, z1 and optional taper; z is the
+    height above the lamp face. Built for the right side and mirrored."""
+    def fn(car, body):
+        lp = ck.LampPlane(body, view, housing, yaw=yaw, pitch=pitch)
+        solids = [(housing_part, lp.prism(housing, -lp.depth, 0.0))]
+        if bezel is not None:
+            solids.append(("Trim", lp.prism(bezel, -lp.depth, -0.003)))
+        for el in elements:
+            solids.append((el["part"], lp.prism(el["poly"], el["z0"], el["z1"], el.get("taper", 1.0))))
+        for part, (V, F) in solids:
+            _add(car, part, (V, F), mirror=sym)
+    return fn
+
+
+def round_lamp_unit(view, cs, ch, r, ring="TailLightsDark", core="TailLights",
+                    centre="TailLights", n=20):
+    """Round tail lamp as a solid unit: black bezel, chrome ring, domed red lens,
+    dark inner ring, lit core and a small centre element."""
+    c = ck.circle_poly
+    return lamp_unit(view, c(cs, ch, r * 1.12, n), [
+        dict(part="Chrome", poly=c(cs, ch, r * 1.04, n), z0=-0.004, z1=0.003),
+        dict(part="TailLights", poly=c(cs, ch, r, n), z0=0.0, z1=0.009, taper=0.95),
+        dict(part=ring, poly=c(cs, ch, r * 0.66, 16), z0=0.007, z1=0.012),
+        dict(part=core, poly=c(cs, ch, r * 0.50, 14), z0=0.010, z1=0.016, taper=0.9),
+        dict(part=centre, poly=c(cs, ch, r * 0.26, 10), z0=0.014, z1=0.019),
+    ], housing_part="Trim")
+
+
+def projector_els(cs, ch, r):
+    """Chrome reflector bowl, black shroud and a domed lens, as solid layers."""
+    c = ck.circle_poly
+    return [
+        dict(part="Chrome", poly=c(cs, ch, r, 16), z0=-0.004, z1=0.003),
+        dict(part="Trim", poly=c(cs, ch, r * 0.76, 14), z0=0.002, z1=0.006),
+        dict(part="Lens", poly=c(cs, ch, r * 0.60, 12), z0=0.005, z1=0.014, taper=0.78),
+    ]

@@ -48,30 +48,24 @@ BODY = {
 # ---------------------------------------------------------------- decals
 D = []
 rp = ck.rounded_poly
-HL_PROJ = dict(yaw=22, pitch=8, pivot=(0.62, 0.70))
-TL_PROJ = dict(yaw=24, pitch=0, pivot=(0.50, 0.865))
 circ = ck.circle_poly
 
-# headlights: angular units, lower inner tip pointing at the grille
-HL = rp([(0.395, 0.655), (0.790, 0.632), (0.838, 0.690), (0.828, 0.758),
-         (0.450, 0.770), (0.380, 0.712)], 0.018)
-# layers, back to front: black bezel, dark gunmetal housing, chrome bowls with
-# projector lenses, amber corner indicator, a chrome eyebrow strip, clear cover
-D.append(dict(part="Trim", view="front", out=0.002, **HL_PROJ,
-              poly=rp([(0.385, 0.645), (0.798, 0.622), (0.848, 0.690), (0.838, 0.768),
-                       (0.445, 0.780), (0.368, 0.712)], 0.02)))
-D.append(dict(part="HeadLights", view="front", poly=HL, out=0.004, **HL_PROJ))
-D += A.projector("front", 0.535, 0.700, 0.052, HL_PROJ)
-D += A.projector("front", 0.700, 0.700, 0.046, HL_PROJ)
-D.append(dict(part="Indicators", view="front", out=0.008, **HL_PROJ,
-              poly=rp([(0.775, 0.646), (0.818, 0.644), (0.832, 0.688), (0.790, 0.680)], 0.006)))
-D.append(dict(part="Chrome", view="front", out=0.007, **HL_PROJ,
-              poly=rp([(0.455, 0.748), (0.815, 0.740), (0.812, 0.749), (0.452, 0.757)], 0.003)))
-D.append(dict(part="HeadlightGlass", view="front", poly=HL, out=0.026, bulge=0.006, **HL_PROJ))
+# headlights: solid units on a plane fitted to the nose (see A.lamp_unit) -
+# a clean trapezoid with straight top/bottom edges, the inner end chamfered
+# toward the grille, two equal projectors on one level line
+HL = rp([(0.398, 0.648), (0.836, 0.648), (0.836, 0.762), (0.390, 0.762), (0.370, 0.705)], 0.012)
+HL_BEZEL = rp([(0.390, 0.640), (0.844, 0.640), (0.844, 0.770), (0.382, 0.770), (0.360, 0.705)], 0.016)
+HL_ELS = (A.projector_els(0.535, 0.702, 0.042) + A.projector_els(0.708, 0.702, 0.042) + [
+    dict(part="Indicators", poly=rp([(0.772, 0.656), (0.828, 0.656), (0.828, 0.690), (0.772, 0.690)], 0.006),
+         z0=-0.004, z1=0.003),
+    dict(part="Chrome", poly=[(0.430, 0.749), (0.828, 0.749), (0.828, 0.755), (0.430, 0.755)],
+         z0=-0.004, z1=0.002),
+    dict(part="HeadlightGlass", poly=HL, z0=0.017, z1=0.020),
+])
 # upper grille between the lights + badge
 D.append(dict(part="Grille", view="front", sym=False, out=0.003,
               poly=rp([(-0.36, 0.680), (0.36, 0.680), (0.39, 0.735), (-0.39, 0.735)], 0.02), frame=(0.022, 0.014)))
-D.append(dict(part="Badge", view="front", sym=False, out=0.007,
+D.append(dict(part="Badge", view="front", sym=False, out=0.013,
               poly=rp([(-0.055, 0.695), (0.055, 0.695), (0.055, 0.722), (-0.055, 0.722)], 0.008)))
 # bumper: big centre intake + two side ducts + chin spoiler
 D.append(dict(part="Grille", view="front", sym=False, out=0.003,
@@ -84,8 +78,7 @@ D.append(dict(part="Trim", view="front", sym=False, out=0.004,
 # rear: quad round tail lights
 # the GT-R's signature quad rings: outer lamps are tail/brake, the inner pair
 # carries the reverse light in the centre
-D += A.round_lamp("rear", 0.630, 0.865, 0.100, TL_PROJ)
-D += A.round_lamp("rear", 0.375, 0.865, 0.100, TL_PROJ, centre="TailLightsInner")
+# (the four round tail lamps are solid units - see SPEC["extras"])
 D.append(dict(part="Badge", view="rear", sym=False, out=0.005,
               poly=rp([(-0.07, 0.86), (0.07, 0.86), (0.07, 0.89), (-0.07, 0.89)], 0.008)))
 D += A.plate("rear", -0.185, 0.185, 0.525, 0.655)
@@ -118,19 +111,20 @@ D[-1]["side"] = 1
 D.append(A.line("front", [(-0.80, 0.60), (0.0, 0.615), (0.80, 0.60)], sym=False))
 D.append(A.line("rear", [(-0.78, 0.71), (0.0, 0.72), (0.78, 0.71)], sym=False))
 # trunk lid + hood shut lines
-D.append(A.line("top", [(0.06, -0.70), (0.06, 0.70)], sym=False))
-D.append(A.line("top", [(4.47, -0.70), (4.47, 0.70)], sym=False))
+D.append(A.line("top", [(0.16, -0.70), (0.16, 0.70)], sym=False))
+D.append(A.line("top", [(4.42, -0.70), (4.42, 0.70)], sym=False))
 
 SPEC = dict(
     name="NissanSkylineGTR_R34",
     length=L,
     body=BODY,
     arch_r=0.352,
-    end_r=(0.09, 0.08),
+    end_r=(0.0, 0.0),        # flat, tessellated end faces (no pinched rounding)
     end_p=3.0,
     # nose: corners swept back, bumper top leaning into the hood, chin tucked under
-    ends=dict(front=dict(zone=0.60, plan=0.17, top=0.07, bot=0.09),
-              rear=dict(zone=0.50, plan=0.11, top=0.05, bot=0.11)),
+    # straight lean lines in side view (pow 1); squarer corners in plan (pow 3)
+    ends=dict(front=dict(zone=0.60, plan=0.12, top=0.06, bot=0.09, plan_pow=5.0, top_pow=1, bot_pow=1),
+              rear=dict(zone=0.50, plan=0.10, top=0.05, bot=0.10, plan_pow=3.0, top_pow=1, bot_pow=1)),
     flare=0.026,
     bevel=0.005,
     crease_gap=0.07,
@@ -175,6 +169,10 @@ def wing(car, body):
 
 
 SPEC["extras"] = [
+    A.lamp_unit("front", HL, HL_ELS, bezel=HL_BEZEL),
+    # GT-R quad rings: outer pair tail/brake, inner pair with reverse centres
+    A.round_lamp_unit("rear", 0.630, 0.865, 0.100),
+    A.round_lamp_unit("rear", 0.375, 0.865, 0.100, centre="TailLightsInner"),
     wing,
     A.mirrors(3.21, 1.035, 0.115),
     A.interior_markers(seat_u=2.30, seat_s=0.38, floor_h=0.18, driver_side=1),

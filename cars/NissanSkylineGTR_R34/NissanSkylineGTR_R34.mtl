@@ -22,14 +22,6 @@ Ns 60
 d 1
 illum 2
 
-newmtl HeadlightHousing
-Ka 0 0 0
-Kd 0.160 0.170 0.180
-Ks 0.25 0.25 0.25
-Ns 60
-d 1
-illum 2
-
 newmtl Chrome
 Ka 0 0 0
 Kd 0.750 0.760 0.780
@@ -38,33 +30,9 @@ Ns 60
 d 1
 illum 2
 
-newmtl Lens
+newmtl Plate
 Ka 0 0 0
-Kd 0.950 0.970 1.000
-Ks 0.25 0.25 0.25
-Ns 60
-d 1
-illum 2
-
-newmtl Amber
-Ka 0 0 0
-Kd 0.980 0.550 0.050
-Ks 0.25 0.25 0.25
-Ns 60
-d 1
-illum 2
-
-newmtl ClearGlass
-Ka 0 0 0
-Kd 0.850 0.900 0.950
-Ks 0.25 0.25 0.25
-Ns 60
-d 1
-illum 2
-
-newmtl TailRed
-Ka 0 0 0
-Kd 0.700 0.020 0.030
+Kd 0.950 0.950 0.920
 Ks 0.25 0.25 0.25
 Ns 60
 d 1
@@ -78,17 +46,9 @@ Ns 60
 d 1
 illum 2
 
-newmtl TailInner
+newmtl Amber
 Ka 0 0 0
-Kd 0.950 0.850 0.850
-Ks 0.25 0.25 0.25
-Ns 60
-d 1
-illum 2
-
-newmtl Plate
-Ka 0 0 0
-Kd 0.950 0.950 0.920
+Kd 0.980 0.550 0.050
 Ks 0.25 0.25 0.25
 Ns 60
 d 1
@@ -129,6 +89,46 @@ illum 2
 newmtl Default
 Ka 0 0 0
 Kd 0.600 0.600 0.600
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl HeadlightHousing
+Ka 0 0 0
+Kd 0.160 0.170 0.180
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Lens
+Ka 0 0 0
+Kd 0.950 0.970 1.000
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl ClearGlass
+Ka 0 0 0
+Kd 0.850 0.900 0.950
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl TailRed
+Ka 0 0 0
+Kd 0.700 0.020 0.030
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl TailInner
+Ka 0 0 0
+Kd 0.950 0.850 0.850
 Ks 0.25 0.25 0.25
 Ns 60
 d 1
