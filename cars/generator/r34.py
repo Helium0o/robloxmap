@@ -57,10 +57,9 @@ HL = rp([(0.398, 0.648), (0.836, 0.648), (0.836, 0.762), (0.390, 0.762), (0.370,
 HL_BEZEL = rp([(0.390, 0.640), (0.844, 0.640), (0.844, 0.770), (0.382, 0.770), (0.360, 0.705)], 0.016)
 HL_ELS = (A.projector_els(0.535, 0.702, 0.042) + A.projector_els(0.708, 0.702, 0.042) + [
     dict(part="Indicators", poly=rp([(0.772, 0.656), (0.828, 0.656), (0.828, 0.690), (0.772, 0.690)], 0.006),
-         z0=-0.004, z1=0.003),
+         out=0.007),
     dict(part="Chrome", poly=[(0.430, 0.749), (0.828, 0.749), (0.828, 0.755), (0.430, 0.755)],
-         z0=-0.004, z1=0.002),
-    dict(part="HeadlightGlass", poly=HL, z0=0.017, z1=0.020),
+         out=0.007),
 ])
 # upper grille between the lights + badge
 D.append(dict(part="Grille", view="front", sym=False, out=0.003,
@@ -171,8 +170,8 @@ def wing(car, body):
 SPEC["extras"] = [
     A.lamp_unit("front", HL, HL_ELS, bezel=HL_BEZEL),
     # GT-R quad rings: outer pair tail/brake, inner pair with reverse centres
-    A.round_lamp_unit("rear", 0.630, 0.865, 0.100),
-    A.round_lamp_unit("rear", 0.375, 0.865, 0.100, centre="TailLightsInner"),
+    A.round_lamp_unit("rear", 0.630, 0.845, 0.098),
+    A.round_lamp_unit("rear", 0.375, 0.845, 0.098, centre="TailLightsInner"),
     wing,
     A.mirrors(3.21, 1.035, 0.115),
     A.interior_markers(seat_u=2.30, seat_s=0.38, floor_h=0.18, driver_side=1),

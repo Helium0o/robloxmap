@@ -110,14 +110,6 @@ Ns 60
 d 1
 illum 2
 
-newmtl ClearGlass
-Ka 0 0 0
-Kd 0.850 0.900 0.950
-Ks 0.25 0.25 0.25
-Ns 60
-d 1
-illum 2
-
 newmtl TailRed
 Ka 0 0 0
 Kd 0.700 0.020 0.030

@@ -1386,3 +1386,45 @@ class LampPlane:
             j = (i + 1) % n
             F += [(i, j, j + n), (i, j + n, i + n)]
         return V, np.array(F)
+
+    def conform(self, body, poly, out, depth=0.012, bulge=0.0, maxlen=0.025):
+        """Lay a layer onto the paint: the outline is drawn in this lamp's flat
+        2D frame (straight edges, round level lenses) and each point is cast
+        along the lamp's facing direction onto the real triangles, then lifted
+        by 'out'. The result hugs the bodywork instead of floating in front."""
+        poly = [tuple(q) for q in poly]
+        if poly_area(poly) < 0:
+            poly = poly[::-1]
+        poly = resample_poly(poly, maxlen)
+        tris = delaunay_flip(poly, triangulate(poly))
+        P2, T = refine(poly, tris, maxlen * 1.6)
+        loop = boundary_loop(T)
+        if bulge:
+            bp = P2[loop]
+            dmin = np.array([np.min(np.linalg.norm(bp - v, axis=1)) for v in P2])
+            dome = np.sqrt(np.clip(dmin / max(dmin.max(), 1e-6), 0, 1))
+        else:
+            dome = np.zeros(len(P2))
+        saved = self.off
+        self.off = 0.0
+        O = self.map(P2[:, 0], P2[:, 1], 0.5)
+        self.off = saved
+        hit = mesh_raycast(body.tri_mesh, O, -self.n)
+        miss = np.isnan(hit[:, 0])
+        if miss.any():
+            hit[miss] = O[miss] - self.n * 0.5
+        top = hit + self.n * (out + bulge * dome)[:, None]
+        bot = hit - self.n * depth
+        n = len(P2)
+        T = np.asarray(T)
+        to = to_out(top)
+        a, b, c = to[T[:, 0]], to[T[:, 1]], to[T[:, 2]]
+        if np.sum(np.cross(b - a, c - a) @ to_out(self.n[None, :])[0]) < 0:
+            T = T[:, ::-1]
+        loop = boundary_loop(T)
+        V = np.vstack([top, bot])
+        F = [tuple(t) for t in T]
+        for i in range(len(loop)):
+            p, q = loop[i], loop[(i + 1) % len(loop)]
+            F += [(p, q + n, q), (p, p + n, q + n)]
+        return V, np.array(F)

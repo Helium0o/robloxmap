@@ -385,18 +385,22 @@ def round_lamp(view, cs, ch, r, proj, ring="TailLightsDark", core="TailLights",
 
 def lamp_unit(view, housing, elements, housing_part="HeadLights", bezel=None, yaw=None,
               pitch=None, sym=True):
-    """A solid light cluster on a plane fitted to the body (see ck.LampPlane).
-    elements: dicts with part, poly (s, h), z0, z1 and optional taper; z is the
-    height above the lamp face. Built for the right side and mirrored."""
+    """A light cluster set flush into the bodywork. Shapes are drawn in a flat
+    2D frame fitted to the body (ck.LampPlane), so edges are straight and lenses
+    round and level, then laid onto the paint layer by layer, a few mm apart.
+    elements: dicts with part, poly (s, h), out (mm-scale lift above the paint)
+    and optional bulge (domed lenses). Built for the right side and mirrored."""
     def fn(car, body):
         lp = ck.LampPlane(body, view, housing, yaw=yaw, pitch=pitch)
-        solids = [(housing_part, lp.prism(housing, -lp.depth, 0.0))]
+        layers = []
         if bezel is not None:
-            solids.append(("Trim", lp.prism(bezel, -lp.depth, -0.003)))
+            layers.append(("Trim", lp.conform(body, bezel, 0.002)))
+        layers.append((housing_part, lp.conform(body, housing, 0.004)))
         for el in elements:
-            solids.append((el["part"], lp.prism(el["poly"], el["z0"], el["z1"], el.get("taper", 1.0))))
-        for part, (V, F) in solids:
-            _add(car, part, (V, F), mirror=sym)
+            layers.append((el["part"], lp.conform(body, el["poly"], el["out"],
+                                                   bulge=el.get("bulge", 0.0))))
+        for part, (V, F) in layers:
+            _add(car, part, (V, F), mirror=sym, orient=False)
     return fn
 
 
@@ -406,11 +410,11 @@ def round_lamp_unit(view, cs, ch, r, ring="TailLightsDark", core="TailLights",
     dark inner ring, lit core and a small centre element."""
     c = ck.circle_poly
     return lamp_unit(view, c(cs, ch, r * 1.12, n), [
-        dict(part="Chrome", poly=c(cs, ch, r * 1.04, n), z0=-0.004, z1=0.003),
-        dict(part="TailLights", poly=c(cs, ch, r, n), z0=0.0, z1=0.009, taper=0.95),
-        dict(part=ring, poly=c(cs, ch, r * 0.66, 16), z0=0.007, z1=0.012),
-        dict(part=core, poly=c(cs, ch, r * 0.50, 14), z0=0.010, z1=0.016, taper=0.9),
-        dict(part=centre, poly=c(cs, ch, r * 0.26, 10), z0=0.014, z1=0.019),
+        dict(part="Chrome", poly=c(cs, ch, r * 1.04, n), out=0.006),
+        dict(part="TailLights", poly=c(cs, ch, r, n), out=0.008, bulge=0.005),
+        dict(part=ring, poly=c(cs, ch, r * 0.66, 16), out=0.014),
+        dict(part=core, poly=c(cs, ch, r * 0.50, 14), out=0.016, bulge=0.003),
+        dict(part=centre, poly=c(cs, ch, r * 0.26, 10), out=0.021),
     ], housing_part="Trim")
 
 
@@ -418,7 +422,7 @@ def projector_els(cs, ch, r):
     """Chrome reflector bowl, black shroud and a domed lens, as solid layers."""
     c = ck.circle_poly
     return [
-        dict(part="Chrome", poly=c(cs, ch, r, 16), z0=-0.004, z1=0.003),
-        dict(part="Trim", poly=c(cs, ch, r * 0.76, 14), z0=0.002, z1=0.006),
-        dict(part="Lens", poly=c(cs, ch, r * 0.60, 12), z0=0.005, z1=0.014, taper=0.78),
+        dict(part="Chrome", poly=c(cs, ch, r, 16), out=0.007),
+        dict(part="Trim", poly=c(cs, ch, r * 0.76, 14), out=0.009),
+        dict(part="Lens", poly=c(cs, ch, r * 0.60, 12), out=0.011, bulge=0.004),
     ]
