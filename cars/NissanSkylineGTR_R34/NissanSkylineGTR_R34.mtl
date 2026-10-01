@@ -8,7 +8,7 @@ illum 2
 
 newmtl Glass
 Ka 0 0 0
-Kd 0.100 0.130 0.160
+Kd 0.060 0.070 0.080
 Ks 0.25 0.25 0.25
 Ns 60
 d 1
@@ -126,9 +126,49 @@ Ns 60
 d 1
 illum 2
 
+newmtl Default
+Ka 0 0 0
+Kd 0.600 0.600 0.600
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
 newmtl Mirror
 Ka 0 0 0
 Kd 0.700 0.750 0.800
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Carbon
+Ka 0 0 0
+Kd 0.050 0.050 0.055
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Undertray
+Ka 0 0 0
+Kd 0.050 0.050 0.050
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Engine
+Ka 0 0 0
+Kd 0.300 0.300 0.310
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl CamCover
+Ka 0 0 0
+Kd 0.620 0.060 0.060
 Ks 0.25 0.25 0.25
 Ns 60
 d 1
@@ -145,14 +185,6 @@ illum 2
 newmtl Titanium
 Ka 0 0 0
 Kd 0.620 0.600 0.580
-Ks 0.25 0.25 0.25
-Ns 60
-d 1
-illum 2
-
-newmtl Undertray
-Ka 0 0 0
-Kd 0.050 0.050 0.050
 Ks 0.25 0.25 0.25
 Ns 60
 d 1

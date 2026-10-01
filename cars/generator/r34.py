@@ -31,19 +31,18 @@ BODY = {
             (4.60, 0.700)],
     "zBelt": [(0.00, 0.900), (0.30, 0.965), (1.00, 0.985), (1.60, 0.960), (2.50, 0.925),
               (3.30, 0.895), (3.65, 0.880), (4.20, 0.835), (4.45, 0.770), (4.60, 0.680)],
-    "wB": [(0.00, 0.80), (0.12, 0.865), (0.40, 0.885), (0.98, 0.893), (1.50, 0.884),
-           (2.00, 0.862), (2.60, 0.862), (3.25, 0.884), (3.65, 0.893), (4.10, 0.888), (4.40, 0.874),
-           (4.54, 0.840), (4.60, 0.800)],
-    "zMid": [(0.0, 0.62), (2.3, 0.58), (4.6, 0.60)],
-    "zF": [(0.00, 0.32), (0.22, 0.22), (0.45, 0.15), (4.20, 0.15), (4.42, 0.12),
-           (4.60, 0.16)],
+    "wB": [(0.00, 0.835), (0.10, 0.862), (0.45, 0.868), (2.30, 0.862), (4.10, 0.868),
+           (4.42, 0.860), (4.55, 0.835), (4.60, 0.805)],
+    "zMid": [(0.0, 0.745), (2.3, 0.735), (4.6, 0.715)],
+    "zF": [(0.00, 0.30), (0.22, 0.20), (0.45, 0.13), (4.20, 0.13), (4.42, 0.11),
+           (4.60, 0.14)],
     "wF": [(0.00, 0.70), (0.55, 0.80), (0.60, 0.58), (1.36, 0.58), (1.41, 0.82),
            (3.24, 0.82), (3.27, 0.585), (4.03, 0.585), (4.08, 0.78), (4.60, 0.66)],
     "wGH": [(0.00, 0.70), (1.10, 0.775), (3.40, 0.775), (4.60, 0.62)],
     "wR": [(0.00, 0.66), (1.10, 0.715), (1.40, 0.640), (1.80, 0.600), (2.60, 0.600),
            (3.00, 0.645), (3.40, 0.730), (4.60, 0.580)],
-    "under": [(0, 0.050), (4.6, 0.050)],
-    "over": [(0, 0.055), (4.6, 0.060)],
+    "under": [(0, 0.014), (4.6, 0.014)],
+    "over": [(0, 0.040), (4.6, 0.045)],
 }
 
 # ---------------------------------------------------------------- decals
@@ -100,14 +99,14 @@ GLASS = dict(windshield=(2.84, 3.36), rear=(1.19, 1.71),
 D.append(dict(part="Trim", view="top", sym=False, out=0.002,
               poly=[(3.36, -0.70), (3.43, -0.70), (3.43, 0.70), (3.36, 0.70)]))
 # hood NACA duct (carbon on the V-spec)
-D.append(dict(part="Trim", view="top", sym=False, out=0.002,
+D.append(dict(part="HoodTrim", view="top", sym=False, out=0.002,
               poly=rp([(3.82, -0.11), (3.98, -0.06), (3.98, 0.06), (3.82, 0.11)], 0.02)))
 
 # panel gaps, handles, side indicators, fuel flap
-D.append(A.line("side", [(3.165, 0.26), (3.175, 0.60), (3.200, 0.86)]))
-D.append(A.line("side", [(2.03, 0.27), (2.03, 0.60), (2.04, 0.90)]))
-D.append(A.line("side", [(2.03, 0.27), (3.165, 0.26)]))
-D.append(dict(part="Trim", view="side", out=0.004,
+D.append(A.line("side", [(3.150, 0.24), (3.160, 0.60), (3.185, 0.86)], part="DoorTrim*"))
+D.append(A.line("side", [(2.045, 0.25), (2.045, 0.60), (2.055, 0.90)], part="DoorTrim*"))
+D.append(A.line("side", [(2.045, 0.245), (3.150, 0.235)], part="DoorTrim*"))
+D.append(dict(part="DoorTrim*", view="side", out=0.004,
               poly=rp([(2.14, 0.835), (2.30, 0.835), (2.30, 0.862), (2.14, 0.862)], 0.01)))
 D.append(dict(part="Indicators", view="side", out=0.004,
               poly=rp([(4.06, 0.70), (4.14, 0.70), (4.14, 0.725), (4.06, 0.725)], 0.008)))
@@ -125,15 +124,22 @@ SPEC = dict(
     name="NissanSkylineGTR_R34",
     length=L,
     body=BODY,
-    arch_r=0.365,
-    end_r=(0.09, 0.07),
+    arch_r=0.352,
+    end_r=(0.07, 0.06),
+    end_p=4.0,
+    flare=0.026,
+    bevel=0.005,
+    crease_gap=0.07,
+    flush=True,
+    panels=dict(door=dict(u=(2.03, 3.165), top=(2.09, 3.40)),
+                hood=(3.42, 4.47), trunk=(0.06, 1.17)),
     wheels=[
         dict(tag="FR", u=FRONT_AXLE, half_track=TRACK_F, R=R_TIRE, rim_r=RIM_R, width=0.245),
         dict(tag="FL", u=FRONT_AXLE, half_track=-TRACK_F, R=R_TIRE, rim_r=RIM_R, width=0.245),
         dict(tag="RR", u=REAR_AXLE, half_track=TRACK_R, R=R_TIRE, rim_r=RIM_R, width=0.245),
         dict(tag="RL", u=REAR_AXLE, half_track=-TRACK_R, R=R_TIRE, rim_r=RIM_R, width=0.245),
     ],
-    rim_style=dict(spokes=5, twin=True, spoke_w=0.032, dish=0.022, style="taper"),
+    rim_style=dict(spokes=5, twin=True, spoke_w=0.030, dish=0.034, style="taper", e=0.12),
     disc_r=0.162,
     decals=D,
     glass=GLASS,
@@ -167,6 +173,11 @@ def wing(car, body):
 SPEC["extras"] = [
     wing,
     A.mirrors(3.21, 1.035, 0.115),
+    A.interior_markers(seat_u=2.30, seat_s=0.38, floor_h=0.18, driver_side=1),
+    A.splitter(depth=0.05, inset=0.05, back=0.28),
+    A.diffuser(0.62, fins=5),
+    A.engine_bay(3.45, 4.40, 0.56, 0.32, 0.86, engine_u=3.95),
+    A.trunk_tub(0.22, 1.12, 0.62, 0.46, 0.95),
     A.interior(seat_u=2.30, seat_s=0.38, dash_u=3.05, wheel_side=1, floor_h=0.18,
                belt_h=0.93, roof_h=1.33, half_w=0.80, rear_seat_u=1.55),
     A.exhaust(-0.03, -0.52, 0.255, 0.052, length=0.22),

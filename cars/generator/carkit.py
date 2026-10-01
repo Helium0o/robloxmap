@@ -437,6 +437,49 @@ def grid_closed(rings, cap_start=True, cap_end=True):
     return np.array(V), np.array(F)
 
 
+def thicken(V, F, t):
+    """Turn an open, outward-facing surface patch into a closed slab of thickness t."""
+    V = np.asarray(V, float)
+    F = np.asarray(F, int)
+    P = to_out(V)
+    a, b, c = P[F[:, 0]], P[F[:, 1]], P[F[:, 2]]
+    fn = np.cross(b - a, c - a)
+    vn = np.zeros_like(P)
+    for k in range(3):
+        np.add.at(vn, F[:, k], fn)
+    vn /= np.maximum(np.linalg.norm(vn, axis=1, keepdims=True), 1e-12)
+    # back to (u, s, h): out = (s, h, -u)
+    vn_ush = np.stack([-vn[:, 2], vn[:, 0], vn[:, 1]], axis=1)
+    n = len(V)
+    inner = V - vn_ush * t
+    NV = np.vstack([V, inner])
+    NF = [tuple(f) for f in F] + [(f[0] + n, f[2] + n, f[1] + n) for f in F]
+    from collections import Counter
+    edges = Counter()
+    for f in F:
+        for i in range(3):
+            edges[(f[i], f[(i + 1) % 3])] += 1
+    for (p, q) in list(edges):
+        if (q, p) not in edges:
+            NF += [(q, p, p + n), (q, p + n, q + n)]
+    return NV, np.array(NF)
+
+
+def prism(poly, h0, h1):
+    """Extrude a plan-view (u, s) polygon between heights h0 and h1."""
+    poly = [tuple(p) for p in poly]
+    if poly_area(poly) < 0:
+        poly = poly[::-1]
+    tris = triangulate(poly)
+    n = len(poly)
+    V = [(u, s, h0) for u, s in poly] + [(u, s, h1) for u, s in poly]
+    F = [(t[0], t[2], t[1]) for t in tris] + [(t[0] + n, t[1] + n, t[2] + n) for t in tris]
+    for i in range(n):
+        j = (i + 1) % n
+        F += [(i, j, j + n), (i, j + n, i + n)]
+    return np.array(V, float), np.array(F)
+
+
 def superellipsoid(center, radii, e=0.3, nu=20, nv=12):
     """Rounded box / pill. e -> 0 is boxy, e = 1 is an ellipsoid."""
     cu, cs, ch = center
@@ -571,27 +614,32 @@ class Body:
     """
     Cross-section parameters, each keyframed along u (see the car specs):
       zF  floor height              wF  inner floor half width (wheel wells)
-      wB  max body half width       zMid height of max width
+      wB  body half width at the character line
+      zMid character-line (crease) height
       zBelt shoulder / fender top   wGH greenhouse base half width
       wR  roof (top surface) half width
       zRE height of the roof/hood edge   zT  centreline top height
-      under / over   tumble-under / tumble-home at the shoulder
-    Wheel arches are cut by raising the lower edge over each wheel.
+      under  how far the lower side / skirt tucks in under the crease
+      over   tumble-home from the crease up to the shoulder
+    Wheel arches are cut by raising the lower edge over each wheel; the
+    crease rides over each arch and the side bulges out (flare) around it.
+    Tight point pairs ("bevel") keep creases crisp after smoothing.
     """
 
-    # profile point indices (see profile()): greenhouse side segments and
-    # top segments, used to cut glass straight out of the loft
-    GH_SEGS = (15, 16, 17, 18)
-    TOP_FIRST = 19
-
-    def __init__(self, L, keys, wheels, arch_r, end_r=(0.10, 0.10), end_p=2.4, glass=None):
+    def __init__(self, L, keys, wheels, arch_r, end_r=(0.08, 0.08), end_p=4.0, glass=None,
+                 flare=0.02, bevel=0.006, crease_gap=0.07, panels=None):
         self.L = L
         self.glass = glass or {}
+        self.panels = panels or {}
         self.f = {k: curve(v) for k, v in keys.items()}
         self.wheels = wheels  # list of (u, zc)
         self.arch_r = arch_r
         self.end_r = end_r
         self.end_p = end_p
+        self.flare = flare
+        self.bevel = bevel
+        self.crease_gap = crease_gap
+        self.kinds = None
 
     def params(self, u):
         return {k: float(f(u)) for k, f in self.f.items()}
@@ -604,39 +652,83 @@ class Body:
                 z = max(z, wz + math.sqrt(self.arch_r ** 2 - d * d))
         return z
 
+    def arch_halo(self, u, gap):
+        """Height of a curve following the arch, 'gap' above it (smooth tails)."""
+        z = -1.0
+        r = self.arch_r + gap
+        for (wu, wz) in self.wheels:
+            d = abs(u - wu)
+            if d < r:
+                z = max(z, wz + math.sqrt(r * r - d * d))
+        return z
+
+    def flare_at(self, u):
+        f = 0.0
+        for (wu, _) in self.wheels:
+            d = abs(u - wu)
+            a, b = self.arch_r - 0.02, self.arch_r + 0.32
+            if d <= a:
+                t = 1.0
+            elif d >= b:
+                t = 0.0
+            else:
+                x = (b - d) / (b - a)
+                t = x * x * (3 - 2 * x)
+            f = max(f, t)
+        return self.flare * f
+
     def profile(self, u):
         p = self.params(u)
-        zF, wF, wB = p["zF"], p["wF"], p["wB"]
-        zMid, zBelt = p["zMid"], p["zBelt"]
+        zF, wF = p["zF"], p["wF"]
+        wB0 = p["wB"]
+        wB = wB0 + self.flare_at(u)
         under, over = p["under"], p["over"]
+        bv = self.bevel
         aL = max(zF, self.arch(u))
-        zMid = max(zMid, aL + 0.04)
-        zBelt = max(zBelt, zMid + 0.05)
-        pts = [(0.0, zF), (wF * 0.5, zF), (wF, zF), (wF, aL), (wB - 0.04, aL)]
-        # body side, from sill to shoulder
-        hs = [aL + 0.012] + list(np.linspace(aL + 0.04, zBelt, 7))
-        for hh in hs:
-            if hh <= zMid:
-                k = (zMid - hh) / max(zMid - zF, 1e-3)
-                ss = wB - under * k ** 1.6 - (0.03 if hh == hs[0] else 0)
-            else:
-                k = (hh - zMid) / max(zBelt - zMid, 1e-3)
-                ss = wB - over * k ** 2
-            pts.append((ss, hh))
-        sh = wB - over
-        wGH = min(p["wGH"], sh - 0.06)
-        pts += [(sh - 0.018, zBelt + 0.010), (sh - 0.040, zBelt + 0.016)]
-        zDeck = zBelt + 0.02
+        hC = max(p["zMid"], self.arch_halo(u, self.crease_gap))
+        zBelt = max(p["zBelt"], hC + 0.07)
+        pts, kinds = [], []
+
+        def add(pt, kind):
+            pts.append(pt)
+            kinds.append(kind)
+
+        wS = wB - under                     # skirt / lower side
+        h_sk = min(aL + 0.07, hC - 0.05)    # top of the side skirt
+        add((0.0, zF), "floor")
+        add((wF * 0.5, zF), "floor")
+        add((wF, zF), "well")
+        add((wF, aL), "sill")
+        add((wS - 0.04, aL), "skirt")
+        add((wS - 0.003, aL + 0.004), "skirt")
+        add((wS, h_sk), "skirt")
+        add((wS - 0.010, h_sk + 0.006), "lower")      # step above the skirt
+        for t in (0.35, 0.75):
+            hh = h_sk + 0.006 + (hC - bv - h_sk - 0.006) * t
+            add((wS - 0.010 + (wB - bv * 0.6 - wS + 0.010) * t ** 1.4, hh), "lower")
+        add((wB - bv * 0.6, hC - bv), "crease")
+        add((wB, hC), "crease")
+        add((wB - bv * 0.6, hC + bv), "upper")
+        sh = wB0 - over
+        for t in (0.4, 0.78):
+            hh = hC + bv + (zBelt - bv - hC - bv) * t
+            add((wB - bv * 0.6 + (sh - wB + bv * 0.6) * t ** 1.2, hh), "upper")
+        add((sh, zBelt - bv), "shoulder")
+        add((sh - bv * 1.2, zBelt + bv * 0.3), "deck")
+        zDeck = zBelt + 0.012
+        wGH = min(p["wGH"], sh - 0.05)
         wR = min(p["wR"], wGH - 0.005)
         zRE = max(p["zRE"], zDeck + 0.004)
         zT = max(p["zT"], zRE)
-        for t in np.linspace(0, 1, 5)[:-1]:
-            bow = 0.012 * math.sin(math.pi * t)
-            pts.append((wGH + (wR - wGH) * t + bow, zDeck + (zRE - zDeck) * t))
-        for t in (0.0, 0.04, 0.12, 0.24, 0.40, 0.60, 0.80, 1.0):
-            pts.append((wR * (1 - t), zRE + (zT - zRE) * (1 - (1 - t) ** 2)))
+        for k, t in enumerate(np.linspace(0, 1, 5)[:-1]):
+            bow = 0.010 * math.sin(math.pi * t)
+            add((wGH + (wR - wGH) * t + bow, zDeck + (zRE - zDeck) * t), "gh0" if k == 0 else "gh")
+        for k, t in enumerate((0.0, 0.03, 0.10, 0.22, 0.40, 0.60, 0.80, 1.0)):
+            add((wR * (1 - t), zRE + (zT - zRE) * (1 - (1 - t) ** 2)), "pillar" if k < 2 else "top")
         pts = np.array(pts)
-        # round off the nose and tail
+        if self.kinds is None:
+            self.kinds = kinds
+        # square-ish nose and tail with a tight radius
         k = 1.0
         if u < self.end_r[0]:
             d = (self.end_r[0] - u) / self.end_r[0]
@@ -665,6 +757,12 @@ class Body:
                 us.update(round(x, 4) for x in g[key])
         for a, b in g.get("side", []):
             us.update((round(a, 4), round(b, 4)))
+        pn = self.panels
+        for key in ("hood", "trunk"):
+            if key in pn:
+                us.update(round(x, 4) for x in pn[key])
+        if "door" in pn:
+            us.update(round(x, 4) for x in pn["door"]["u"] + pn["door"]["top"])
         us.add(0.0)
         us.add(round(self.L, 4))
         us = sorted(u for u in us if 0 <= u <= self.L)
@@ -677,27 +775,42 @@ class Body:
             out[-1] = round(self.L, 4)
         return out
 
-    def classify(self, u, seg):
-        """Which part a loft face belongs to: Body, Glass or Trim."""
-        g = self.glass
-        if seg >= self.TOP_FIRST + g.get("pillar_segs", 2):
+    def classify(self, u, kind, side):
+        """Which part a loft face belongs to (Body, Glass, Trim, Door_R, Hood...)."""
+        g, pn = self.glass, self.panels
+        sfx = "_R" if side > 0 else "_L"
+        upper = kind in ("gh0", "gh", "pillar", "top")
+        is_glass = False
+        if kind == "top":
             for key in ("windshield", "rear"):
                 if key in g and g[key][0] <= u <= g[key][1]:
-                    return "Glass"
-        if seg in self.GH_SEGS and "side" in g:
+                    is_glass = True
+        if kind in ("gh", "gh0") and "side" in g:
             lo = min(a for a, b in g["side"])
             hi = max(b for a, b in g["side"])
             if lo <= u <= hi:
-                if seg == self.GH_SEGS[0] and g.get("belt_trim", True):
-                    return "Trim"
-                for a, b in g["side"]:
-                    if a <= u <= b:
-                        return "Glass"
-                return "Trim"  # B-pillar between the windows
-        return "Body"
+                if kind == "gh0" and g.get("belt_trim", True):
+                    tag = "Trim"
+                elif any(a <= u <= b for a, b in g["side"]):
+                    tag = "Glass"
+                else:
+                    tag = "Trim"  # B-pillar between the windows
+                door = pn.get("door")
+                if door and door["top"][0] <= u <= door["top"][1]:
+                    return {"Glass": "DoorGlass", "Trim": "DoorTrim"}[tag] + sfx
+                return tag
+        if "door" in pn and kind in ("lower", "crease", "upper", "shoulder", "deck"):
+            d0, d1 = pn["door"]["u"]
+            if d0 <= u <= d1:
+                return "Door" + sfx
+        if upper:
+            for key, name in (("hood", "Hood"), ("trunk", "Trunk")):
+                if key in pn and pn[key][0] <= u <= pn[key][1]:
+                    return name + ("Glass" if is_glass else "")
+        return "Glass" if is_glass else "Body"
 
     def mesh(self):
-        """Returns {part: (V, F)} - the loft split into paint / glass / trim."""
+        """Returns {part: (V, F)} - the loft split into paint / glass / panels."""
         rings = []
         us = self.stations()
         n = None
@@ -721,7 +834,8 @@ class Body:
             um = 0.5 * (us[i] + us[i + 1])
             for m in range(M):
                 seg = min(prof_idx(m), prof_idx(m + 1))
-                tags.append(self.classify(um, seg))
+                side = 1 if m < n - 1 else -1
+                tags.append(self.classify(um, self.kinds[seg], side))
         tags = np.repeat(np.array(tags), 2)
         tags = np.concatenate([tags, np.array(["Body"] * (len(F) - 2 * nquads))])
         out = {}
@@ -943,7 +1057,7 @@ def tire(R, rim_r, width, seg=56):
 
 
 def rim(rim_r, width, spokes=5, twin=False, spoke_w=0.04, dish=0.025, seg=56,
-        hub_r=0.075, style="straight"):
+        hub_r=0.075, style="straight", e=0.25):
     """Wheel rim built around the origin, outer face towards +s."""
     parts = []
     w = width / 2
@@ -972,7 +1086,7 @@ def rim(rim_r, width, spokes=5, twin=False, spoke_w=0.04, dish=0.025, seg=56,
             ang = 2 * math.pi * k / n
         length = rim_r - hub_r * 0.8
         mid = hub_r * 0.8 + length / 2
-        VF = superellipsoid((0, 0, 0), (length / 2, 0.013, spoke_w / 2), e=0.25, nu=12, nv=6)
+        VF = superellipsoid((0, 0, 0), (length / 2, 0.016, spoke_w / 2), e=e, nu=12, nv=6)
         V, F = VF
         V = np.array(V)
         if style == "taper":

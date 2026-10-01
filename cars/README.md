@@ -11,30 +11,52 @@ so Roblox Studio imports each part as its own MeshPart.
 
 ## Importing into Roblox Studio
 
-1. **File → Import 3D** and pick `NissanSkylineGTR_R34.obj` (or the Supra).
-   Leave the importer's units on **Studs**. Keep it as a Model, not one merged mesh.
-2. Select the new Model and paste `roblox/CarSetup.server.lua` into the **Command Bar**.
-   This applies the paint and materials (glass, chrome, rubber, lights), turns collisions
-   off on the small detail parts, and welds everything to `Body`.
-   You can also drop the script inside the Model so it runs when the game starts.
-3. Optional Model attributes:
-   - `BodyColor` (Color3): repaint the car
-   - `LightsOn` (bool): neon lamps, headlight SpotLight and tail-light glow
-   - `Anchored` (bool, default true): parked prop
-4. For performance, set `CollisionFidelity` on `Body` to **Box** or **Hull** in the
-   Properties panel. Scripts can't change this property.
+1. **File → Import 3D**, pick `NissanSkylineGTR_R34.obj` (or the Supra). Leave units on
+   **Studs**, and import it as a Model with separate parts (not one merged mesh).
+2. Put `roblox/CarSetup.server.lua` inside the imported Model as a **Script**.
+   When the game runs it paints the car and builds the rig (see below).
+   To see the paint while you build the map, select the Model and paste the same file
+   into the **Command Bar**. That only applies the colours and materials.
+3. For performance, set `CollisionFidelity` on `Body` to **Hull** in the Properties
+   panel. Scripts can't change this property.
+
+### What's modular
+
+| Module | Parts | How it moves in Roblox |
+| --- | --- | --- |
+| Wheels ×4 | `Tire_XX`, `Rim_XX`, `Brake_XX` | Welded to an invisible cylinder that spins on a motor `HingeConstraint` |
+| Front steering | `Caliper_FL/FR` + the front wheels | Servo hinge "knuckle". The calipers steer but don't spin |
+| Doors ×2 | `Door_X`, `DoorGlass_X`, `DoorTrim_X`, `Mirror_X`, `MirrorGlass_X` | Hinged at the front edge. **F** to open/close |
+| Hood | `Hood`, `HoodTrim` | Hinged at the windscreen. Engine and bay inside |
+| Trunk / hatch | `Trunk`, `TrunkGlass`, `Wing` | Hinged at the rear window. On the Supra the whole glass hatch lifts with the wing |
+| Seats | `Marker_DriverSeat`, `Marker_PassengerSeat` | Turned into a VehicleSeat and a Seat. **E** to Drive / Ride, WASD to drive |
+| Lights | `HeadLights`, `Lens`, `TailLights` | Headlights switch on while driven. Brake lights glow when braking |
+
+`Marker_*` parts are small invisible cubes that mark hinge and seat positions.
+Keep them in the Model.
+
+Model attributes (all optional):
+
+| Attribute | Type | Default |
+| --- | --- | --- |
+| `BodyColor` | Color3 | factory colour (Bayside Blue / Renaissance Red) |
+| `Drivable` | bool | `true`. Set `false` for a parked prop; doors still open |
+| `MaxSpeed` | number | `140` studs/s (≈140 km/h at real-world scale) |
+| `SteerAngle` | number | `32` degrees |
+| `DriveType` | string | `AWD` for the R34 (ATTESA), `RWD` for the Supra |
+| `LightsOn` | bool | `false`, which forces the lamps on when set |
 
 Scale: 1 stud = 0.28 m (Roblox's real-world conversion), so the R34 is about 16.4
 studs long. Most Roblox games use slightly oversized cars. To get those, scale the
-Model in Studio (e.g. `model:ScaleTo(1.3)`) or rebuild with `--scale 0.22`.
+Model before adding the script (e.g. `model:ScaleTo(1.3)`), or rebuild with
+`--scale 0.22`. Forward is −Z, which is the Model's LookVector.
 
-Forward is −Z, which is the Model's LookVector. Wheels are separate parts
-(`Tire_FL`, `Rim_FL`, `Brake_FL`, `Caliper_FL`, …). That makes it easy to rig
-them later with HingeConstraints if you want the cars to be drivable.
-
-Each car is ~75k triangles split over ~40 MeshParts. Every part stays under
+Each car is ~85k triangles split over ~60 MeshParts. Every part stays under
 Roblox's 20k-triangle limit; the exporter splits large parts automatically
 (e.g. `Trim`, `Trim2`).
+
+![R34 opened up](NissanSkylineGTR_R34/preview_open.png)
+![Supra opened up](ToyotaSupra_MK4/preview_open.png)
 
 ## Reference data used
 
@@ -47,6 +69,9 @@ Roblox's 20k-triangle limit; the exporter splits large parts automatically
 | Curb weight | ~1560 kg | ~1590 kg |
 
 Design cues modelled:
+
+Both cars sit lower than stock, with flush wheels, flared arches, a sharp character
+line that wraps over each arch, side skirts, a front splitter and a rear diffuser.
 
 - **R34:** boxy wedge, notchback roof, angular headlights with twin projectors, upper
   grille plus a three-opening bumper, NACA hood duct, four round tail lights, pillar
@@ -77,7 +102,8 @@ python3 build.py --scale 0.22    # bigger, "Roblox-sized" cars
 ```
 
 - `r34.py`, `supra.py`: each car's spec. Body cross-sections are keyframed along the
-  car's length (`BODY`). Lights, grilles, glass, panel gaps etc. are 2D outlines
+  car's length (`BODY`). `panels` sets where the doors, hood and trunk are cut from the
+  shell, and `flare`, `bevel` and `crease_gap` set how aggressive the body lines are. Lights, grilles, glass, panel gaps etc. are 2D outlines
   projected onto the body (`D`). Wing, mirrors, interior and exhaust are built
   separately.
 - `carkit.py`: the toolkit: lofted body with wheel-arch cut-outs, projected decals,

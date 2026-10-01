@@ -15,15 +15,39 @@ def _add(car, part, VF, mirror=False):
         car.part(part).add(m.V, m.F)
 
 
+PANEL_THICKNESS = {"Door": 0.035, "Hood": 0.025, "Trunk": 0.025, "DoorGlass": 0.006,
+                   "TrunkGlass": 0.006, "DoorTrim": 0.01}
+
+
+def _named(part, side):
+    """'DoorTrim*' -> 'DoorTrim_R' / 'DoorTrim_L'."""
+    if part.endswith("*"):
+        return part[:-1] + ("_R" if side > 0 else "_L")
+    return part
+
+
+def marker(car, name, pos, size=0.05):
+    """Tiny named cube the Roblox rig script reads (seat / hinge positions)."""
+    V, F = ck.box(pos, (size, size, size))
+    car.part("Marker_" + name).add(V, F)
+
+
 def build(spec):
     L = spec["length"]
     car = ck.Car(spec["name"], L)
     wheels = spec["wheels"]  # list of dict(u, half_track, R, rim_r, width)
     body = ck.Body(L, spec["body"], [(w["u"], w["R"]) for w in wheels[::2]],
-                   spec["arch_r"], end_r=spec.get("end_r", (0.10, 0.10)),
-                   glass=spec.get("glass"))
+                   spec["arch_r"], end_r=spec.get("end_r", (0.08, 0.08)),
+                   end_p=spec.get("end_p", 4.0), glass=spec.get("glass"),
+                   flare=spec.get("flare", 0.02), bevel=spec.get("bevel", 0.006),
+                   crease_gap=spec.get("crease_gap", 0.07), panels=spec.get("panels"))
     for pname, (V, F) in body.mesh().items():
-        car.part(pname).add(V, F, orient=False)
+        base = pname[:-2] if pname[-2:] in ("_R", "_L") else pname
+        if base in PANEL_THICKNESS:
+            V, F = ck.thicken(V, F, PANEL_THICKNESS[base])
+            car.part(pname).add(V, F)
+        else:
+            car.part(pname).add(V, F, orient=False)
     body.build_table()
     car.body = body
 
@@ -35,18 +59,24 @@ def build(spec):
         if view == "side":
             sides = (1, -1) if sym else (d.get("side", 1),)
             for sd in sides:
-                _add(car, part, ck.decal(body, poly, "side", side=sd, **kw))
+                _add(car, _named(part, sd), ck.decal(body, poly, "side", side=sd, **kw))
         else:
-            _add(car, part, ck.decal(body, poly, view, **kw))
+            sd = 1 if np.mean([p[1] if view == "top" else p[0] for p in poly]) >= 0 else -1
+            _add(car, _named(part, sd), ck.decal(body, poly, view, **kw))
             if sym:
                 mp = ck.mirror_poly_s(poly) if view in ("front", "rear") else ck.mirror_poly_top(poly)
-                _add(car, part, ck.decal(body, mp, view, **kw))
+                _add(car, _named(part, -sd), ck.decal(body, mp, view, **kw))
 
-    # ---- wheels -------------------------------------------------------
+    # ---- wheels (each one its own set of parts so it can spin / steer) ------
     for w in wheels:
         side = 1 if w["half_track"] > 0 else -1
         tag = w["tag"]
-        center = np.array([w["u"], w["half_track"], w["R"]])
+        ht = abs(w["half_track"])
+        if spec.get("flush"):
+            p = body.params(w["u"])
+            outer = p["wB"] + body.flare_at(w["u"]) - p["under"]
+            ht = outer - w["width"] / 2 - spec.get("flush_inset", 0.012)
+        center = np.array([w["u"], side * ht, w["R"]])
         tV, tF = ck.tire(w["R"], w["rim_r"], w["width"])
         parts = [("Tire_" + tag, (tV, tF))]
         for VF in ck.rim(w["rim_r"], w["width"], **spec["rim_style"]):
@@ -61,6 +91,21 @@ def build(spec):
                 F = np.asarray(F)[:, ::-1]
             car.part(pname).add(V + center, F)
 
+    # ---- hinge / seat markers for the Roblox rig ----------------------------
+    pn = spec.get("panels", {})
+    if "door" in pn:
+        d1 = pn["door"]["u"][1]
+        hmid = 0.62
+        s_out = body.surface_side(d1, hmid)
+        for sd, sfx in ((1, "R"), (-1, "L")):
+            marker(car, "Hinge_Door_" + sfx, (d1 - 0.02, sd * (s_out - 0.03), hmid))
+    if "hood" in pn:
+        u0 = pn["hood"][0]
+        marker(car, "Hinge_Hood", (u0 + 0.02, 0.0, body.surface_top(u0 + 0.02, 0.0) - 0.02))
+    if "trunk" in pn:
+        u1 = pn["trunk"][1]
+        marker(car, "Hinge_Trunk", (u1 - 0.02, 0.0, body.surface_top(u1 - 0.02, 0.0) - 0.02))
+
     # ---- custom extras (wing, mirrors, interior, exhaust...) ------------
     for fn in spec.get("extras", []):
         fn(car, body)
@@ -71,20 +116,27 @@ def build(spec):
 # reusable extras
 # --------------------------------------------------------------------------
 
-def mirrors(u, h, reach, size=(0.075, 0.10, 0.058), stalk_part="Mirrors"):
+def mirrors(u, h, reach, size=(0.075, 0.10, 0.058)):
+    """Door mirrors, one part per side so they swing with the doors."""
     def fn(car, body):
         s_body = body.surface_side(u, h - 0.04)
-        cs = s_body + reach
-        V, F = ck.superellipsoid((u, cs, h), size, e=0.45, nu=18, nv=10)
-        _add(car, "Mirrors", (V, F), mirror=True)
-        # stalk
-        sl = reach - size[1] * 0.6 + 0.02
-        _add(car, "Mirrors", ck.box((u + 0.01, s_body + sl / 2 - 0.01, h - 0.035), (0.06, sl, 0.025)),
-             mirror=True)
-        # mirror glass on the rear face
-        V, F = ck.superellipsoid((u - size[0] * 0.92, cs, h), (0.012, size[1] * 0.82, size[2] * 0.75),
-                                 e=0.45, nu=18, nv=8)
-        _add(car, "MirrorGlass", (V, F), mirror=True)
+        for sd, sfx in ((1, "_R"), (-1, "_L")):
+            cs = s_body + reach
+            parts = [
+                ("Mirror", ck.superellipsoid((u, cs, h), size, e=0.3, nu=18, nv=10)),
+                ("Mirror", ck.box((u + 0.01, s_body + (reach - size[1] * 0.6 + 0.02) / 2 - 0.01,
+                                   h - 0.035), (0.07, reach - size[1] * 0.6 + 0.02, 0.022))),
+                ("MirrorGlass", ck.superellipsoid((u - size[0] * 0.92, cs, h),
+                                                  (0.012, size[1] * 0.82, size[2] * 0.75),
+                                                  e=0.3, nu=18, nv=8)),
+            ]
+            for name, (V, F) in parts:
+                V = np.asarray(V, float).copy()
+                F = np.asarray(F)
+                if sd < 0:
+                    V[:, 1] *= -1
+                    F = F[:, ::-1]
+                car.part(name + sfx).add(V, F)
     return fn
 
 
@@ -175,3 +227,95 @@ def line(view, pts, width=0.006, part="PanelGaps", out=0.0015, sym=True):
         right.append(tuple(pts[i] - n))
     return dict(part=part, view=view, poly=left + right[::-1], out=out, depth=0.006,
                 maxlen=0.04, sym=sym)
+
+
+def interior_markers(seat_u, seat_s, floor_h, driver_side):
+    def fn(car, body):
+        marker(car, "DriverSeat", (seat_u + 0.05, seat_s * driver_side, floor_h + 0.36))
+        marker(car, "PassengerSeat", (seat_u + 0.05, -seat_s * driver_side, floor_h + 0.36))
+    return fn
+
+
+def splitter(depth=0.05, inset=0.06, h=None, back=0.30, part="Splitter"):
+    """Front lip / splitter plate following the nose outline."""
+    def fn(car, body):
+        L = body.L
+        pts = []
+        for t in np.linspace(0, 1, 14):
+            u = L - back + (back - 0.005) * t
+            w = body.params(u)["wB"] - inset
+            pr = body.profile(u)
+            w = min(w, pr[:, 0].max() - 0.01)
+            pts.append((u, w))
+        hh = h if h is not None else body.params(L - 0.1)["zF"] + 0.005
+        outline = [(L - back, 0.0)] + pts + [(L + depth, pts[-1][1] * 0.92)]
+        right = outline[1:]
+        poly = right + [(u, -s) for u, s in right[::-1]]
+        poly = ck.rounded_poly(poly, 0.03, seg=3)
+        _add(car, part, ck.prism(poly, hh - 0.012, hh + 0.008))
+    return fn
+
+
+def diffuser(width, fins=4, length=0.32, h0=None, part="Diffuser"):
+    """Rear diffuser: an angled plate with vertical strakes."""
+    def fn(car, body):
+        zf = h0 if h0 is not None else body.params(0.3)["zF"]
+        u0, u1 = -0.02, length
+        plate = [(u0, -width), (u1, -width), (u1, width), (u0, width)]
+        V, F = ck.prism(plate, -0.006, 0.006)
+        V = np.asarray(V, float)
+        # tilt: rises toward the rear
+        V[:, 2] += zf + 0.02 + (u1 - V[:, 0]) / (u1 - u0) * 0.07
+        _add(car, part, (V, F))
+        for k in range(fins):
+            s = -width + 2 * width * (k + 1) / (fins + 1)
+            fV, fF = ck.box((0.12, s, 0), (0.24, 0.008, 0.08))
+            fV = np.asarray(fV, float)
+            fV[:, 2] += zf - 0.01 + (u1 - fV[:, 0]) / (u1 - u0) * 0.07
+            _add(car, part, (fV, fF))
+    return fn
+
+
+def _tub(car, body, u0, u1, half_w, floor_h, top_h, closed_front=True):
+    """Dark box under a lid whose walls stay below the paint."""
+    _add(car, "EngineBay", ck.box(((u0 + u1) / 2, 0, floor_h + 0.01), (u1 - u0, half_w * 2, 0.02)))
+    steps = max(2, int((u1 - u0) / 0.05))
+    for k in range(steps):
+        a = u0 + (u1 - u0) * k / steps
+        b = u0 + (u1 - u0) * (k + 1) / steps
+        top = min(top_h, body.surface_top((a + b) / 2, half_w + 0.01) - 0.035)
+        for sd in (1, -1):
+            _add(car, "EngineBay", ck.box(((a + b) / 2, sd * half_w, (floor_h + top) / 2),
+                                          (b - a + 0.002, 0.02, top - floor_h)))
+    ends = (u0, u1) if closed_front else (u0,)
+    for uu in ends:
+        top = min(top_h, body.surface_top(uu, half_w * 0.9) - 0.035)
+        _add(car, "EngineBay", ck.box((uu, 0, (floor_h + top) / 2), (0.02, half_w * 2, top - floor_h)))
+
+
+def engine_bay(u0, u1, half_w, floor_h, top_h, engine_u, cover_part="EngineCover"):
+    """A tub under the bonnet plus a simple straight-six so an open hood isn't empty."""
+    def fn(car, body):
+        _tub(car, body, u0, u1, half_w, floor_h, top_h, closed_front=False)
+        # radiator, tucked under the nose
+        rh = body.surface_top(u1 - 0.06, half_w * 0.7) - 0.05
+        _add(car, "EngineBay", ck.box((u1 - 0.06, 0, (floor_h + rh) / 2), (0.05, half_w * 1.6, rh - floor_h)))
+        # engine block + head + cam cover + intake plenum, kept under the hood
+        eu = engine_u
+        ceiling = min(top_h, body.surface_top(eu + 0.3, 0.2) - 0.05)
+        _add(car, "Engine", ck.box((eu, 0, floor_h + 0.18), (0.62, 0.36, 0.26)))
+        head_top = min(floor_h + 0.40, ceiling - 0.08)
+        _add(car, "Engine", ck.box((eu, 0, (floor_h + 0.31 + head_top) / 2), (0.60, 0.26, head_top - floor_h - 0.31)))
+        _add(car, cover_part, ck.superellipsoid((eu, 0.0, ceiling - 0.05), (0.30, 0.13, 0.04), e=0.25))
+        _add(car, "Engine", ck.superellipsoid((eu, -0.18, ceiling - 0.07), (0.28, 0.06, 0.05), e=0.3))
+        for sd in (1, -1):
+            sh = body.surface_top(u1 - 0.55, half_w - 0.10) - 0.10
+            _add(car, "Engine", ck.superellipsoid((u1 - 0.55, sd * (half_w - 0.10), sh),
+                                                  (0.07, 0.07, 0.06), e=0.6))
+    return fn
+
+
+def trunk_tub(u0, u1, half_w, floor_h, top_h):
+    def fn(car, body):
+        _tub(car, body, u0, u1, half_w, floor_h, top_h)
+    return fn
