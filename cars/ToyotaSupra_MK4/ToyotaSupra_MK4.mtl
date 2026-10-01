@@ -1,0 +1,160 @@
+newmtl RenaissanceRed
+Ka 0 0 0
+Kd 0.690 0.075 0.090
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Glass
+Ka 0 0 0
+Kd 0.100 0.130 0.160
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl BlackTrim
+Ka 0 0 0
+Kd 0.070 0.070 0.075
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl HeadlightGlass
+Ka 0 0 0
+Kd 0.860 0.880 0.900
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Chrome
+Ka 0 0 0
+Kd 0.750 0.760 0.780
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Lens
+Ka 0 0 0
+Kd 0.950 0.970 1.000
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl BlackPlastic
+Ka 0 0 0
+Kd 0.040 0.040 0.045
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Amber
+Ka 0 0 0
+Kd 0.980 0.550 0.050
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl TailRed
+Ka 0 0 0
+Kd 0.700 0.020 0.030
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl TailInner
+Ka 0 0 0
+Kd 0.950 0.850 0.850
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Plate
+Ka 0 0 0
+Kd 0.950 0.950 0.920
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Gap
+Ka 0 0 0
+Kd 0.020 0.020 0.020
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Rubber
+Ka 0 0 0
+Kd 0.060 0.060 0.065
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Alloy
+Ka 0 0 0
+Kd 0.720 0.730 0.750
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Disc
+Ka 0 0 0
+Kd 0.350 0.350 0.360
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Caliper
+Ka 0 0 0
+Kd 0.180 0.180 0.190
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Mirror
+Ka 0 0 0
+Kd 0.700 0.750 0.800
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Interior
+Ka 0 0 0
+Kd 0.090 0.090 0.100
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Titanium
+Ka 0 0 0
+Kd 0.620 0.600 0.580
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+
+newmtl Undertray
+Ka 0 0 0
+Kd 0.050 0.050 0.050
+Ks 0.25 0.25 0.25
+Ns 60
+d 1
+illum 2
+

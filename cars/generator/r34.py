@@ -1,0 +1,174 @@
+"""
+Nissan Skyline GT-R (BNR34), 1999-2002.
+
+Reference data (see cars/README.md for sources):
+  length 4600 mm, width 1785 mm, height 1360 mm, wheelbase 2665 mm
+  track 1481 / 1491 mm (F/R), tyres 245/40 ZR18 on 18x9 alloys
+  curb weight ~1560 kg
+Design cues modelled: boxy wedge profile, notchback coupe roof, angular
+headlights, upper grille + large three-opening front bumper, NACA hood
+duct, quad round tail lights, tall pillar-mounted rear wing, single
+large exhaust tip, RHD interior, 10-spoke (5 twin-spoke) wheels.
+"""
+
+import math
+import carkit as ck
+import assemble as A
+
+L = 4.60
+FRONT_AXLE = 3.645
+REAR_AXLE = FRONT_AXLE - 2.665
+R_TIRE = 0.327          # 245/40R18 -> 653 mm diameter
+RIM_R = 0.2286 + 0.006   # 18" bead seat + flange
+TRACK_F, TRACK_R = 1.481 / 2, 1.491 / 2
+
+BODY = {
+    "zT": [(0.00, 0.97), (0.30, 1.010), (0.95, 1.030), (1.15, 1.055), (1.28, 1.115),
+           (1.72, 1.345), (1.95, 1.360), (2.55, 1.360), (2.80, 1.330), (3.32, 1.000),
+           (3.42, 0.965), (3.70, 0.945), (4.20, 0.880), (4.45, 0.820), (4.60, 0.730)],
+    "zRE": [(0.00, 0.955), (0.95, 1.000), (1.15, 1.020), (1.72, 1.300), (1.95, 1.315),
+            (2.55, 1.315), (2.80, 1.290), (3.34, 0.935), (3.60, 0.915), (4.45, 0.790),
+            (4.60, 0.700)],
+    "zBelt": [(0.00, 0.900), (0.30, 0.965), (1.00, 0.985), (1.60, 0.960), (2.50, 0.925),
+              (3.30, 0.895), (3.65, 0.880), (4.20, 0.835), (4.45, 0.770), (4.60, 0.680)],
+    "wB": [(0.00, 0.80), (0.12, 0.865), (0.40, 0.885), (0.98, 0.893), (1.50, 0.884),
+           (2.00, 0.862), (2.60, 0.862), (3.25, 0.884), (3.65, 0.893), (4.10, 0.888), (4.40, 0.874),
+           (4.54, 0.840), (4.60, 0.800)],
+    "zMid": [(0.0, 0.62), (2.3, 0.58), (4.6, 0.60)],
+    "zF": [(0.00, 0.32), (0.22, 0.22), (0.45, 0.15), (4.20, 0.15), (4.42, 0.12),
+           (4.60, 0.16)],
+    "wF": [(0.00, 0.70), (0.55, 0.80), (0.60, 0.58), (1.36, 0.58), (1.41, 0.82),
+           (3.24, 0.82), (3.27, 0.585), (4.03, 0.585), (4.08, 0.78), (4.60, 0.66)],
+    "wGH": [(0.00, 0.70), (1.10, 0.775), (3.40, 0.775), (4.60, 0.62)],
+    "wR": [(0.00, 0.66), (1.10, 0.715), (1.40, 0.640), (1.80, 0.600), (2.60, 0.600),
+           (3.00, 0.645), (3.40, 0.730), (4.60, 0.580)],
+    "under": [(0, 0.050), (4.6, 0.050)],
+    "over": [(0, 0.055), (4.6, 0.060)],
+}
+
+# ---------------------------------------------------------------- decals
+D = []
+rp = ck.rounded_poly
+HL_PROJ = dict(yaw=22, pitch=8, pivot=(0.62, 0.70))
+TL_PROJ = dict(yaw=24, pitch=0, pivot=(0.50, 0.865))
+circ = ck.circle_poly
+
+# headlights: angular units, lower inner tip pointing at the grille
+HL = rp([(0.395, 0.655), (0.790, 0.632), (0.838, 0.690), (0.828, 0.758),
+         (0.450, 0.770), (0.380, 0.712)], 0.018)
+D.append(dict(part="HeadLights", view="front", poly=HL, out=0.004, **HL_PROJ))
+D.append(dict(part="Trim", view="front", out=0.002, **HL_PROJ,
+              poly=rp([(0.385, 0.645), (0.798, 0.622), (0.848, 0.690), (0.838, 0.768),
+                       (0.445, 0.780), (0.368, 0.712)], 0.02)))
+for cs in (0.52, 0.70):
+    D.append(dict(part="Chrome", view="front", poly=circ(cs, 0.703, 0.048, 24), out=0.008, **HL_PROJ))
+    D.append(dict(part="Lens", view="front", poly=circ(cs, 0.703, 0.033, 20), out=0.011, **HL_PROJ,
+                  bulge=0.006))
+D.append(dict(part="Indicators", view="front", out=0.006, **HL_PROJ,
+              poly=rp([(0.765, 0.645), (0.815, 0.645), (0.830, 0.690), (0.782, 0.684)], 0.006)))
+# upper grille between the lights + badge
+D.append(dict(part="Grille", view="front", sym=False, out=0.003,
+              poly=rp([(-0.36, 0.680), (0.36, 0.680), (0.39, 0.735), (-0.39, 0.735)], 0.02)))
+D.append(dict(part="Badge", view="front", sym=False, out=0.007,
+              poly=rp([(-0.055, 0.695), (0.055, 0.695), (0.055, 0.722), (-0.055, 0.722)], 0.008)))
+# bumper: big centre intake + two side ducts + chin spoiler
+D.append(dict(part="Grille", view="front", sym=False, out=0.003,
+              poly=rp([(-0.33, 0.305), (0.33, 0.305), (0.36, 0.475), (-0.36, 0.475)], 0.04)))
+D.append(dict(part="Grille", view="front", out=0.003,
+              poly=rp([(0.45, 0.305), (0.73, 0.330), (0.76, 0.470), (0.47, 0.470)], 0.035)))
+D.append(dict(part="Trim", view="front", sym=False, out=0.004,
+              poly=rp([(-0.70, 0.125), (0.70, 0.125), (0.72, 0.185), (-0.72, 0.185)], 0.02)))
+
+# rear: quad round tail lights
+for cs in (0.375, 0.630):
+    D.append(dict(part="Trim", view="rear", poly=circ(cs, 0.865, 0.112, 36), out=0.002, **TL_PROJ))
+    D.append(dict(part="TailLights", view="rear", poly=circ(cs, 0.865, 0.100, 36), out=0.006,
+                  bulge=0.008, **TL_PROJ))
+    D.append(dict(part="TailLightsInner", view="rear", poly=circ(cs, 0.865, 0.042, 24),
+                  out=0.016, **TL_PROJ))
+D.append(dict(part="Badge", view="rear", sym=False, out=0.005,
+              poly=rp([(-0.07, 0.86), (0.07, 0.86), (0.07, 0.89), (-0.07, 0.89)], 0.008)))
+D += A.plate("rear", -0.185, 0.185, 0.525, 0.655)
+D.append(dict(part="Trim", view="rear", sym=False, out=0.003,
+              poly=rp([(-0.74, 0.30), (0.74, 0.30), (0.70, 0.18), (-0.70, 0.18)], 0.03)))
+D.append(dict(part="Reflectors", view="rear", out=0.004,
+              poly=rp([(0.58, 0.40), (0.76, 0.40), (0.76, 0.43), (0.58, 0.43)], 0.008)))
+
+# glass
+GLASS = dict(windshield=(2.84, 3.36), rear=(1.19, 1.71),
+             side=[(1.60, 2.09), (2.16, 3.40)])
+D.append(dict(part="Trim", view="top", sym=False, out=0.002,
+              poly=[(3.36, -0.70), (3.43, -0.70), (3.43, 0.70), (3.36, 0.70)]))
+# hood NACA duct (carbon on the V-spec)
+D.append(dict(part="Trim", view="top", sym=False, out=0.002,
+              poly=rp([(3.82, -0.11), (3.98, -0.06), (3.98, 0.06), (3.82, 0.11)], 0.02)))
+
+# panel gaps, handles, side indicators, fuel flap
+D.append(A.line("side", [(3.165, 0.26), (3.175, 0.60), (3.200, 0.86)]))
+D.append(A.line("side", [(2.03, 0.27), (2.03, 0.60), (2.04, 0.90)]))
+D.append(A.line("side", [(2.03, 0.27), (3.165, 0.26)]))
+D.append(dict(part="Trim", view="side", out=0.004,
+              poly=rp([(2.14, 0.835), (2.30, 0.835), (2.30, 0.862), (2.14, 0.862)], 0.01)))
+D.append(dict(part="Indicators", view="side", out=0.004,
+              poly=rp([(4.06, 0.70), (4.14, 0.70), (4.14, 0.725), (4.06, 0.725)], 0.008)))
+D.append(A.line("side", ck.circle_poly(1.48, 0.83, 0.07, 24) + [ck.circle_poly(1.48, 0.83, 0.07, 24)[0]],
+                sym=False))
+D[-1]["side"] = 1
+# bumper shut lines front and rear
+D.append(A.line("front", [(-0.80, 0.60), (0.0, 0.615), (0.80, 0.60)], sym=False))
+D.append(A.line("rear", [(-0.78, 0.71), (0.0, 0.72), (0.78, 0.71)], sym=False))
+# trunk lid + hood shut lines
+D.append(A.line("top", [(0.06, -0.70), (0.06, 0.70)], sym=False))
+D.append(A.line("top", [(4.47, -0.70), (4.47, 0.70)], sym=False))
+
+SPEC = dict(
+    name="NissanSkylineGTR_R34",
+    length=L,
+    body=BODY,
+    arch_r=0.365,
+    end_r=(0.09, 0.07),
+    wheels=[
+        dict(tag="FR", u=FRONT_AXLE, half_track=TRACK_F, R=R_TIRE, rim_r=RIM_R, width=0.245),
+        dict(tag="FL", u=FRONT_AXLE, half_track=-TRACK_F, R=R_TIRE, rim_r=RIM_R, width=0.245),
+        dict(tag="RR", u=REAR_AXLE, half_track=TRACK_R, R=R_TIRE, rim_r=RIM_R, width=0.245),
+        dict(tag="RL", u=REAR_AXLE, half_track=-TRACK_R, R=R_TIRE, rim_r=RIM_R, width=0.245),
+    ],
+    rim_style=dict(spokes=5, twin=True, spoke_w=0.032, dish=0.022, style="taper"),
+    disc_r=0.162,
+    decals=D,
+    glass=GLASS,
+)
+
+
+def wing(car, body):
+    hw = 1.185
+    chord, le = 0.25, 0.43
+    span = 0.80
+    pitch = math.radians(-7)
+    prof = [(a, b) for a, b in ck.airfoil(chord, 0.11, camber=0.04)]
+    path = [(0, -span, 0), (0, span, 0)]
+    V, F = ck.sweep(prof, path, up_hint=(-1, 0, 0))
+    A._add(car, "Wing", ck.xform((V, F), ck.rot_s(pitch), (le, 0, hw)))
+    # small gurney flap
+    A._add(car, "Wing", ck.box((le - chord + 0.01, 0, hw + 0.035), (0.012, span * 2, 0.03)))
+    for sgn in (1, -1):
+        s = 0.47 * sgn
+        base = body.surface_top(0.30, s)
+        hgt = hw - base + 0.01
+        stay = ck.superellipsoid((0, 0, 0), (0.07, 0.014, hgt / 2), e=0.3, nu=14, nv=8)
+        A._add(car, "Wing", ck.xform(stay, ck.rot_s(math.radians(-8)),
+                                     (0.31, s, base + hgt / 2 - 0.01)))
+        # end caps
+        cap = ck.superellipsoid((le - chord / 2, span * sgn, hw - 0.005), (chord / 2 + 0.01, 0.008, 0.045),
+                                e=0.3, nu=14, nv=8)
+        A._add(car, "Wing", cap)
+
+
+SPEC["extras"] = [
+    wing,
+    A.mirrors(3.21, 1.035, 0.115),
+    A.interior(seat_u=2.30, seat_s=0.38, dash_u=3.05, wheel_side=1, floor_h=0.18,
+               belt_h=0.93, roof_h=1.33, half_w=0.80, rear_seat_u=1.55),
+    A.exhaust(-0.03, -0.52, 0.255, 0.052, length=0.22),
+    A.undertray(0.25, 4.40, 0.60, 0.135),
+]
