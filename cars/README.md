@@ -53,21 +53,35 @@ Model before adding the script (e.g. `model:ScaleTo(1.3)`), or rebuild with
 
 ### Performance
 
-Each car stays under a hard **45,000-triangle budget** for network racing:
-the R34 is about 41.2k and the Supra about 40.2k, in 53 MeshParts. `build.py` refuses
-to export a car over budget (`--budget` changes the limit). No single part is near
-Roblox's 20k-per-mesh cap; the biggest is `Body`, at about 9.6k.
+Targets come from Roblox racing practice: desktop racers usually run 5k–15k
+triangles per car; spend them on the silhouette, fenders and arches; keep the
+underside and interior minimal; prefer fewer meshes
+([devforum](https://devforum.roblox.com/t/meshpart-usage-performance-optimizations/1319217),
+[devforum](https://devforum.roblox.com/t/140-150-mesh-parts-for-one-car-is-bad-for-performance/2961291),
+[HWK Studio pack](https://hwk-studio.itch.io/230-low-poly-vehicle-body-rim-collection-roblox)).
 
-- Light, grille and trim layers have no hidden undersides.
-- Long thin strips (chin spoiler, rear valance) are triangulated cleanly.
-- Each wheel (tyre, rim, disc and caliper) is about 1.8k triangles. The body uses fewer
-  cross-sections and profile points. Smooth normals keep it looking round.
-- Light and trim outlines use fewer points, and small solids (seats, mirrors, engine)
-  are low-poly.
-- Same-colour details are merged into one part: badges go into `Chrome`; grilles
-  and panel gaps into `Trim`; the steering wheel into `Interior`; and the splitter,
-  diffuser, undertray and engine bay into `Underbody`.
-- `CarSetup` only lets the big shapes (body panels, wing, wheels) cast shadows.
+| | Triangles | Parts | One wheel (tyre + rim + disc + caliper) |
+| --- | --- | --- | --- |
+| R34 | ~19.1k | 53 | ~750 |
+| Supra | ~19.2k | 53 | ~690 |
+
+Those totals include opening doors, hood and trunk (each a solid panel), an engine
+bay and a basic interior. `build.py` refuses to export a car over the hard
+**45,000-triangle** budget (`--budget` changes it).
+
+How it stays light:
+
+- **Panel-style body:** each cross-section is 17 points of mostly straight panels
+  meeting at hard edges (sill, skirt step, character line, shoulder, belt, roof rail),
+  like a real car body.
+- **Crisp creases, smooth bends:** edges running along the car stay sharp, and bends
+  toward the nose and tail are smooth-shaded.
+- **Wheels:** 20 slices, box spokes, no lug nuts.
+- **Lights and trim:** raised layers have no hidden undersides. Flat layers have no
+  side walls. Lamp circles use 10–20 points.
+- **Merged parts:** same-colour details share a part (`Chrome`, `Trim`, `Interior`,
+  `Underbody`, `TailLightsDark`).
+- **Shadows:** `CarSetup` lets only the big shapes cast shadows.
 
 No part goes over Roblox's 20k-triangle limit; the exporter would split one automatically.
 For a busy map, also set `RenderFidelity` to **Automatic** on the MeshParts in

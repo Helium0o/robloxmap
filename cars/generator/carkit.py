@@ -340,6 +340,9 @@ class Car:
         return {k: len(m.F) for k, m in self.parts.items()}
 
     # ------------------------------------------------------------------
+    # hard-edge angle per part: low for body panels so the creases stay crisp
+    HARD = {"Body": 12, "Door": 12, "Hood": 12, "Trunk": 12, "Wing": 30, "Mirror": 30}
+
     def export_obj(self, path, materials, scale_m_per_unit=METRES_PER_STUD, smooth_angle=50):
         """Write .obj + .mtl.  materials: part name -> (mtl name, (r,g,b))."""
         import os
@@ -356,7 +359,11 @@ class Car:
             P = to_out(mesh.V)
             P[:, 2] += self.L / 2.0  # centre along length
             P /= scale_m_per_unit
-            N, corner_n = corner_normals(P, mesh.F, smooth_angle)
+            base = pname.rstrip("0123456789")
+            base = base[:-2] if base[-2:] in ("_R", "_L") else base
+            loft = base in ("Body", "Door", "Hood", "Trunk")
+            N, corner_n = corner_normals(P, mesh.F, self.HARD.get(base, smooth_angle),
+                                         along_axis=np.array([0, 0, 1.0]) if loft else None)
             mname, rgb = materials.get(pname, ("Default", (0.6, 0.6, 0.6)))
             used[mname] = rgb
             lines.append(f"o {pname}")
@@ -378,8 +385,11 @@ class Car:
                          f"Ks 0.25 0.25 0.25\nNs 60\nd 1\nillum 2\n\n")
 
 
-def corner_normals(P, F, angle_deg):
-    """Per-corner normals with an auto-smooth angle (hard edges stay crisp)."""
+def corner_normals(P, F, angle_deg, along_axis=None, along_angle=50):
+    """Per-corner normals with an auto-smooth angle (hard edges stay crisp).
+    With along_axis set, faces that bend *along* that axis (e.g. a body panel
+    curving toward the nose) stay smooth up to along_angle, so only the creases
+    running lengthwise are kept hard."""
     a, b, c = P[F[:, 0]], P[F[:, 1]], P[F[:, 2]]
     fn = np.cross(b - a, c - a)
     area = np.linalg.norm(fn, axis=1, keepdims=True)
@@ -399,7 +409,15 @@ def corner_normals(P, F, angle_deg):
         for k in range(3):
             v = F[fi, k]
             inc = faces_sorted[starts[v]:ends[v]]
-            sel = inc[(fnu[inc] @ fnu[fi]) >= cos_t]
+            dots = fnu[inc] @ fnu[fi]
+            if along_axis is None:
+                sel = inc[dots >= cos_t]
+            else:
+                diff = fnu[inc] - fnu[fi]
+                dn = np.linalg.norm(diff, axis=1) + 1e-12
+                lengthwise = np.abs(diff @ along_axis) / dn > 0.6
+                cos_a = math.cos(math.radians(along_angle))
+                sel = inc[np.where(lengthwise, dots >= cos_a, dots >= cos_t)]
             n = fn[sel].sum(axis=0)
             ln = np.linalg.norm(n)
             n = fnu[fi] if ln < 1e-12 else n / ln
@@ -483,7 +501,7 @@ def prism(poly, h0, h1):
     return np.array(V, float), np.array(F)
 
 
-def superellipsoid(center, radii, e=0.3, nu=12, nv=6):
+def superellipsoid(center, radii, e=0.3, nu=10, nv=5):
     """Rounded box / pill. e -> 0 is boxy, e = 1 is an ellipsoid."""
     cu, cs, ch = center
     ru, rs, rh = radii
@@ -571,7 +589,7 @@ def sweep(profile2d, path, up_hint=(1, 0, 0)):
     return grid_closed(rings)
 
 
-def airfoil(chord, thick, n=14, camber=0.0):
+def airfoil(chord, thick, n=7, camber=0.0):
     """Closed airfoil outline (a = along chord, b = thickness)."""
     xs = (1 - np.cos(np.linspace(0, math.pi, n))) / 2
     yt = 5 * thick * (0.2969 * np.sqrt(xs) - 0.126 * xs - 0.3516 * xs ** 2
@@ -630,10 +648,11 @@ class Body:
     """
 
     def __init__(self, L, keys, wheels, arch_r, end_r=(0.08, 0.08), end_p=4.0, glass=None,
-                 flare=0.02, bevel=0.006, crease_gap=0.07, panels=None, ends=None):
+                 flare=0.02, bevel=0.006, crease_gap=0.07, panels=None, ends=None, bow=0.0):
         self.L = L
         # shaping of the nose / tail: {"front": dict(zone, plan, top, bot), "rear": ...}
         self.ends = ends or {}
+        self.bow = bow
         self.glass = glass or {}
         self.panels = panels or {}
         self.f = {k: curve(v) for k, v in keys.items()}
@@ -683,12 +702,14 @@ class Body:
         return self.flare * f
 
     def profile(self, u):
+        """Panel-style cross-section: mostly straight panels meeting at hard
+        edges (sill, skirt step, character line, shoulder, roof rail), the way
+        real car bodies are shaped. 'bow' lets a car bulge its side panels."""
         p = self.params(u)
         zF, wF = p["zF"], p["wF"]
         wB0 = p["wB"]
         wB = wB0 + self.flare_at(u)
         under, over = p["under"], p["over"]
-        bv = self.bevel
         aL = max(zF, self.arch(u))
         hC = max(p["zMid"], self.arch_halo(u, self.crease_gap))
         zBelt = max(p["zBelt"], hC + 0.07)
@@ -700,36 +721,31 @@ class Body:
 
         wS = wB - under                     # skirt / lower side
         h_sk = min(aL + 0.07, hC - 0.05)    # top of the side skirt
+        sh = wB0 - over
         add((0.0, zF), "floor")
-        add((wF * 0.5, zF), "floor")
         add((wF, zF), "well")
         add((wF, aL), "sill")
-        add((wS - 0.04, aL), "skirt")
-        add((wS - 0.003, aL + 0.004), "skirt")
-        add((wS, h_sk), "skirt")
-        add((wS - 0.010, h_sk + 0.006), "lower")      # step above the skirt
-        for t in (0.55,):
-            hh = h_sk + 0.006 + (hC - bv - h_sk - 0.006) * t
-            add((wS - 0.010 + (wB - bv * 0.6 - wS + 0.010) * t ** 1.4, hh), "lower")
-        add((wB - bv * 0.6, hC - bv), "crease")
-        add((wB, hC), "crease")
-        add((wB - bv * 0.6, hC + bv), "upper")
-        sh = wB0 - over
-        for t in (0.55,):
-            hh = hC + bv + (zBelt - bv - hC - bv) * t
-            add((wB - bv * 0.6 + (sh - wB + bv * 0.6) * t ** 1.2, hh), "upper")
-        add((sh, zBelt - bv), "shoulder")
-        add((sh - bv * 1.2, zBelt + bv * 0.3), "deck")
-        zDeck = zBelt + 0.012
+        add((wS - 0.035, aL), "skirt")
+        add((wS, h_sk), "lower")                       # skirt face
+        add((wS - 0.010, h_sk + 0.008), "lower")       # step above the skirt
+        a, b = np.array([wS - 0.010, h_sk + 0.008]), np.array([wB, hC])
+        add(tuple(0.5 * (a + b) + [self.bow * 0.6, 0]), "lower")
+        add((wB, hC), "upper")                         # character line
+        a, b = np.array([wB, hC]), np.array([sh, zBelt])
+        add(tuple(0.5 * (a + b) + [self.bow, 0]), "upper")
+        add((sh, zBelt), "shoulder")                   # shoulder edge
+        zDeck = zBelt + 0.014
         wGH = min(p["wGH"], sh - 0.05)
         wR = min(p["wR"], wGH - 0.005)
-        zRE = max(p["zRE"], zDeck + 0.004)
+        zRE = max(p["zRE"], zDeck + 0.034)
         zT = max(p["zT"], zRE)
-        for k, t in enumerate(np.linspace(0, 1, 4)[:-1]):
-            bow = 0.010 * math.sin(math.pi * t)
-            add((wGH + (wR - wGH) * t + bow, zDeck + (zRE - zDeck) * t), "gh0" if k == 0 else "gh")
-        for k, t in enumerate((0.0, 0.04, 0.16, 0.38, 0.66, 1.0)):
-            add((wR * (1 - t), zRE + (zT - zRE) * (1 - (1 - t) ** 2)), "pillar" if k < 2 else "top")
+        add((sh - 0.024, zBelt + 0.010), "deck")
+        add((wGH, zDeck), "gh0")                       # belt moulding
+        add((wGH - 0.004, zDeck + 0.03), "gh")         # side glass
+        add((wR, zRE), "pillar")                       # roof rail / A-pillar
+        add((wR - 0.065, zRE + 0.30 * (zT - zRE)), "top")
+        add((wR * 0.45, zRE + 0.88 * (zT - zRE)), "top")
+        add((0.0, zT), "top")
         pts = np.array(pts)
         if self.kinds is None:
             self.kinds = kinds
@@ -747,13 +763,13 @@ class Body:
             pts[:, 1] = hc + (pts[:, 1] - hc) * k
         return pts
 
-    def stations(self, base=0.062, fine=0.034):
+    def stations(self, base=0.085, fine=0.055):
         us = set(np.round(np.arange(0, self.L, base), 4))
         for wu, _ in self.wheels:
             for u in np.arange(wu - self.arch_r - 0.03, wu + self.arch_r + 0.03, fine):
                 us.add(round(u, 4))
         for r, sign in ((self.end_r[0], 0), (self.end_r[1], 1)):
-            for t in np.linspace(0, 1, 12):
+            for t in np.linspace(0, 1, 5):
                 d = r * (1 - math.cos(t * math.pi / 2))
                 us.add(round(d if sign == 0 else self.L - d, 4))
         g = self.glass
@@ -1041,7 +1057,7 @@ def decal(body, poly, view, out=0.004, depth=0.012, maxlen=0.045, side=1, bulge=
         poly = poly[::-1]
     poly = resample_poly(poly, maxlen)
     tris = delaunay_flip(poly, triangulate(poly))
-    V2, T = refine(poly, tris, max(maxlen * (2 if view in ("front", "rear") else 3), 0.06))
+    V2, T = refine(poly, tris, max(maxlen * (2.5 if view in ("front", "rear") else 4), 0.09))
     loop = boundary_loop(T)
     # dome factor for bulge: 1 in the middle, 0 on the outline
     if bulge:
@@ -1077,8 +1093,9 @@ def decal(body, poly, view, out=0.004, depth=0.012, maxlen=0.045, side=1, bulge=
         T = T[:, ::-1]
     # the underside sits inside the paint and is never seen, so it is left out
     F = [tuple(t) for t in T]
-    # walls (duplicate verts so edges shade crisply)
-    loop = boundary_loop(T)
+    # walls (duplicate verts so edges shade crisply) - only where the layer is
+    # raised enough for its edge to be seen
+    loop = boundary_loop(T) if out >= 0.005 else []
     for i in range(len(loop)):
         p, q = loop[i], loop[(i + 1) % len(loop)]
         base = len(V)
@@ -1100,79 +1117,65 @@ def mirror_poly_top(poly):
 # wheels
 # --------------------------------------------------------------------------
 
-def tire(R, rim_r, width, seg=28):
+# Wheels follow common Roblox racing practice: ~150-250 triangles per piece,
+# 20 slices around (smooth normals hide the facets at speed), no lug nuts.
+
+def tire(R, rim_r, width, seg=20):
     w = width / 2
     side_r = rim_r + 0.55 * (R - rim_r)
     prof = [
-        (rim_r + 0.008, -w * 0.86), (side_r, -w), (R - 0.016, -w * 0.94), (R, -w * 0.70),
-        (R, w * 0.70), (R - 0.016, w * 0.94), (side_r, w), (rim_r + 0.008, w * 0.86),
+        (rim_r + 0.008, -w * 0.86), (side_r, -w), (R, -w * 0.74),
+        (R, w * 0.74), (side_r, w), (rim_r + 0.008, w * 0.86),
     ]
     return lathe(prof, (0, 0, 0), "s", seg)
 
 
-def rim(rim_r, width, spokes=5, twin=False, spoke_w=0.04, dish=0.025, seg=28,
-        hub_r=0.075, style="straight", e=0.25):
-    """Wheel rim built around the origin, outer face towards +s."""
+def rim(rim_r, width, spokes=5, twin=False, spoke_w=0.04, dish=0.025, seg=20,
+        hub_r=0.075, style="straight", e=None):
+    """Wheel rim built around the origin, outer face towards +s:
+    a lipped barrel, a hub cap and box spokes that dish toward the lip."""
     parts = []
     w = width / 2
-    # barrel + lip (closed lathe profile, hollow look via an inner wall)
     prof = [
         (rim_r + 0.014, w * 0.86 + 0.012), (rim_r + 0.014, w * 0.86 - 0.004),
         (rim_r - 0.012, w * 0.60), (rim_r - 0.012, -w * 0.94),
-        (rim_r - 0.024, -w * 0.94), (rim_r - 0.024, w * 0.55),
-        (rim_r - 0.002, w * 0.86 + 0.008),
+        (rim_r - 0.024, w * 0.70),
     ]
     parts.append(lathe(prof, (0, 0, 0), "s", seg))
-    # hub
     face = w * 0.86 - dish
-    hub = [(0.001, face + 0.012), (hub_r * 0.55, face + 0.012), (hub_r, face),
-           (hub_r, face - 0.05), (0.001, face - 0.05)]
-    parts.append(lathe(hub, (0, 0, 0), "s", 14))
-    # spokes
+    hub = [(0.001, face + 0.014), (hub_r * 0.6, face + 0.012), (hub_r, face - 0.004),
+           (0.001, face - 0.05)]
+    parts.append(lathe(hub, (0, 0, 0), "s", 8))
     n = spokes * (2 if twin else 1)
+    length = rim_r - hub_r * 0.8
     for k in range(n):
         if twin:
-            base_ang = 2 * math.pi * (k // 2) / spokes
-            ang = base_ang + (0.11 if k % 2 else -0.11)
+            ang = 2 * math.pi * (k // 2) / spokes + (0.11 if k % 2 else -0.11)
         else:
             ang = 2 * math.pi * k / n
-        length = rim_r - hub_r * 0.8
-        mid = hub_r * 0.8 + length / 2
-        VF = superellipsoid((0, 0, 0), (length / 2, 0.016, spoke_w / 2), e=e, nu=6, nv=4)
-        V, F = VF
-        V = np.array(V)
+        V, F = box((0, 0, 0), (length, 0.03, spoke_w))
+        V = np.array(V, float)
+        t = (V[:, 0] + length / 2) / length          # 0 at hub, 1 at lip
         if style == "taper":
-            # wider near the rim
-            t = (V[:, 0] + length / 2) / length
-            V[:, 2] *= 0.75 + 0.6 * t
-        # concave: spokes move outward toward the rim lip
-        t = (V[:, 0] + length / 2) / length
-        V[:, 1] += dish * t
-        V[:, 0] += mid
-        R = rot_s(ang)
-        V = V @ R.T
+            V[:, 2] *= 0.75 + 0.6 * t                 # wider toward the rim
+        V[:, 1] += dish * t                           # concave face
+        V[:, 0] += hub_r * 0.8 + length / 2
+        V = V @ rot_s(ang).T
         V[:, 1] += face - 0.004
         parts.append((V, F))
-    # lug nuts
-    for k in range(5):
-        ang = 2 * math.pi * k / 5 + math.pi / 5
-        r = hub_r * 0.62
-        parts.append(lathe([(0.001, face + 0.022), (0.009, face + 0.022), (0.009, face + 0.004),
-                            (0.001, face + 0.004)],
-                           (r * math.cos(ang), 0, r * math.sin(ang)), "s", 5))
     return parts
 
 
 def brake(disc_r, caliper_rgb_unused=None, offset=-0.03, caliper_ang=math.radians(150)):
     parts = []
-    disc = [(0.06, offset + 0.014), (disc_r, offset + 0.014), (disc_r, offset - 0.014),
-            (0.06, offset - 0.014)]
-    parts.append(("disc", lathe(disc, (0, 0, 0), "s", 20)))
-    # caliper: an arc of a box hugging the disc edge
+    disc = [(0.06, offset + 0.012), (disc_r, offset + 0.012), (disc_r, offset - 0.012),
+            (0.06, offset - 0.012)]
+    parts.append(("disc", lathe(disc, (0, 0, 0), "s", 12)))
+    # caliper: a three-segment arc of a box hugging the disc edge
     rings = []
     span = math.radians(60)
-    for i in range(9):
-        a = caliper_ang - span / 2 + span * i / 8
+    for i in range(4):
+        a = caliper_ang - span / 2 + span * i / 3
         prof = []
         for (rr, ss) in ((disc_r - 0.05, offset - 0.035), (disc_r + 0.022, offset - 0.035),
                          (disc_r + 0.022, offset + 0.032), (disc_r - 0.05, offset + 0.032)):

@@ -48,7 +48,7 @@ def build(spec):
                    end_p=spec.get("end_p", 4.0), glass=spec.get("glass"),
                    flare=spec.get("flare", 0.02), bevel=spec.get("bevel", 0.006),
                    crease_gap=spec.get("crease_gap", 0.07), panels=spec.get("panels"),
-                   ends=spec.get("ends"))
+                   ends=spec.get("ends"), bow=spec.get("bow", 0.0))
     for pname, (V, F) in body.mesh().items():
         base = pname[:-2] if pname[-2:] in ("_R", "_L") else pname
         if base in PANEL_THICKNESS:
@@ -66,7 +66,7 @@ def build(spec):
         if d.get("frame"):
             # raised lip around an opening so it reads as recessed
             width, out = d["frame"]
-            pts = ck.resample_poly(d["poly"], 0.03)
+            pts = ck.resample_poly(d["poly"], 0.07)
             path = pts + [pts[0]]
             a, b = np.array(path[-2]), np.array(path[-1])
             path[-1] = tuple(b - (b - a) / max(np.linalg.norm(b - a), 1e-9) * 0.012)
@@ -148,12 +148,12 @@ def mirrors(u, h, reach, size=(0.075, 0.10, 0.058)):
         for sd, sfx in ((1, "_R"), (-1, "_L")):
             cs = s_body + reach
             parts = [
-                ("Mirror", ck.superellipsoid((u, cs, h), size, e=0.3, nu=18, nv=10)),
+                ("Mirror", ck.superellipsoid((u, cs, h), size, e=0.3, nu=10, nv=5)),
                 ("Mirror", ck.box((u + 0.01, s_body + (reach - size[1] * 0.6 + 0.02) / 2 - 0.01,
                                    h - 0.035), (0.07, reach - size[1] * 0.6 + 0.02, 0.022))),
                 ("MirrorGlass", ck.superellipsoid((u - size[0] * 0.92, cs, h),
                                                   (0.012, size[1] * 0.82, size[2] * 0.75),
-                                                  e=0.3, nu=18, nv=8)),
+                                                  e=0.3, nu=8, nv=3)),
             ]
             for name, (V, F) in parts:
                 V = np.asarray(V, float).copy()
@@ -177,18 +177,18 @@ def interior(seat_u, seat_s, dash_u, wheel_side, floor_h, belt_h, roof_h, half_w
             s = seat_s * sgn
             # cushion + backrest + headrest
             _add(car, P, ck.superellipsoid((seat_u + 0.05, s, floor_h + 0.36), (0.25, 0.25, 0.07), e=0.35,
-                                           nu=12, nv=6))
-            back = ck.superellipsoid((0, 0, 0), (0.07, 0.25, 0.30), e=0.35, nu=12, nv=6)
+                                           nu=8, nv=4))
+            back = ck.superellipsoid((0, 0, 0), (0.07, 0.25, 0.30), e=0.35, nu=8, nv=4)
             _add(car, P, ck.xform(back, ck.rot_s(math.radians(-14)), (seat_u - 0.22, s, floor_h + 0.70)))
-            _add(car, P, ck.superellipsoid((seat_u - 0.32, s, min(floor_h + 1.04, roof_h - 0.13)), (0.06, 0.13, 0.09), e=0.4, nu=10, nv=6))
+            _add(car, P, ck.superellipsoid((seat_u - 0.32, s, min(floor_h + 1.04, roof_h - 0.13)), (0.06, 0.13, 0.09), e=0.4, nu=8, nv=4))
         if rear_seat_u is not None:
             _add(car, P, ck.superellipsoid((rear_seat_u, 0, floor_h + 0.36), (0.22, half_w - 0.18, 0.07), e=0.35,
-                                           nu=12, nv=6))
-            back = ck.superellipsoid((0, 0, 0), (0.07, half_w - 0.2, 0.24), e=0.35, nu=12, nv=6)
+                                           nu=8, nv=4))
+            back = ck.superellipsoid((0, 0, 0), (0.07, half_w - 0.2, 0.24), e=0.35, nu=8, nv=4)
             _add(car, P, ck.xform(back, ck.rot_s(math.radians(-24)), (rear_seat_u - 0.22, 0, floor_h + 0.62)))
         # dashboard
         _add(car, P, ck.superellipsoid((dash_u, 0, belt_h - 0.06), (0.20, half_w - 0.10, 0.12), e=0.3,
-                                       nu=14, nv=6))
+                                       nu=8, nv=4))
         # steering wheel
         sw_u, sw_s, sw_h = dash_u - 0.30, seat_s * wheel_side, belt_h - 0.02
         ring = [(0.19 + 0.018 * math.cos(a), 0.018 * math.sin(a))
@@ -214,13 +214,13 @@ def exhaust(u, s, h, r, length=0.20, oval=1.0, part="Exhaust", poke=0.035):
         else:
             uu = u
         prof = [(r * 0.80, 0.0), (r, 0.0), (r, length), (r * 0.8, length), (r * 0.8, 0.01)]
-        V, F = ck.lathe(prof, (0, 0, 0), "u", 28)
+        V, F = ck.lathe(prof, (0, 0, 0), "u", 14)
         V = np.array(V)
         V[:, 2] *= 1.0 / oval
         _add(car, part, (V + np.array([uu, s, h]), F))
         # dark inner
         inner = [(0.001, 0.03), (r * 0.79, 0.03), (r * 0.79, 0.06), (0.001, 0.06)]
-        V, F = ck.lathe(inner, (0, 0, 0), "u", 20)
+        V, F = ck.lathe(inner, (0, 0, 0), "u", 10)
         V = np.array(V)
         V[:, 2] *= 1.0 / oval
         _add(car, "Undertray", (V + np.array([uu, s, h]), F))
@@ -278,7 +278,7 @@ def splitter(depth=0.05, inset=0.06, h=None, back=0.30, part="Splitter"):
         probe = hh + 0.03
         right = []
         wmax = body.params(L - 0.3)["wB"] - inset
-        for a in np.linspace(0, 1, 16):
+        for a in np.linspace(0, 1, 8):
             sv = wmax * a
             uf = body.surface_front(sv, probe)
             if uf is None:
@@ -287,7 +287,6 @@ def splitter(depth=0.05, inset=0.06, h=None, back=0.30, part="Splitter"):
         right.append((right[-1][0] - back * 0.5, right[-1][1]))
         right.append((L - back - 0.1, right[-1][1] * 0.9))
         poly = [(u, sv) for u, sv in right] + [(u, -sv) for u, sv in right[::-1] if sv > 1e-6]
-        poly = ck.rounded_poly(poly, 0.02, seg=3)
         _add(car, part, ck.prism(poly, hh - 0.012, hh + 0.008))
     return fn
 
@@ -317,11 +316,11 @@ def diffuser(width, fins=4, length=0.32, h0=None, part="Diffuser"):
 def _tub(car, body, u0, u1, half_w, floor_h, top_h, closed_front=True):
     """Dark box under a lid whose walls stay below the paint."""
     _add(car, "EngineBay", ck.box(((u0 + u1) / 2, 0, floor_h + 0.01), (u1 - u0, half_w * 2, 0.02)))
-    steps = max(2, int((u1 - u0) / 0.05))
+    steps = max(2, int((u1 - u0) / 0.2))
     for k in range(steps):
         a = u0 + (u1 - u0) * k / steps
         b = u0 + (u1 - u0) * (k + 1) / steps
-        top = min(top_h, body.surface_top((a + b) / 2, half_w + 0.01) - 0.035)
+        top = min([top_h] + [body.surface_top(x, half_w + 0.01) - 0.035 for x in (a, (a + b) / 2, b)])
         for sd in (1, -1):
             _add(car, "EngineBay", ck.box(((a + b) / 2, sd * half_w, (floor_h + top) / 2),
                                           (b - a + 0.002, 0.02, top - floor_h)))
@@ -362,9 +361,9 @@ def trunk_tub(u0, u1, half_w, floor_h, top_h):
 def projector(view, cs, ch, r, proj, out=0.006):
     """Headlight projector: chrome reflector bowl, black shroud, domed lens."""
     return [
-        dict(part="Chrome", view=view, poly=ck.circle_poly(cs, ch, r, 24), out=out, **proj),
-        dict(part="Trim", view=view, poly=ck.circle_poly(cs, ch, r * 0.74, 20), out=out + 0.004, **proj),
-        dict(part="Lens", view=view, poly=ck.circle_poly(cs, ch, r * 0.58, 20), out=out + 0.007,
+        dict(part="Chrome", view=view, poly=ck.circle_poly(cs, ch, r, 16), out=out, **proj),
+        dict(part="Trim", view=view, poly=ck.circle_poly(cs, ch, r * 0.74, 14), out=out + 0.004, **proj),
+        dict(part="Lens", view=view, poly=ck.circle_poly(cs, ch, r * 0.58, 12), out=out + 0.007,
              bulge=0.006, **proj),
     ]
 
@@ -375,10 +374,10 @@ def round_lamp(view, cs, ch, r, proj, ring="TailLightsDark", core="TailLights",
     ring, lit core and a small centre (reverse / indicator) element."""
     c = ck.circle_poly
     return [
-        dict(part="Trim", view=view, poly=c(cs, ch, r * 1.12, 32), out=0.002, **proj),
-        dict(part="Chrome", view=view, poly=c(cs, ch, r * 1.04, 32), out=0.005, **proj),
-        dict(part="TailLights", view=view, poly=c(cs, ch, r, 32), out=0.008, bulge=0.006, **proj),
-        dict(part=ring, view=view, poly=c(cs, ch, r * 0.66, 28), out=0.016, **proj),
-        dict(part=core, view=view, poly=c(cs, ch, r * 0.50, 24), out=0.019, bulge=0.004, **proj),
-        dict(part=centre, view=view, poly=c(cs, ch, r * 0.26, 16), out=0.026, **proj),
+        dict(part="Trim", view=view, poly=c(cs, ch, r * 1.12, 20), out=0.002, **proj),
+        dict(part="Chrome", view=view, poly=c(cs, ch, r * 1.04, 20), out=0.005, **proj),
+        dict(part="TailLights", view=view, poly=c(cs, ch, r, 20), out=0.008, bulge=0.006, **proj),
+        dict(part=ring, view=view, poly=c(cs, ch, r * 0.66, 16), out=0.016, **proj),
+        dict(part=core, view=view, poly=c(cs, ch, r * 0.50, 14), out=0.019, bulge=0.004, **proj),
+        dict(part=centre, view=view, poly=c(cs, ch, r * 0.26, 10), out=0.026, **proj),
     ]

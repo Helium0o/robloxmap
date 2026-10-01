@@ -155,17 +155,17 @@ def hoop_wing(car, body):
     legs = 0.66
     r = 0.12
     # left leg up, round corner, across, round corner, right leg down
-    for t in [0.0, 0.3, 0.6, 1.0]:
+    for t in [0.0, 1.0]:
         path.append((u0, -legs - 0.03 * (1 - t), deck - 0.01 + (top - r - deck + 0.01) * t))
-    for k in range(1, 7):
-        a = math.pi - k * (math.pi / 2) / 6
+    for k in range(1, 4):
+        a = math.pi - k * (math.pi / 2) / 3
         path.append((u0, -legs + r + r * math.cos(a), top - r + r * math.sin(a)))
-    for s in [-0.3, 0.0, 0.3]:
+    for s in [0.0]:
         path.append((u0, s, top + 0.006 * (1 - (s / 0.66) ** 2)))
-    for k in range(0, 6):
-        a = math.pi / 2 - k * (math.pi / 2) / 6
+    for k in range(0, 3):
+        a = math.pi / 2 - k * (math.pi / 2) / 3
         path.append((u0, legs - r + r * math.cos(a), top - r + r * math.sin(a)))
-    for t in [1.0, 0.6, 0.3, 0.0]:
+    for t in [1.0, 0.0]:
         path.append((u0, legs + 0.03 * (1 - t), deck - 0.01 + (top - r - deck + 0.01) * t))
     V, F = ck.sweep(prof, path, up_hint=(-1, 0, 0))
     # slight angle of attack

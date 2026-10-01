@@ -165,12 +165,12 @@ def wing(car, body):
         s = 0.47 * sgn
         base = body.surface_top(0.30, s)
         hgt = hw - base + 0.01
-        stay = ck.superellipsoid((0, 0, 0), (0.07, 0.014, hgt / 2), e=0.3, nu=14, nv=8)
+        stay = ck.box((0, 0, 0), (0.14, 0.028, hgt))
         A._add(car, "Wing", ck.xform(stay, ck.rot_s(math.radians(-8)),
                                      (0.31, s, base + hgt / 2 - 0.01)))
         # end caps
         cap = ck.superellipsoid((le - chord / 2, span * sgn, hw - 0.005), (chord / 2 + 0.01, 0.008, 0.045),
-                                e=0.3, nu=14, nv=8)
+                                e=0.3, nu=8, nv=4)
         A._add(car, "Wing", cap)
 
 
