@@ -192,8 +192,8 @@ def interior(seat_u, seat_s, dash_u, wheel_side, floor_h, belt_h, roof_h, half_w
         # steering wheel
         sw_u, sw_s, sw_h = dash_u - 0.30, seat_s * wheel_side, belt_h - 0.02
         ring = [(0.19 + 0.018 * math.cos(a), 0.018 * math.sin(a))
-                for a in np.linspace(0, 2 * math.pi, 8, endpoint=False)]
-        V, F = ck.lathe(ring, (0, 0, 0), "u", 20)
+                for a in np.linspace(0, 2 * math.pi, 5, endpoint=False)]
+        V, F = ck.lathe(ring, (0, 0, 0), "u", 14)
         _add(car, "Steering", ck.xform((V, F), ck.rot_s(math.radians(-62)), (sw_u, sw_s, sw_h)))
         _add(car, "Steering", ck.xform(ck.superellipsoid((0, 0, 0), (0.03, 0.06, 0.06), e=0.5),
                                        ck.rot_s(math.radians(-62)), (sw_u + 0.005, sw_s, sw_h)))
@@ -260,7 +260,7 @@ def line(view, pts, width=0.006, part="PanelGaps", out=0.0015, sym=True):
         left.append(tuple(pts[i] + n))
         right.append(tuple(pts[i] - n))
     return dict(part=part, view=view, poly=left + right[::-1], out=out, depth=0.006,
-                maxlen=0.04, sym=sym)
+                maxlen=0.07, sym=sym)
 
 
 def interior_markers(seat_u, seat_s, floor_h, driver_side):

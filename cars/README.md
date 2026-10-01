@@ -53,12 +53,17 @@ Model before adding the script (e.g. `model:ScaleTo(1.3)`), or rebuild with
 
 ### Performance
 
-Each car is about 62k triangles in 53 MeshParts (down from ~92k in ~60 parts):
+Each car stays under a hard **45,000-triangle budget** for network racing:
+the R34 is about 41.2k and the Supra about 40.2k, in 53 MeshParts. `build.py` refuses
+to export a car over budget (`--budget` changes the limit). No single part is near
+Roblox's 20k-per-mesh cap; the biggest is `Body`, at about 9.6k.
 
 - Light, grille and trim layers have no hidden undersides.
 - Long thin strips (chin spoiler, rear valance) are triangulated cleanly.
-- Wheels, brake discs and seats use fewer segments, and the body loft is
-  sampled less densely where it's flat.
+- Each wheel (tyre, rim, disc and caliper) is about 1.8k triangles. The body uses fewer
+  cross-sections and profile points. Smooth normals keep it looking round.
+- Light and trim outlines use fewer points, and small solids (seats, mirrors, engine)
+  are low-poly.
 - Same-colour details are merged into one part: badges go into `Chrome`; grilles
   and panel gaps into `Trim`; the steering wheel into `Interior`; and the splitter,
   diffuser, undertray and engine bay into `Underbody`.

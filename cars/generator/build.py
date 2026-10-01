@@ -26,12 +26,18 @@ def main():
     ap.add_argument("--scale", type=float, default=ck.METRES_PER_STUD,
                     help="metres per stud (default 0.28 = Roblox real-world scale)")
     ap.add_argument("--only", default=None)
+    ap.add_argument("--budget", type=int, default=45000,
+                    help="max triangles for the whole car (default 45000, for network racing)")
     args = ap.parse_args()
     for mod in [m for m in (r34, supra) if m]:
         spec = mod.SPEC
         if args.only and args.only.lower() not in spec["name"].lower():
             continue
         car = assemble.build(spec)
+        total = sum(len(m.F) for m in car.parts.values())
+        if total > args.budget:
+            sys.exit(f"{spec['name']}: {total} triangles is over the {args.budget} budget - "
+                     "not exporting")
         out_dir = os.path.join(ROOT, spec["name"])
         os.makedirs(out_dir, exist_ok=True)
         mats = MATERIALS(spec["name"])
