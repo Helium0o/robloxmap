@@ -25,15 +25,15 @@ TRACK_F, TRACK_R = 1.481 / 2, 1.491 / 2
 BODY = {
     "zT": [(0.00, 0.97), (0.30, 1.010), (0.95, 1.030), (1.15, 1.055), (1.28, 1.115),
            (1.72, 1.345), (1.95, 1.360), (2.55, 1.360), (2.80, 1.330), (3.32, 1.000),
-           (3.42, 0.965), (3.70, 0.945), (4.20, 0.880), (4.45, 0.820), (4.60, 0.730)],
+           (3.42, 0.965), (3.70, 0.945), (4.20, 0.872), (4.45, 0.800), (4.60, 0.705)],
     "zRE": [(0.00, 0.955), (0.95, 1.000), (1.15, 1.020), (1.72, 1.300), (1.95, 1.315),
-            (2.55, 1.315), (2.80, 1.290), (3.34, 0.935), (3.60, 0.915), (4.45, 0.790),
-            (4.60, 0.700)],
+            (2.55, 1.315), (2.80, 1.290), (3.34, 0.935), (3.60, 0.915), (4.45, 0.772),
+            (4.60, 0.680)],
     "zBelt": [(0.00, 0.900), (0.30, 0.965), (1.00, 0.985), (1.60, 0.960), (2.50, 0.925),
-              (3.30, 0.895), (3.65, 0.880), (4.20, 0.835), (4.45, 0.770), (4.60, 0.680)],
+              (3.30, 0.895), (3.65, 0.880), (4.20, 0.828), (4.45, 0.755), (4.60, 0.662)],
     "wB": [(0.00, 0.835), (0.10, 0.862), (0.45, 0.868), (2.30, 0.862), (4.10, 0.868),
            (4.42, 0.860), (4.55, 0.835), (4.60, 0.805)],
-    "zMid": [(0.0, 0.745), (2.3, 0.735), (4.6, 0.715)],
+    "zMid": [(0.0, 0.745), (2.3, 0.735), (3.9, 0.715), (4.35, 0.655), (4.6, 0.575)],
     "zF": [(0.00, 0.30), (0.22, 0.20), (0.45, 0.13), (4.20, 0.13), (4.42, 0.11),
            (4.60, 0.14)],
     "wF": [(0.00, 0.70), (0.55, 0.80), (0.60, 0.58), (1.36, 0.58), (1.41, 0.82),
@@ -53,24 +53,24 @@ circ = ck.circle_poly
 # headlights: solid units on a plane fitted to the nose (see A.lamp_unit) -
 # a clean trapezoid with straight top/bottom edges, the inner end chamfered
 # toward the grille, two equal projectors on one level line
-HL = rp([(0.398, 0.648), (0.836, 0.648), (0.836, 0.762), (0.390, 0.762), (0.370, 0.705)], 0.012)
-HL_BEZEL = rp([(0.390, 0.640), (0.844, 0.640), (0.844, 0.770), (0.382, 0.770), (0.360, 0.705)], 0.016)
-HL_ELS = (A.projector_els(0.535, 0.702, 0.042) + A.projector_els(0.708, 0.702, 0.042) + [
-    dict(part="Indicators", poly=rp([(0.772, 0.656), (0.828, 0.656), (0.828, 0.690), (0.772, 0.690)], 0.006),
+HL = rp([(0.398, 0.605), (0.836, 0.605), (0.836, 0.675), (0.390, 0.675), (0.370, 0.640)], 0.012)
+HL_BEZEL = rp([(0.390, 0.600), (0.844, 0.600), (0.844, 0.680), (0.382, 0.680), (0.360, 0.640)], 0.016)
+HL_ELS = (A.projector_els(0.535, 0.640, 0.030) + A.projector_els(0.708, 0.640, 0.030) + [
+    dict(part="Indicators", poly=rp([(0.772, 0.610), (0.828, 0.610), (0.828, 0.631), (0.772, 0.631)], 0.006),
          out=0.007),
-    dict(part="Chrome", poly=[(0.430, 0.749), (0.828, 0.749), (0.828, 0.755), (0.430, 0.755)],
+    dict(part="Chrome", poly=[(0.430, 0.667), (0.828, 0.667), (0.828, 0.671), (0.430, 0.671)],
          out=0.007),
 ])
 # upper grille between the lights + badge
 D.append(dict(part="Grille", view="front", sym=False, out=0.003,
-              poly=rp([(-0.36, 0.680), (0.36, 0.680), (0.39, 0.735), (-0.39, 0.735)], 0.02), frame=(0.022, 0.014)))
+              poly=rp([(-0.36, 0.625), (0.36, 0.625), (0.39, 0.658), (-0.39, 0.658)], 0.02), frame=(0.022, 0.014)))
 D.append(dict(part="Badge", view="front", sym=False, out=0.013,
-              poly=rp([(-0.055, 0.695), (0.055, 0.695), (0.055, 0.722), (-0.055, 0.722)], 0.008)))
+              poly=rp([(-0.055, 0.634), (0.055, 0.634), (0.055, 0.650), (-0.055, 0.650)], 0.008)))
 # bumper: big centre intake + two side ducts + chin spoiler
 D.append(dict(part="Grille", view="front", sym=False, out=0.003,
               poly=rp([(-0.33, 0.305), (0.33, 0.305), (0.36, 0.475), (-0.36, 0.475)], 0.04), frame=(0.022, 0.014)))
 D.append(dict(part="Grille", view="front", out=0.003,
-              poly=rp([(0.45, 0.305), (0.73, 0.330), (0.76, 0.470), (0.47, 0.470)], 0.035), frame=(0.022, 0.014)))
+              poly=rp([(0.45, 0.305), (0.64, 0.322), (0.66, 0.455), (0.47, 0.462)], 0.035), frame=(0.022, 0.014)))
 D.append(dict(part="Trim", view="front", sym=False, out=0.004,
               poly=rp([(-0.70, 0.125), (0.70, 0.125), (0.72, 0.185), (-0.72, 0.185)], 0.02)))
 
@@ -107,11 +107,11 @@ D.append(A.line("side", ck.circle_poly(1.48, 0.83, 0.07, 24) + [ck.circle_poly(1
                 sym=False))
 D[-1]["side"] = 1
 # bumper shut lines front and rear
-D.append(A.line("front", [(-0.80, 0.60), (0.0, 0.615), (0.80, 0.60)], sym=False))
+D.append(A.line("front", [(-0.74, 0.555), (0.0, 0.565), (0.74, 0.555)], sym=False))
 D.append(A.line("rear", [(-0.78, 0.71), (0.0, 0.72), (0.78, 0.71)], sym=False))
 # trunk lid + hood shut lines
 D.append(A.line("top", [(0.16, -0.70), (0.16, 0.70)], sym=False))
-D.append(A.line("top", [(4.42, -0.70), (4.42, 0.70)], sym=False))
+D.append(A.line("top", [(4.35, -0.62), (4.35, 0.62)], sym=False))
 
 SPEC = dict(
     name="NissanSkylineGTR_R34",
@@ -122,14 +122,17 @@ SPEC = dict(
     end_p=3.0,
     # nose: corners swept back, bumper top leaning into the hood, chin tucked under
     # straight lean lines in side view (pow 1); squarer corners in plan (pow 3)
-    ends=dict(front=dict(zone=0.60, plan=0.12, top=0.06, bot=0.09, plan_pow=5.0, top_pow=1, bot_pow=1),
+    # nose: corners rounded back in plan, the light band leaning back under the
+    # hood lip, and a bumper that juts forward at the bottom
+    ends=dict(front=dict(zone=0.65, plan=0.22, top=0.12, bot=0.05, plan_pow=3.2, top_pow=1.4, bot_pow=1.5,
+                         mid=0.42),
               rear=dict(zone=0.50, plan=0.10, top=0.05, bot=0.10, plan_pow=3.0, top_pow=1, bot_pow=1)),
     flare=0.026,
     bevel=0.005,
     crease_gap=0.07,
     flush=True,
     panels=dict(door=dict(u=(2.03, 3.165), top=(2.09, 3.40)),
-                hood=(3.42, 4.47), trunk=(0.06, 1.17)),
+                hood=(3.42, 4.36), trunk=(0.06, 1.17)),
     wheels=[
         dict(tag="FR", u=FRONT_AXLE, half_track=TRACK_F, R=R_TIRE, rim_r=RIM_R, width=0.245),
         dict(tag="FL", u=FRONT_AXLE, half_track=-TRACK_F, R=R_TIRE, rim_r=RIM_R, width=0.245),

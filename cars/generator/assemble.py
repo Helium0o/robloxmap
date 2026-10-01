@@ -66,7 +66,8 @@ def build(spec):
         if d.get("frame"):
             # raised lip around an opening so it reads as recessed
             width, out = d["frame"]
-            pts = ck.resample_poly(d["poly"], 0.07)
+            # finer on the curved nose/tail so the lip follows the paint
+            pts = ck.resample_poly(d["poly"], 0.025 if d["view"] in ("front", "rear") else 0.07)
             path = pts + [pts[0]]
             a, b = np.array(path[-2]), np.array(path[-1])
             path[-1] = tuple(b - (b - a) / max(np.linalg.norm(b - a), 1e-9) * 0.012)

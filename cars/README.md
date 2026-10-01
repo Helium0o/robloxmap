@@ -62,8 +62,8 @@ underside and interior minimal; prefer fewer meshes
 
 | | Triangles | Parts | One wheel (tyre + rim + disc + caliper) |
 | --- | --- | --- | --- |
-| R34 | ~29.4k | 53 | ~750 |
-| Supra | ~26.6k | 53 | ~690 |
+| R34 | ~28.6k | 53 | ~750 |
+| Supra | ~26.7k | 53 | ~690 |
 
 Those totals include opening doors, hood and trunk (each a solid panel), an engine
 bay and a basic interior. `build.py` refuses to export a car over the hard
