@@ -58,12 +58,12 @@ circ = ck.circle_poly
 HL = circ(0.600, 0.640, 0.205, 40, ry=0.052, rot=math.radians(5))
 D.append(dict(part="Trim", view="front", out=0.002, **HL_PROJ,
               poly=circ(0.600, 0.640, 0.218, 40, ry=0.064, rot=math.radians(5))))
-D.append(dict(part="HeadLights", view="front", poly=HL, out=0.005, **HL_PROJ))
-for k, cs in enumerate((0.470, 0.585, 0.700)):
+D.append(dict(part="HeadLights", view="front", poly=HL, out=0.004, **HL_PROJ))
+# three projectors (two low-beam, one high-beam) sitting in chrome bowls
+for cs, r in ((0.462, 0.040), (0.585, 0.044), (0.708, 0.040)):
     ch = 0.640 + (cs - 0.600) * math.tan(math.radians(5))
-    D.append(dict(part="Chrome", view="front", poly=circ(cs, ch, 0.040, 22), out=0.009, **HL_PROJ))
-    D.append(dict(part="Lens", view="front", poly=circ(cs, ch, 0.028, 20), out=0.012, **HL_PROJ,
-                  bulge=0.006))
+    D += A.projector("front", cs, ch, r, HL_PROJ)
+D.append(dict(part="HeadlightGlass", view="front", poly=HL, out=0.026, bulge=0.006, **HL_PROJ))
 # big centre mouth with the number plate recess above it
 D.append(dict(part="Grille", view="front", sym=False, out=0.003,
               poly=rp([(-0.40, 0.255), (0.40, 0.255), (0.36, 0.430), (0.0, 0.445),
@@ -80,13 +80,14 @@ D.append(dict(part="Trim", view="front", sym=False, out=0.004,
 # ---- rear: full-width tail panel with two round lamps each side
 D.append(dict(part="Trim", view="rear", sym=False, out=0.003,
               poly=rp([(-0.77, 0.760), (0.77, 0.760), (0.78, 0.900), (-0.78, 0.900)], 0.03)))
-D.append(dict(part="TailLights", view="rear", sym=False, out=0.005,
+# centre garnish: dark red lens with a lit strip
+D.append(dict(part="TailLightsDark", view="rear", sym=False, out=0.005,
               poly=rp([(-0.30, 0.785), (0.30, 0.785), (0.30, 0.875), (-0.30, 0.875)], 0.02)))
-for cs, inner in ((0.660, "TailLightsInner"), (0.440, "Indicators")):
-    D.append(dict(part="Chrome", view="rear", poly=circ(cs, 0.830, 0.092, 36), out=0.006, **TL_PROJ))
-    D.append(dict(part="TailLights", view="rear", poly=circ(cs, 0.830, 0.082, 36), out=0.009,
-                  bulge=0.008, **TL_PROJ))
-    D.append(dict(part=inner, view="rear", poly=circ(cs, 0.830, 0.036, 24), out=0.019, **TL_PROJ))
+D.append(dict(part="TailLights", view="rear", sym=False, out=0.008,
+              poly=rp([(-0.28, 0.852), (0.28, 0.852), (0.28, 0.864), (-0.28, 0.864)], 0.005)))
+# outer lamps: tail/brake with a reverse centre, inner lamps: amber turn ring
+D += A.round_lamp("rear", 0.660, 0.830, 0.084, TL_PROJ, centre="TailLightsInner")
+D += A.round_lamp("rear", 0.440, 0.830, 0.084, TL_PROJ, ring="Indicators")
 D.append(dict(part="Badge", view="rear", sym=False, out=0.009,
               poly=rp([(-0.10, 0.818), (0.10, 0.818), (0.10, 0.842), (-0.10, 0.842)], 0.008)))
 D += A.plate("rear", -0.18, 0.18, 0.505, 0.635)

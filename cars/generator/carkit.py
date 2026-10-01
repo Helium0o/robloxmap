@@ -129,7 +129,7 @@ def triangulate(poly):
     return tris
 
 
-def delaunay_flip(verts2d, tris, iters=50):
+def delaunay_flip(verts2d, tris, iters=2000):
     """Lawson edge flips -> constrained Delaunay (outline edges never flip)."""
     P = np.asarray(verts2d, float)
     T = [list(t) for t in tris]
@@ -308,7 +308,10 @@ class Car:
         self.L = length
         self.parts = {}
 
+    alias = {}
+
     def part(self, name):
+        name = self.alias.get(name, name)
         if name not in self.parts:
             self.parts[name] = Mesh()
         return self.parts[name]
@@ -359,8 +362,8 @@ class Car:
             lines.append(f"o {pname}")
             lines.append(f"g {pname}")
             lines.append(f"usemtl {mname}")
-            lines += [f"v {x:.4f} {y:.4f} {z:.4f}" for x, y, z in P]
-            lines += [f"vn {x:.4f} {y:.4f} {z:.4f}" for x, y, z in N]
+            lines += [f"v {x:.3f} {y:.3f} {z:.3f}" for x, y, z in P]
+            lines += [f"vn {x:.3f} {y:.3f} {z:.3f}" for x, y, z in N]
             for fi, f in enumerate(mesh.F):
                 a, b, c = f + vofs
                 na, nb, nc = corner_n[fi] + nofs
@@ -744,7 +747,7 @@ class Body:
             pts[:, 1] = hc + (pts[:, 1] - hc) * k
         return pts
 
-    def stations(self, base=0.045, fine=0.018):
+    def stations(self, base=0.05, fine=0.026):
         us = set(np.round(np.arange(0, self.L, base), 4))
         for wu, _ in self.wheels:
             for u in np.arange(wu - self.arch_r - 0.03, wu + self.arch_r + 0.03, fine):
@@ -1065,10 +1068,17 @@ def decal(body, poly, view, out=0.004, depth=0.012, maxlen=0.03, side=1, bulge=0
     nrm /= np.linalg.norm(nrm, axis=1, keepdims=True)
     top = P + nrm * (out + bulge * dome)[:, None]
     bot = P - nrm * depth
-    n = len(P)
     V = np.vstack([top, bot])
-    F = [tuple(t) for t in T] + [(t[0] + n, t[2] + n, t[1] + n) for t in T]
+    # make the visible face point away from the paint (checked in the
+    # right-handed export frame; (u, s, h) itself is left-handed)
+    to = to_out(top)
+    fa, fb, fc = to[T[:, 0]], to[T[:, 1]], to[T[:, 2]]
+    if np.sum(np.cross(fb - fa, fc - fa) @ to_out(d[None, :])[0]) < 0:
+        T = T[:, ::-1]
+    # the underside sits inside the paint and is never seen, so it is left out
+    F = [tuple(t) for t in T]
     # walls (duplicate verts so edges shade crisply)
+    loop = boundary_loop(T)
     for i in range(len(loop)):
         p, q = loop[i], loop[(i + 1) % len(loop)]
         base = len(V)
@@ -1090,7 +1100,7 @@ def mirror_poly_top(poly):
 # wheels
 # --------------------------------------------------------------------------
 
-def tire(R, rim_r, width, seg=56):
+def tire(R, rim_r, width, seg=40):
     w = width / 2
     side_r = rim_r + 0.55 * (R - rim_r)
     prof = [
@@ -1102,7 +1112,7 @@ def tire(R, rim_r, width, seg=56):
     return lathe(prof, (0, 0, 0), "s", seg)
 
 
-def rim(rim_r, width, spokes=5, twin=False, spoke_w=0.04, dish=0.025, seg=56,
+def rim(rim_r, width, spokes=5, twin=False, spoke_w=0.04, dish=0.025, seg=40,
         hub_r=0.075, style="straight", e=0.25):
     """Wheel rim built around the origin, outer face towards +s."""
     parts = []
@@ -1121,7 +1131,7 @@ def rim(rim_r, width, spokes=5, twin=False, spoke_w=0.04, dish=0.025, seg=56,
     face = w * 0.86 - dish
     hub = [(0.001, face + 0.012), (hub_r * 0.55, face + 0.012), (hub_r, face),
            (hub_r, face - 0.05), (0.001, face - 0.05)]
-    parts.append(lathe(hub, (0, 0, 0), "s", 32))
+    parts.append(lathe(hub, (0, 0, 0), "s", 20))
     # spokes
     n = spokes * (2 if twin else 1)
     for k in range(n):
@@ -1132,7 +1142,7 @@ def rim(rim_r, width, spokes=5, twin=False, spoke_w=0.04, dish=0.025, seg=56,
             ang = 2 * math.pi * k / n
         length = rim_r - hub_r * 0.8
         mid = hub_r * 0.8 + length / 2
-        VF = superellipsoid((0, 0, 0), (length / 2, 0.016, spoke_w / 2), e=e, nu=12, nv=6)
+        VF = superellipsoid((0, 0, 0), (length / 2, 0.016, spoke_w / 2), e=e, nu=8, nv=5)
         V, F = VF
         V = np.array(V)
         if style == "taper":
@@ -1161,7 +1171,7 @@ def brake(disc_r, caliper_rgb_unused=None, offset=-0.03, caliper_ang=math.radian
     parts = []
     disc = [(0.06, offset + 0.014), (disc_r, offset + 0.014), (disc_r, offset - 0.014),
             (0.06, offset - 0.014)]
-    parts.append(("disc", lathe(disc, (0, 0, 0), "s", 40)))
+    parts.append(("disc", lathe(disc, (0, 0, 0), "s", 28)))
     # caliper: an arc of a box hugging the disc edge
     rings = []
     span = math.radians(60)

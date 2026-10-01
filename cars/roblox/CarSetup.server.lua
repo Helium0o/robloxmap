@@ -54,7 +54,10 @@ end
 -- part base name -> {Color, Material, Transparency, Reflectance}
 local LOOK = {
 	Glass = { Color3.fromRGB(15, 18, 21), Enum.Material.Glass, 0.3, 0.2 },
-	HeadLights = { Color3.fromRGB(220, 225, 230), Enum.Material.Glass, 0.15, 0.2 },
+	HeadLights = { Color3.fromRGB(42, 44, 47), Enum.Material.Metal, 0, 0.15 }, -- housing
+	HeadlightGlass = { Color3.fromRGB(215, 228, 240), Enum.Material.Glass, 0.75, 0.3 }, -- clear cover
+	TailLightsDark = { Color3.fromRGB(82, 3, 5), Enum.Material.Glass, 0, 0.1 },
+	Underbody = { Color3.fromRGB(14, 14, 15), Enum.Material.SmoothPlastic, 0, 0.05 },
 	Lens = { Color3.fromRGB(242, 247, 255), Enum.Material.Glass, 0, 0.25 },
 	Chrome = { Color3.fromRGB(190, 192, 198), Enum.Material.Metal, 0, 0.35 },
 	Badge = { Color3.fromRGB(190, 192, 198), Enum.Material.Metal, 0, 0.35 },
@@ -120,7 +123,9 @@ for _, part in ipairs(parts) do
 	part.CanCollide = base == "Body"
 	part.CanTouch = false
 	part.CanQuery = base ~= "Glass"
-	part.CastShadow = not (string.find(base, "Glass") or base == "PanelGaps")
+	-- only big shapes cast shadows: small details cost render time for no visible gain
+	part.CastShadow = (base == "Body" or base == "Door" or base == "Hood" or base == "Trunk"
+		or base == "Wing" or base == "Tire" or base == "Rim")
 	if part:IsA("MeshPart") then
 		part.DoubleSided = string.find(base, "Glass") ~= nil
 	end

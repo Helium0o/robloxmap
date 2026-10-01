@@ -30,7 +30,7 @@ so Roblox Studio imports each part as its own MeshPart.
 | Hood | `Hood`, `HoodTrim` | Hinged at the windscreen. Engine and bay inside |
 | Trunk / hatch | `Trunk`, `TrunkGlass`, `Wing` | Hinged at the rear window. On the Supra the whole glass hatch lifts with the wing |
 | Seats | `Marker_DriverSeat`, `Marker_PassengerSeat` | Turned into a VehicleSeat and a Seat. **E** to Drive / Ride, WASD to drive |
-| Lights | `HeadLights`, `Lens`, `TailLights` | Headlights switch on while driven. Brake lights glow when braking |
+| Lights | `HeadLights` (housing), `Lens` (projectors), `HeadlightGlass` (clear cover), `TailLights`, `TailLightsDark`, `TailLightsInner` | Projectors and the headlight beam switch on while driven. Brake lights glow when braking |
 
 `Marker_*` parts are small invisible cubes that mark hinge and seat positions.
 Keep them in the Model.
@@ -51,12 +51,27 @@ studs long. Most Roblox games use slightly oversized cars. To get those, scale t
 Model before adding the script (e.g. `model:ScaleTo(1.3)`), or rebuild with
 `--scale 0.22`. Forward is −Z, which is the Model's LookVector.
 
-Each car is ~85k triangles split over ~60 MeshParts. Every part stays under
-Roblox's 20k-triangle limit; the exporter splits large parts automatically
-(e.g. `Trim`, `Trim2`).
+### Performance
+
+Each car is about 62k triangles in 53 MeshParts (down from ~92k in ~60 parts):
+
+- Light, grille and trim layers have no hidden undersides.
+- Long thin strips (chin spoiler, rear valance) are triangulated cleanly.
+- Wheels, brake discs and seats use fewer segments, and the body loft is
+  sampled less densely where it's flat.
+- Same-colour details are merged into one part: badges go into `Chrome`; grilles
+  and panel gaps into `Trim`; the steering wheel into `Interior`; and the splitter,
+  diffuser, undertray and engine bay into `Underbody`.
+- `CarSetup` only lets the big shapes (body panels, wing, wheels) cast shadows.
+
+No part goes over Roblox's 20k-triangle limit; the exporter would split one automatically.
+For a busy map, also set `RenderFidelity` to **Automatic** on the MeshParts in
+Studio (scripts can't change it), so distant cars draw with fewer triangles.
 
 ![R34 opened up](NissanSkylineGTR_R34/preview_open.png)
 ![Supra opened up](ToyotaSupra_MK4/preview_open.png)
+![R34 lights](NissanSkylineGTR_R34/preview_lights.png)
+![Supra lights](ToyotaSupra_MK4/preview_lights.png)
 
 ## Reference data used
 
