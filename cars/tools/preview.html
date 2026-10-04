@@ -1,0 +1,47 @@
+<!doctype html><html><head><style>body{margin:0;background:#222}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script></head>
+<body><script type="module">
+import * as THREE from 'three';
+import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
+import {MTLLoader} from 'three/addons/loaders/MTLLoader.js';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+const q=new URLSearchParams(location.search); const name=q.get('car');
+const W=1600,H=1000;
+const r=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true}); r.setSize(W,H); r.setScissorTest(true);
+document.body.appendChild(r.domElement);
+const scene=new THREE.Scene(); scene.background=new THREE.Color(0xb8c4cc);
+const pm=new THREE.PMREMGenerator(r); scene.environment=pm.fromScene(new RoomEnvironment(),0.04).texture;
+const sun=new THREE.DirectionalLight(0xffffff,1.6); sun.position.set(20,40,15); scene.add(sun);
+scene.add(new THREE.HemisphereLight(0xffffff,0x444444,0.6));
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(400,400),new THREE.MeshStandardMaterial({color:0x6b6f72,roughness:0.9}));
+ground.rotation.x=-Math.PI/2; scene.add(ground);
+const mtl=await new MTLLoader().setPath(`../${name}/`).loadAsync(`${name}.mtl`);
+mtl.preload();
+const obj=await new OBJLoader().setMaterials(mtl).setPath(`../${name}/`).loadAsync(`${name}.obj`);
+obj.traverse(o=>{if(o.isMesh){const m=o.material; const c=m.color.clone();
+  const metal=/Rim|Chrome|Badge|Exhaust|Mirror/.test(o.name);
+  o.material=new THREE.MeshStandardMaterial({color:c,roughness:/Tire|Trim|Grille|Interior|Under|Steer/.test(o.name)?0.8:(metal?0.25:0.35),metalness:metal?0.9:(o.name=='Body'||o.name=='Wing'?0.3:0.05),side:THREE.FrontSide,
+   transparent:/Glass/.test(o.name)&&!/Mirror/.test(o.name),opacity:o.name=='HeadlightGlass'?0.25:((/Glass/.test(o.name)&&!/Mirror/.test(o.name))?0.8:1), visible:!/Marker/.test(o.name)});}});
+scene.add(obj);
+if(q.get('pose')){
+  const byName={}; obj.traverse(o=>{if(o.isMesh) byName[o.name]=o;});
+  const center=n=>{const b=new THREE.Box3().setFromObject(byName[n]);return b.getCenter(new THREE.Vector3());};
+  const rot=(names,pivot,axis,deg)=>{const qq=new THREE.Quaternion().setFromAxisAngle(axis,deg*Math.PI/180);
+    names.forEach(n=>{const m=byName[n]; if(!m) return; m.geometry.translate(-pivot.x,-pivot.y,-pivot.z);
+      m.geometry.applyQuaternion(qq); m.geometry.translate(pivot.x,pivot.y,pivot.z);});};
+  const Y=new THREE.Vector3(0,1,0), X=new THREE.Vector3(1,0,0);
+  rot(['Door_R','DoorGlass_R','DoorTrim_R','Mirror_R','MirrorGlass_R'],center('Marker_Hinge_Door_R'),Y,65);
+  rot(['Door_L','DoorGlass_L','DoorTrim_L','Mirror_L','MirrorGlass_L'],center('Marker_Hinge_Door_L'),Y,-65);
+  rot(['Hood','HoodTrim'],center('Marker_Hinge_Hood'),X,55);
+  rot(['Trunk','TrunkGlass','TrunkTrim','Wing'],center('Marker_Hinge_Trunk'),X,-55);
+  for(const t of ['FL','FR']){const c=center('Tire_'+t); rot(['Tire_'+t,'Rim_'+t,'Brake_'+t,'Caliper_'+t],c,Y,-25);}
+}
+const box=new THREE.Box3().setFromObject(obj); const ctr=box.getCenter(new THREE.Vector3()); if(q.get('tgt')) ctr.add(new THREE.Vector3(...JSON.parse(q.get('tgt'))));
+const views=q.get('views')?JSON.parse(q.get('views')):[[1,0.35,-1],[-1,0.35,1],[1,0.02,0],[0,0.05,-1],[0,0.05,1],[0.0,1,0.0001]];
+const cols=+(q.get('cols')||3), rows=Math.ceil(views.length/cols), vw=W/cols, vh=H/rows;
+views.forEach((v,i)=>{const cam=new THREE.PerspectiveCamera(20,vw/vh,0.1,1000);
+  const d=new THREE.Vector3(...v).normalize(); const dist=+(q.get('dist')||62);
+  cam.position.copy(ctr).addScaledVector(d,dist); cam.lookAt(ctr);
+  const x=(i%cols)*vw, y=H-(Math.floor(i/cols)+1)*vh; r.setViewport(x,y,vw,vh); r.setScissor(x,y,vw,vh); r.render(scene,cam);});
+document.title='done';
+</script></body></html>
